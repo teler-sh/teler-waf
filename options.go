@@ -2,6 +2,7 @@ package teler
 
 import "github.com/kitabisa/teler-waf/threat"
 
+// Options is a struct for specifying configuration options for the teler.Teler middleware.
 type Options struct {
 	// Excludes is a list of threat types to exclude from the security checks.
 	// These threat types are defined in the threat.Exclude type.

@@ -1,5 +1,6 @@
 package teler
 
+// Rule is custom security rules to apply to incoming requests.
 type Rule struct {
 	// Name is the name of the rule.
 	Name string
