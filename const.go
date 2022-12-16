@@ -1,6 +1,20 @@
 package teler
 
 const (
-	errParsing   = "error parsing %s: %s"
 	errResources = "error while getting teler resources: %s"
+	errLogFile   = "error opening log file: %s"
+	errPattern   = "error while compile custom rule for \"%s\": %s"
+	errWhitelist = "error parsing whitelist pattern \"%s\": %s"
+
+	errInvalidRuleName = "error while compile custom rule: missing rule name"
+	errInvalidRuleCond = "invalid logical operator for \"%s\" rule condition, valid values are \"and\" or \"or\", given: \"%s\""
+)
+
+const (
+	commonWebAttack     = "common-web-attacks.json"
+	cve                 = "cves.json"
+	badIPAddress        = "bad-ip-addresses.txt"
+	badReferrer         = "bad-referrers.txt"
+	badCrawler          = "bad-crawlers.txt"
+	directoryBruteforce = "directory-bruteforces.txt"
 )

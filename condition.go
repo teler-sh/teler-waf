@@ -1,6 +1,10 @@
 package teler
 
-import "github.com/kitabisa/teler-waf/request"
+import (
+    "regexp"
+
+    "github.com/kitabisa/teler-waf/request"
+)
 
 // Condition specifies a request element to match and
 // a pattern to match against the element.

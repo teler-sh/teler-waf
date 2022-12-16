@@ -1,4 +1,4 @@
-package examples
+package main
 
 import (
 	"net/http"
@@ -14,7 +14,7 @@ var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	telerMiddleware := teler.New(teler.Options{
-		Excludes: []teler.Exclude{
+		Excludes: []threat.Exclude{
 			threat.BadReferrer,
 			threat.BadCrawler,
 		},
@@ -36,8 +36,7 @@ func main() {
 				},
 			},
 		},
-		LogFile:   "/var/log/teler/teler.log",
-		LogRotate: true,
+		LogFile: "/var/log/teler/teler.log",
 	})
 
 	app := telerMiddleware.Handler(myHandler)

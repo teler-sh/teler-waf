@@ -1,5 +1,7 @@
 package threat
 
+type Exclude int
+
 const (
 	// CommonWebAttack threat type covers common web-based attacks such as cross-site scripting (XSS) and SQL injection.
 	CommonWebAttack Exclude = iota
