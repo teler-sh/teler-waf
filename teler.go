@@ -108,8 +108,13 @@ func New(opts ...Options) *Teler {
 			panic(errInvalidRuleName)
 		}
 
-		// Convert the condition to lowercase and check that it is either "or" or "and"
+		// Convert the condition to lowercase, if empty string then defaulting to "or"
 		rule.Condition = strings.ToLower(rule.Condition)
+		if rule.Condition == "" {
+			rule.Condition = "or"
+		}
+
+		// Check the condition is either "or" or "and"
 		if rule.Condition != "or" && rule.Condition != "and" {
 			panic(fmt.Sprintf(errInvalidRuleCond, rule.Name, rule.Condition))
 		}
