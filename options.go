@@ -22,7 +22,8 @@ type Options struct {
 	// LogFile is the file path for the log file to store the security logs.
 	LogFile string
 
+	// TODO:
 	// LogRotate specifies whether to rotate the log file when it reaches a
 	// certain size or at a specified time interval.
-	LogRotate bool
+	// LogRotate bool
 }

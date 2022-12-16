@@ -1,5 +1,7 @@
 package request
 
+type Element int
+
 const (
     // Path specifies the request path as the request element to match.
     Path Element = iota
