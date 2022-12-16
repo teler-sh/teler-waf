@@ -16,7 +16,7 @@ It returns a modified http.Request and an error value.
 The function first retrieves the threat struct from the Teler struct.
 It then iterates over the elements in the excludes map of the threat struct.
 For each element in the excludes map, the function checks whether the value is true.
-If it is not true, the loop continues to the next iteration.
+If it is true, the loop continues to the next iteration.
 Otherwise, the function performs a check based on the type of threat specified by the key in the excludes map.
 
 The types of threats that are checked for are:
@@ -32,7 +32,7 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (*http.Re
 	th := t.threat
 
 	for k, v := range th.excludes {
-		if !v {
+		if v {
 			continue
 		}
 
