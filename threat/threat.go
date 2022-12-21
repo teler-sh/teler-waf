@@ -1,9 +1,9 @@
 package threat
 
 /*
-Exclude represents the different types of threats that can be excluded from analysis.
+Threat represents the different types of threats that can be excluded from analysis.
 
-The Exclude type is used to specify which types of threats should be excluded
+The Threat type is used to specify which types of threats should be excluded
 when analyzing a request for threats. It can be one of the following values:
 
 - CommonWebAttack: covers common web-based attacks such as cross-site scripting (XSS) and SQL injection.
@@ -13,11 +13,11 @@ when analyzing a request for threats. It can be one of the following values:
 - BadCrawler: covers requests from known bad crawlers or scrapers, such as those that are known to cause performance issues or attempt to extract sensitive information from the application.
 - DirectoryBruteforce: covers requests that attempt to brute-force access to directories on the server, such as by trying common directory names or using dictionary attacks.
 */
-type Exclude int
+type Threat int
 
 const (
 	// CommonWebAttack threat type covers common web-based attacks such as cross-site scripting (XSS) and SQL injection.
-	CommonWebAttack Exclude = iota
+	CommonWebAttack Threat = iota
 
 	// CVE threat type covers known vulnerabilities and exploits, as specified by the Common Vulnerabilities and Exposures (CVE) database.
 	CVE

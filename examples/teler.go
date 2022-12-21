@@ -14,7 +14,7 @@ var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	telerMiddleware := teler.New(teler.Options{
-		Excludes: []threat.Exclude{
+		Excludes: []threat.Threat{
 			threat.BadReferrer,
 			threat.BadCrawler,
 		},

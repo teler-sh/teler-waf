@@ -21,15 +21,15 @@ func defaultHandler(w http.ResponseWriter, r *http.Request) {
 // and what is the corresponding data.
 type Threat struct {
 	// excludes specifies which threat categories should be excluded.
-	// The keys in the map are of type threat.Exclude, and the values are
+	// The keys in the map are of type threat.Threat, and the values are
 	// boolean flags indicating whether the corresponding threat category
 	// should be excluded.
-	excludes map[threat.Exclude]bool
+	excludes map[threat.Threat]bool
 
 	// data contains the data for each threat category.
-	// The keys in the map are of type threat.Exclude, and the values are
+	// The keys in the map are of type threat.Threat, and the values are
 	// strings containing the data for the corresponding threat category.
-	data map[threat.Exclude]string
+	data map[threat.Threat]string
 }
 
 // Teler is a middleware that helps setup a few basic security features
@@ -86,7 +86,7 @@ func New(opts ...Options) *Teler {
 
 	// Initialize the excludes field of the Threat struct to a new map and
 	// set the boolean flag for each threat category specified in the Excludes option to true
-	t.threat.excludes = make(map[threat.Exclude]bool)
+	t.threat.excludes = make(map[threat.Threat]bool)
 	for _, ex := range o.Excludes {
 		t.threat.excludes[ex] = true
 	}
@@ -170,7 +170,7 @@ func (t *Teler) getResources() error {
 
 	// Create a map with the names of the data files for each
 	// threat category as the keys and the corresponding threat category as the values
-	files := map[threat.Exclude]string{
+	files := map[threat.Threat]string{
 		threat.CommonWebAttack:     commonWebAttack,
 		threat.CVE:                 cve,
 		threat.BadIPAddress:        badIPAddress,
@@ -180,7 +180,7 @@ func (t *Teler) getResources() error {
 	}
 
 	// Initialize the data field of the Threat struct to a new map
-	t.threat.data = make(map[threat.Exclude]string)
+	t.threat.data = make(map[threat.Threat]string)
 
 	for k, v := range files {
 		// Get the location of the downloaded datasets
