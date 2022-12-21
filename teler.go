@@ -105,7 +105,14 @@ func New(opts ...Options) *Teler {
 
 	// Initialize the excludes field of the Threat struct to a new map and
 	// set the boolean flag for each threat category specified in the Excludes option to true
-	t.threat.excludes = make(map[threat.Threat]bool)
+	t.threat.excludes = map[threat.Threat]bool{
+		threat.CommonWebAttack:     false,
+		threat.CVE:                 false,
+		threat.BadIPAddress:        false,
+		threat.BadReferrer:         false,
+		threat.BadCrawler:          false,
+		threat.DirectoryBruteforce: false,
+	}
 	for _, ex := range o.Excludes {
 		t.threat.excludes[ex] = true
 	}
