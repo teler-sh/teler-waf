@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 
 	"github.com/kitabisa/teler-waf/threat"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +41,9 @@ type Teler struct {
 
 	// out is a file descriptor for the log file.
 	out *os.File
+
+	// log is a logger descriptor for the log.
+	log *zap.Logger
 
 	// threat is a Threat struct.
 	threat *Threat
@@ -74,6 +79,9 @@ func New(opts ...Options) *Teler {
 		panic(fmt.Sprintf(errResources, err))
 	}
 
+	// Initialize writer for logging
+	ws := []zapcore.WriteSyncer{os.Stderr}
+
 	// If the LogFile option is set, open the log file and
 	// set the log field of the Teler struct to the file descriptor
 	if o.LogFile != "" {
@@ -82,7 +90,18 @@ func New(opts ...Options) *Teler {
 			panic(fmt.Sprintf(errLogFile, err))
 		}
 		defer t.out.Close()
+
+		ws = append(ws, t.out)
 	}
+
+	// Create a new logger with the multiwriter as the output destination
+	mw := zapcore.NewMultiWriteSyncer(ws...)
+	t.log = zap.New(zapcore.NewCore(
+		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), // Use JSON encoding
+		mw,               // Use the multiwriter
+		zap.WarningLevel, // Set the logging level to debug
+	))
+	defer t.log.Sync() // Flush any buffered writes before exiting
 
 	// Initialize the excludes field of the Threat struct to a new map and
 	// set the boolean flag for each threat category specified in the Excludes option to true
