@@ -1,6 +1,7 @@
 package teler
 
 import (
+	"errors"
 	"fmt"
 
 	"net/http"
@@ -72,7 +73,7 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) error {
 
 func (t *Teler) checkBadIPAddress(r *http.Request) error {
 	if t.inThreatIndex(threat.BadIPAddress, r.RemoteAddr) {
-		return fmt.Errorf(errThreatDetected, "bad IP address", r.RemoteAddr)
+		return errors.New("bad IP address")
 	}
 
 	return nil
@@ -94,7 +95,7 @@ func (t *Teler) checkBadReferrer(r *http.Request) error {
 	}
 
 	if t.inThreatIndex(threat.BadReferrer, eTLD1) {
-		return fmt.Errorf(errThreatDetected, "bad HTTP referrer", r.Referer())
+		return errors.New("bad HTTP referer")
 	}
 
 	return nil
