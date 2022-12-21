@@ -63,7 +63,7 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (t *Teler) checkBadIPAddress(r *http.Request) error {
-	if i := strings.Index(t.threat.data[threat.BadIPAddress], r.RemoteAddr); i >= 0 {
+	if t.inThreatIndex(threat.BadIPAddress, r.RemoteAddr) {
 		return fmt.Errorf(errBadIPAddress, r.RemoteAddr)
 	}
 
