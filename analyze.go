@@ -63,6 +63,10 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
+	if err != nil {
+		t.handler.ServeHTTP(w, r)
+	}
+
 	return err
 }
 
