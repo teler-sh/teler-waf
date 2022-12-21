@@ -1,6 +1,9 @@
 package teler
 
 import (
+	"fmt"
+	"strings"
+
 	"net/http"
 
 	"github.com/kitabisa/teler-waf/threat"
@@ -11,7 +14,7 @@ analyzeRequest checks an incoming HTTP request for certain types of threats or v
 If a threat is detected, the function returns an error and the request is stopped from continuing through the middleware chain.
 
 The function takes in two arguments: a http.ResponseWriter and an http.Request.
-It returns a modified http.Request and an error value.
+It returns an error value.
 
 The function first retrieves the threat struct from the Teler struct.
 It then iterates over the elements in the excludes map of the threat struct.
@@ -28,9 +31,10 @@ The types of threats that are checked for are:
 - Bad crawlers
 - Directory bruteforce attacks
 */
-func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (*http.Request, error) {
-	th := t.threat
+func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) error {
+	var err error
 
+	th := t.threat
 	for k, v := range th.excludes {
 		if v {
 			continue
@@ -42,7 +46,10 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (*http.Re
 		case threat.CVE:
 			// TODO
 		case threat.BadIPAddress:
-			// TODO
+			err = t.checkBadIPAddress(r)
+			if err != nil {
+				break
+			}
 		case threat.BadReferrer:
 			// TODO
 		case threat.BadCrawler:
@@ -52,5 +59,13 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (*http.Re
 		}
 	}
 
-	return r, nil
+	return err
+}
+
+func (t *Teler) checkBadIPAddress(r *http.Request) error {
+	if i := strings.Index(t.threat.data[threat.BadIPAddress], r.RemoteAddr); i >= 0 {
+		return fmt.Errorf(errBadIPAddress, r.RemoteAddr)
+	}
+
+	return nil
 }
