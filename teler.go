@@ -37,8 +37,8 @@ type Teler struct {
 	// opt is a struct that contains options for the Teler middleware.
 	opt Options
 
-	// log is a file descriptor for the log file.
-	log *os.File
+	// out is a file descriptor for the log file.
+	out *os.File
 
 	// threat is a Threat struct.
 	threat *Threat
@@ -77,11 +77,11 @@ func New(opts ...Options) *Teler {
 	// If the LogFile option is set, open the log file and
 	// set the log field of the Teler struct to the file descriptor
 	if o.LogFile != "" {
-		t.log, err = os.OpenFile(o.LogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		t.out, err = os.OpenFile(o.LogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			panic(fmt.Sprintf(errLogFile, err))
 		}
-		defer t.log.Close()
+		defer t.out.Close()
 	}
 
 	// Initialize the excludes field of the Threat struct to a new map and
