@@ -2,11 +2,12 @@ package teler
 
 import (
 	"fmt"
-	"strings"
 
 	"net/http"
+	"net/url"
 
 	"github.com/kitabisa/teler-waf/threat"
+	"golang.org/x/net/publicsuffix"
 )
 
 /*
@@ -51,7 +52,10 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) error {
 				break
 			}
 		case threat.BadReferrer:
-			// TODO
+			err = t.checkBadReferrer(r)
+			if err != nil {
+				break
+			}
 		case threat.BadCrawler:
 			// TODO
 		case threat.DirectoryBruteforce:
@@ -64,7 +68,29 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) error {
 
 func (t *Teler) checkBadIPAddress(r *http.Request) error {
 	if t.inThreatIndex(threat.BadIPAddress, r.RemoteAddr) {
-		return fmt.Errorf(errBadIPAddress, r.RemoteAddr)
+		return fmt.Errorf(errThreatDetected, "bad IP address", r.RemoteAddr)
+	}
+
+	return nil
+}
+
+func (t *Teler) checkBadReferrer(r *http.Request) error {
+	ref, err := url.Parse(r.Referer())
+	if err != nil {
+		// TODO: What should we do so as not to stop the
+		// threat analysis chain from analyzeRequest?
+		return nil
+	}
+
+	eTLD1, err := publicsuffix.EffectiveTLDPlusOne(ref.Hostname())
+	if err != nil {
+		// TODO: What should we do so as not to stop the
+		// threat analysis chain from analyzeRequest?
+		return nil
+	}
+
+	if t.inThreatIndex(threat.BadReferrer, eTLD1) {
+		return fmt.Errorf(errThreatDetected, "bad HTTP referrer", r.Referer())
 	}
 
 	return nil
