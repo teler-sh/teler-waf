@@ -2,7 +2,10 @@ module github.com/kitabisa/teler-waf
 
 go 1.19
 
-require github.com/hashicorp/go-getter v1.6.2
+require (
+	github.com/hashicorp/go-getter v1.6.2
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
+)
 
 require (
 	cloud.google.com/go v0.45.1 // indirect
@@ -20,7 +23,6 @@ require (
 	github.com/mitchellh/go-testing-interface v1.0.0 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	go.opencensus.io v0.22.0 // indirect
-	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
 	golang.org/x/sys v0.0.0-20220517195934-5e4e11fc645e // indirect
 	golang.org/x/text v0.3.2 // indirect
