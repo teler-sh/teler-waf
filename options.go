@@ -5,8 +5,8 @@ import "github.com/kitabisa/teler-waf/threat"
 // Options is a struct for specifying configuration options for the teler.Teler middleware.
 type Options struct {
 	// Excludes is a list of threat types to exclude from the security checks.
-	// These threat types are defined in the threat.Exclude type.
-	Excludes []threat.Exclude
+	// These threat types are defined in the threat.Threat type.
+	Excludes []threat.Threat
 
 	// Whitelists is a list of regular expressions that match request elements
 	// that should be excluded from the security checks. The request elements
