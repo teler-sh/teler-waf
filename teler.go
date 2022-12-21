@@ -143,12 +143,11 @@ func New(opts ...Options) *Teler {
 // Handler implements the http.HandlerFunc for integration with the standard net/http library.
 func (t *Teler) Handler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// TODO: analyze from custom rules
+
 		// Let teler analyze the request. If it returns an error,
 		// that indicates the request should not continue.
-		r, err := t.analyzeRequest(w, r)
-
-		// If there was an error, do not continue.
-		if err != nil {
+		if err := t.analyzeRequest(w, r); err != nil {
 			return
 		}
 
