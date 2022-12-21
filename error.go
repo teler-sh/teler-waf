@@ -9,5 +9,5 @@ const (
 	errInvalidRuleName = "error while compile custom rule: missing rule name"
 	errInvalidRuleCond = "invalid logical operator for \"%s\" rule condition, valid values are \"and\" or \"or\", given: \"%s\""
 
-	errBadIPAddress = "bad IP address detected: %s"
+	errThreatDetected = "threat: %s detected: %s"
 )
