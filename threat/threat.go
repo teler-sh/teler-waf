@@ -33,4 +33,7 @@ const (
 
 	// DirectoryBruteforce threat type covers requests that attempt to brute-force access to directories on the server, such as by trying common directory names or using dictionary attacks.
 	DirectoryBruteforce
+
+	// Undefined threat type didn't covers anything
+	Undefined
 )

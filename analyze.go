@@ -2,7 +2,6 @@ package teler
 
 import (
 	"errors"
-	"fmt"
 
 	"net/http"
 	"net/url"
@@ -16,7 +15,7 @@ analyzeRequest checks an incoming HTTP request for certain types of threats or v
 If a threat is detected, the function returns an error and the request is stopped from continuing through the middleware chain.
 
 The function takes in two arguments: a http.ResponseWriter and an http.Request.
-It returns an error value.
+It returns threat type and an error value.
 
 The function first retrieves the threat struct from the Teler struct.
 It then iterates over the elements in the excludes map of the threat struct.
@@ -33,8 +32,10 @@ The types of threats that are checked for are:
 - Bad crawlers
 - Directory bruteforce attacks
 */
-func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) error {
-	var err error
+func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.Threat, error) {
+	// TODO:
+	// - analyze from custom rules
+	// - implement whitelisting
 
 	th := t.threat
 	for k, v := range th.excludes {
@@ -48,14 +49,14 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) error {
 		case threat.CVE:
 			// TODO
 		case threat.BadIPAddress:
-			err = t.checkBadIPAddress(r)
-			if err != nil {
-				break
+			if err := t.checkBadIPAddress(r); err != nil {
+				t.handler.ServeHTTP(w, r)
+				return k, err
 			}
 		case threat.BadReferrer:
-			err = t.checkBadReferrer(r)
-			if err != nil {
-				break
+			if err := t.checkBadReferrer(r); err != nil {
+				t.handler.ServeHTTP(w, r)
+				return k, err
 			}
 		case threat.BadCrawler:
 			// TODO
@@ -64,11 +65,7 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	if err != nil {
-		t.handler.ServeHTTP(w, r)
-	}
-
-	return err
+	return threat.Undefined, nil
 }
 
 func (t *Teler) checkBadIPAddress(r *http.Request) error {

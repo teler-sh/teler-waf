@@ -98,8 +98,8 @@ func New(opts ...Options) *Teler {
 	mw := zapcore.NewMultiWriteSyncer(ws...)
 	t.log = zap.New(zapcore.NewCore(
 		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), // Use JSON encoding
-		mw,               // Use the multiwriter
-		zap.WarningLevel, // Set the logging level to debug
+		mw,            // Use the multiwriter
+		zap.WarnLevel, // Set the logging level to debug
 	))
 	defer t.log.Sync() // Flush any buffered writes before exiting
 
@@ -161,12 +161,25 @@ func New(opts ...Options) *Teler {
 
 // Handler implements the http.HandlerFunc for integration with the standard net/http library.
 func (t *Teler) Handler(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: analyze from custom rules
+	// Create a map with the names of the threat type for each
+	// threat category as the keys and the corresponding threat category as the values
+	name := map[threat.Threat]string{
+		threat.CommonWebAttack:     "CommonWebAttack",
+		threat.CVE:                 "CVE",
+		threat.BadIPAddress:        "BadIPAddress",
+		threat.BadReferrer:         "BadReferrer",
+		threat.BadCrawler:          "BadCrawler",
+		threat.DirectoryBruteforce: "DirectoryBruteforce",
+	}
 
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Let teler analyze the request. If it returns an error,
 		// that indicates the request should not continue.
-		if err := t.analyzeRequest(w, r); err != nil {
+		k, err := t.analyzeRequest(w, r)
+		if err != nil {
+			// Logging the threat with associated request
+			// TODO: implement subcategory for CommonWebAttack & CVE
+			t.log.With(zap.String("category", name[k])).Warn(err.Error(), zap.Any("request", r))
 			return
 		}
 
