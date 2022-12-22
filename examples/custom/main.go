@@ -36,7 +36,7 @@ func main() {
 				},
 			},
 		},
-		LogFile: "/var/log/teler/teler.log",
+		LogFile: "/tmp/teler.log",
 	})
 
 	app := telerMiddleware.Handler(myHandler)
