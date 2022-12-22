@@ -184,6 +184,8 @@ func (t *Teler) Handler(h http.Handler) http.Handler {
 		// that indicates the request should not continue.
 		k, err := t.analyzeRequest(w, r)
 		if err != nil {
+			msg := err.Error()
+
 			body, err := ioutil.ReadAll(r.Body)
 			if err != nil {
 				body = []byte{}
@@ -200,7 +202,7 @@ func (t *Teler) Handler(h http.Handler) http.Handler {
 				zap.String("remote_addr", r.RemoteAddr),
 				zap.Any("headers", r.Header),
 				zap.ByteString("body", body),
-			).Warn(err.Error())
+			).Warn(msg)
 			return
 		}
 
