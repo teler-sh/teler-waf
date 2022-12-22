@@ -1,6 +1,7 @@
 package teler
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"regexp"
@@ -89,7 +90,6 @@ func New(opts ...Options) *Teler {
 		if err != nil {
 			panic(fmt.Sprintf(errLogFile, err))
 		}
-		defer t.out.Close()
 
 		ws = append(ws, t.out)
 	}
@@ -184,9 +184,23 @@ func (t *Teler) Handler(h http.Handler) http.Handler {
 		// that indicates the request should not continue.
 		k, err := t.analyzeRequest(w, r)
 		if err != nil {
+			body, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				body = []byte{}
+			}
+			r.Body = ioutil.NopCloser(bytes.NewReader(body))
+
 			// Logging the threat with associated request
 			// TODO: implement subcategory for CommonWebAttack & CVE
-			t.log.With(zap.String("category", name[k])).Warn(err.Error(), zap.Any("request", r))
+			t.log.With(
+				zap.String("category", name[k]),
+				zap.Namespace("request"),
+				zap.String("method", r.Method),
+				zap.String("URL", r.URL.String()),
+				zap.String("remote_addr", r.RemoteAddr),
+				zap.Any("headers", r.Header),
+				zap.ByteString("body", body),
+			).Warn(err.Error())
 			return
 		}
 
