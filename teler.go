@@ -9,7 +9,6 @@ import (
 
 	"io/ioutil"
 	"net/http"
-	"path/filepath"
 
 	"github.com/kitabisa/teler-waf/threat"
 	"go.uber.org/zap"
@@ -211,30 +210,24 @@ func (t *Teler) getResources() error {
 		return err
 	}
 
-	// Create a map with the names of the data files for each
-	// threat category as the keys and the corresponding threat category as the values
-	files := map[threat.Threat]string{
-		threat.CommonWebAttack:     commonWebAttack,
-		threat.CVE:                 cve,
-		threat.BadIPAddress:        badIPAddress,
-		threat.BadReferrer:         badReferrer,
-		threat.BadCrawler:          badCrawler,
-		threat.DirectoryBruteforce: directoryBruteforce,
-	}
-
 	// Initialize the data field of the Threat struct to a new map
 	t.threat.data = make(map[threat.Threat]string)
 
-	for k, v := range files {
-		// Get the location of the downloaded datasets
-		c, err := threat.Location()
+	for _, k := range threat.List() {
+		// Skip if it is undefined
+		if k == threat.Undefined {
+			continue
+		}
+
+		// Get the location of respective threat type
+		p, err := k.Filepath()
 		if err != nil {
 			return err
 		}
 
 		// Read the contents of the data file and store it
 		// as a string in the data field of the Threat struct
-		b, err := ioutil.ReadFile(filepath.Join(c, v))
+		b, err := ioutil.ReadFile(p)
 		if err != nil {
 			return err
 		}
