@@ -11,7 +11,7 @@ import (
 
 // Get all teler threat datasets
 func Get() error {
-	dst, err := Location()
+	dst, err := location()
 	if err != nil {
 		return err
 	}
@@ -42,7 +42,7 @@ func Get() error {
 }
 
 // Location of teler cache directory
-func Location() (string, error) {
+func location() (string, error) {
 	// Get user cache directory
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
