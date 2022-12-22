@@ -37,3 +37,33 @@ const (
 	// DirectoryBruteforce threat type covers requests that attempt to brute-force access to directories on the server, such as by trying common directory names or using dictionary attacks.
 	DirectoryBruteforce
 )
+
+var str = map[Threat]string{
+	Undefined:           "Undefined",
+	CommonWebAttack:     "CommonWebAttack",
+	CVE:                 "CVE",
+	BadIPAddress:        "BadIPAddress",
+	BadReferrer:         "BadReferrer",
+	BadCrawler:          "BadCrawler",
+	DirectoryBruteforce: "DirectoryBruteforce",
+}
+
+// String returns the string representation of a Threat value
+func (t Threat) String() string {
+	if s, ok := str[t]; ok {
+		return s
+	}
+
+	return ""
+}
+
+// List returns a slice of all Threat constants
+func List() []Threat {
+	var threats []Threat
+
+	for t := range str {
+		threats = append(threats, t)
+	}
+
+	return threats
+}
