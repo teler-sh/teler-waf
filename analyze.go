@@ -2,9 +2,11 @@ package teler
 
 import (
 	"errors"
+	"strings"
 
 	"net/http"
 	"net/url"
+	"path/filepath"
 
 	"github.com/kitabisa/teler-waf/threat"
 	"golang.org/x/net/publicsuffix"
@@ -57,7 +59,7 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 		case threat.BadCrawler:
 			err = t.checkBadCrawler(r)
 		case threat.DirectoryBruteforce:
-			// TODO
+			err = t.checkDirectoryBruteforce(r)
 		}
 
 		if err != nil {
@@ -70,6 +72,7 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 }
 
 func (t *Teler) checkBadIPAddress(r *http.Request) error {
+	// Check if the request remote address is in BadIPAddress index
 	if t.inThreatIndex(threat.BadIPAddress, r.RemoteAddr) {
 		return errors.New("bad IP address")
 	}
@@ -92,6 +95,8 @@ func (t *Teler) checkBadReferrer(r *http.Request) error {
 		return nil
 	}
 
+	// Check if the root domain of request referer
+	// header is in BadReferrer index
 	if t.inThreatIndex(threat.BadReferrer, eTLD1) {
 		return errors.New("bad HTTP referer")
 	}
@@ -112,6 +117,26 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 			return errors.New("bad crawler")
 		}
 	}
+
+	return nil
+}
+
+func (t *Teler) checkDirectoryBruteforce(r *http.Request) error {
+	ext := filepath.Ext(r.URL.Path)
+	kind := threat.DirectoryBruteforce
+
+	// Save the old data before extension replacement of threat data
+	oldData := t.threat.data[kind]
+	t.threat.data[kind] = strings.ReplaceAll(t.threat.data[kind], ".%EXT%", ext)
+
+	// Check if the request remote address is in DirectoryBruteforce data
+	if t.inThreatRegex(kind, strings.TrimLeft(r.URL.Path, "/")) {
+		t.threat.data[kind] = oldData // Restore threat data to old version
+
+		return errors.New("directory bruteforce")
+	}
+
+	t.threat.data[kind] = oldData // Restore threat data to old version
 
 	return nil
 }
