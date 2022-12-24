@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -150,12 +151,25 @@ func New(opts ...Options) *Teler {
 			panic(fmt.Sprintf(errInvalidRuleCond, rule.Name, rule.Condition))
 		}
 
-		// Iterate over the rules in the custom rule and compile the regular expression pattern
+		// Iterate over the rules in the custom rules
 		for _, cond := range rule.Rules {
+			// Check if the method rule condition is valid, and
+			// set to UNDEFINED if it isn't.
+			if !isValidMethod(cond.Method) {
+				cond.Method = request.UNDEFINED
+			}
+
+			// Defaulting method rule condition to GET if empty or undefined
+			if cond.Method == request.UNDEFINED {
+				cond.Method = request.GET
+			}
+
+			// Empty pattern cannot be process
 			if cond.Pattern == "" {
 				panic(fmt.Sprintf(errPattern, rule.Name, "pattern can't be blank"))
 			}
 
+			// Compile the regular expression pattern
 			regex, err := regexp.Compile(cond.Pattern)
 			if err != nil {
 				panic(fmt.Sprintf(errPattern, rule.Name, err))
