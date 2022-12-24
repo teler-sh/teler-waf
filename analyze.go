@@ -2,6 +2,8 @@ package teler
 
 import (
 	"errors"
+	"fmt"
+	"regexp"
 	"strings"
 
 	"net/http"
@@ -49,7 +51,7 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 
 		switch k {
 		case threat.CommonWebAttack:
-			// TODO
+			err = t.checkCommonWebAttack(r)
 		case threat.CVE:
 			// TODO
 		case threat.BadIPAddress:
@@ -69,6 +71,20 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 	}
 
 	return threat.Undefined, nil
+}
+
+func (t *Teler) checkCommonWebAttack(r *http.Request) error {
+	// Convert request to RAW HTTP
+	raw := toRaw(r)
+
+	for _, filter := range t.threat.cwa.Filters {
+		pattern := filter.pattern
+		if pattern != nil && pattern.MatchString(raw) {
+			return errors.New(filter.Description)
+		}
+	}
+
+	return nil
 }
 
 func (t *Teler) checkBadIPAddress(r *http.Request) error {
@@ -121,22 +137,36 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 	return nil
 }
 
+// checkDirectoryBruteforce for incoming request
 func (t *Teler) checkDirectoryBruteforce(r *http.Request) error {
+	// Extract the file extension from the request path
 	ext := filepath.Ext(r.URL.Path)
-	kind := threat.DirectoryBruteforce
 
-	// Save the old data before extension replacement of threat data
-	oldData := t.threat.data[kind]
-	t.threat.data[kind] = strings.ReplaceAll(t.threat.data[kind], ".%EXT%", ext)
+	// Trim the leading slash from the request path, and if path
+	// is empty string after the trim, do not process the check
+	path := strings.TrimLeft(r.URL.Path, "/")
+	if path == "" {
+		return nil
+	}
 
-	// Check if the request remote address is in DirectoryBruteforce data
-	if t.inThreatRegex(kind, strings.TrimLeft(r.URL.Path, "/")) {
-		t.threat.data[kind] = oldData // Restore threat data to old version
+	// Create a regex pattern that matches the entire request path
+	pattern := fmt.Sprintf("(?m)^%s$", regexp.QuoteMeta(path))
 
+	// Replace any instances of .%EXT% in the directory bruteforce data with the file extension
+	data := strings.ReplaceAll(t.threat.data[threat.DirectoryBruteforce], ".%EXT%", ext)
+
+	// Check if the pattern matches the data using regexp.MatchString
+	match, err := regexp.MatchString(pattern, data)
+	if err != nil {
+		// Return nil if there was an error during the regex matching process
+		return nil
+	}
+
+	// If the pattern matches the data, return an error indicating a directory bruteforce attack has been detected
+	if match {
 		return errors.New("directory bruteforce")
 	}
 
-	t.threat.data[kind] = oldData // Restore threat data to old version
-
+	// Return nil if no match is found
 	return nil
 }
