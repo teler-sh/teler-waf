@@ -5,7 +5,7 @@ import "regexp"
 type cwa struct {
 	Filters []struct {
 		Description string      `json:"description"`
-		Id          string      `json:"id"`
+		ID          string      `json:"id"`
 		Impact      string      `json:"impact"`
 		Rule        string      `json:"rule"`
 		Tags        interface{} `json:"tags"`

@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 
@@ -39,10 +40,10 @@ type Threat struct {
 	badCrawler []*regexp.Regexp
 
 	// cve is a struct of CVEs threat data
-	cve cve
+	cve *cve
 
 	// cwa is a struct of CommonWebAttack threat data
-	cwa cwa
+	cwa *cwa
 }
 
 // Teler is a middleware that helps setup a few basic security features
@@ -257,31 +258,64 @@ func (t *Teler) getResources() error {
 		if err != nil {
 			return err
 		}
-
 		t.threat.data[k] = string(b)
-		t.processResource(k)
+
+		err = t.processResource(k)
+		if err != nil {
+			return err
+		}
+
 	}
 
 	return nil
 }
 
-func (t *Teler) processResource(k threat.Threat) {
+// processResource processes the resource data for the given threat type.
+// It initializes and unmarshals the data into the corresponding field in the threat struct.
+func (t *Teler) processResource(k threat.Threat) error {
 	var err error
 
 	switch k {
+	case threat.CommonWebAttack:
+		// Initialize the cwa field of the threat struct.
+		t.threat.cwa = &cwa{}
+
+		// Unmarshal the data into the cwa field.
+		err = json.Unmarshal([]byte(t.threat.data[k]), &t.threat.cwa)
+		if err != nil {
+			return err
+		}
+
+		// Compile the Rule field of each filter in the Filters slice
+		// and save it in the pattern field of the filter.
+		for _, filter := range t.threat.cwa.Filters {
+			filter.pattern, err = regexp.Compile(filter.Rule)
+			if err != nil {
+				continue
+			}
+		}
+	case threat.CVE:
+		// Initialize the cve field of the threat struct.
+		t.threat.cve = &cve{}
+
+		// Unmarshal the data into the cve field.
+		err = json.Unmarshal([]byte(t.threat.data[k]), &t.threat.cve)
+		if err != nil {
+			return err
+		}
 	case threat.BadCrawler:
-		// Compile the pattern line-by-line and save it to
-		// the badCrawler field of the threat struct.
+		// Split the data into a slice of strings, compile each string
+		// into a regexp, and save it in the badCrawler field.
 		patterns := strings.Split(t.threat.data[k], "\n")
 		t.threat.badCrawler = make([]*regexp.Regexp, len(patterns))
 
 		for i, pattern := range patterns {
 			t.threat.badCrawler[i], err = regexp.Compile(pattern)
 			if err != nil {
-				return
+				continue
 			}
 		}
 	}
 
-	return
+	return nil
 }
