@@ -32,6 +32,12 @@ type Threat struct {
 	// The keys in the map are of type threat.Threat, and the values are
 	// strings containing the data for the corresponding threat category.
 	data map[threat.Threat]string
+
+	// pattern contains the regular expressions for each threat category.
+	// The keys in the map are of type threat.Threat, and the values are
+	// slices of pointers to regexp.Regexp objects containing the regular
+	// expressions for the corresponding threat category.
+	pattern map[threat.Threat][]*regexp.Regexp
 }
 
 // Teler is a middleware that helps setup a few basic security features
@@ -172,16 +178,17 @@ func (t *Teler) Handler(h http.Handler) http.Handler {
 		// that indicates the request should not continue.
 		k, err := t.analyzeRequest(w, r)
 		if err != nil {
+			// Convert the error from analyzeRequest as string message
 			msg := err.Error()
 
+			// Read the request body and initialize empty byte if returns an error
 			body, err := ioutil.ReadAll(r.Body)
 			if err != nil {
 				body = []byte{}
 			}
 			r.Body = ioutil.NopCloser(bytes.NewReader(body))
 
-			// Logging the threat with associated request
-			// TODO: implement subcategory for CommonWebAttack & CVE
+			// Log the detected threats
 			t.log.With(
 				zap.String("category", k.String()),
 				zap.Namespace("request"),
@@ -191,6 +198,7 @@ func (t *Teler) Handler(h http.Handler) http.Handler {
 				zap.Any("headers", r.Header),
 				zap.ByteString("body", body),
 			).Warn(msg)
+
 			return
 		}
 
@@ -210,8 +218,9 @@ func (t *Teler) getResources() error {
 		return err
 	}
 
-	// Initialize the data field of the Threat struct to a new map
+	// Initialize the data & pattern field of the Threat struct to a new map
 	t.threat.data = make(map[threat.Threat]string)
+	t.threat.pattern = make(map[threat.Threat][]*regexp.Regexp)
 
 	for _, k := range threat.List() {
 		// Skip if it is undefined
@@ -220,19 +229,34 @@ func (t *Teler) getResources() error {
 		}
 
 		// Get the location of respective threat type
-		p, err := k.Filepath()
+		path, err := k.Filepath()
 		if err != nil {
 			return err
 		}
 
 		// Read the contents of the data file and store it
 		// as a string in the data field of the Threat struct
-		b, err := ioutil.ReadFile(p)
+		b, err := ioutil.ReadFile(path)
 		if err != nil {
 			return err
 		}
 
 		t.threat.data[k] = string(b)
+
+		// If the current threat type is BadCrawler, it will
+		// compile the pattern line-by-line and save it to
+		// the pattern field of the threat struct.
+		if k == threat.BadCrawler {
+			patterns := strings.Split(string(b), "\n")
+			t.threat.pattern[k] = make([]*regexp.Regexp, len(patterns))
+
+			for i, pattern := range patterns {
+				t.threat.pattern[k][i], err = regexp.Compile(pattern)
+				if err != nil {
+					continue
+				}
+			}
+		}
 	}
 
 	return nil

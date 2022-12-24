@@ -33,6 +33,8 @@ The types of threats that are checked for are:
 - Directory bruteforce attacks
 */
 func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.Threat, error) {
+	var err error
+
 	// TODO:
 	// - analyze from custom rules
 	// - implement whitelisting
@@ -49,19 +51,18 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 		case threat.CVE:
 			// TODO
 		case threat.BadIPAddress:
-			if err := t.checkBadIPAddress(r); err != nil {
-				t.handler.ServeHTTP(w, r)
-				return k, err
-			}
+			err = t.checkBadIPAddress(r)
 		case threat.BadReferrer:
-			if err := t.checkBadReferrer(r); err != nil {
-				t.handler.ServeHTTP(w, r)
-				return k, err
-			}
+			err = t.checkBadReferrer(r)
 		case threat.BadCrawler:
-			// TODO
+			err = t.checkBadCrawler(r)
 		case threat.DirectoryBruteforce:
 			// TODO
+		}
+
+		if err != nil {
+			t.handler.ServeHTTP(w, r)
+			return k, err
 		}
 	}
 
@@ -93,6 +94,23 @@ func (t *Teler) checkBadReferrer(r *http.Request) error {
 
 	if t.inThreatIndex(threat.BadReferrer, eTLD1) {
 		return errors.New("bad HTTP referer")
+	}
+
+	return nil
+}
+
+func (t *Teler) checkBadCrawler(r *http.Request) error {
+	ua := r.UserAgent()
+	// Do not proccess the check if User-Agent is empty
+	if ua == "" {
+		return nil
+	}
+
+	// Iterate over BadCrawler compiled patterns and do the check
+	for _, pattern := range t.threat.pattern[threat.BadCrawler] {
+		if pattern != nil && pattern.MatchString(ua) {
+			return errors.New("bad crawler")
+		}
 	}
 
 	return nil
