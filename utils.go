@@ -1,9 +1,10 @@
 package teler
 
 import (
-	"fmt"
-	"regexp"
+	"bytes"
 	"strings"
+
+	"net/http"
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
@@ -17,22 +18,6 @@ func (t *Teler) inThreatIndex(kind threat.Threat, substr string) bool {
 	return false
 }
 
-func (t *Teler) inThreatRegex(kind threat.Threat, substr string) bool {
-	// Do not process if substring is empty
-	if substr == "" {
-		return false
-	}
-
-	pattern := fmt.Sprintf("(?m)^%s$", regexp.QuoteMeta(substr))
-
-	match, err := regexp.MatchString(pattern, t.threat.data[kind])
-	if err != nil {
-		return false
-	}
-
-	return match
-}
-
 func isValidMethod(method request.Method) bool {
 	switch method {
 	case request.GET, request.HEAD, request.POST, request.PUT, request.PATCH:
@@ -44,4 +29,13 @@ func isValidMethod(method request.Method) bool {
 	}
 
 	return false
+}
+
+func toRaw(r *http.Request) string {
+	// Create a new bytes.Buffer & write the request into it
+	buf := new(bytes.Buffer)
+	r.Write(buf)
+
+	// Convert the buffer to a string & return it
+	return buf.String()
 }
