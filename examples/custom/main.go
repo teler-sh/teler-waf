@@ -30,7 +30,11 @@ func main() {
 				Condition: "or",
 				Rules: []teler.Condition{
 					{
+						Method:  request.GET,
 						Element: request.Path,
+						// you can use request.Any: it useful when you want to
+						// match against multiple elements of the request at once,
+						// rather than just a single element.
 						Pattern: `\$\{.*:\/\/.*\/?\w+?\}`,
 					},
 				},
