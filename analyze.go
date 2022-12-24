@@ -112,7 +112,7 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 	}
 
 	// Iterate over BadCrawler compiled patterns and do the check
-	for _, pattern := range t.threat.pattern[threat.BadCrawler] {
+	for _, pattern := range t.threat.badCrawler {
 		if pattern != nil && pattern.MatchString(ua) {
 			return errors.New("bad crawler")
 		}
