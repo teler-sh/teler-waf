@@ -21,4 +21,7 @@ const (
 
     // Body specifies the request body as the request element to match.
     Body
+
+    // Any specifies that any element of the request should be matched.
+    Any
 )
