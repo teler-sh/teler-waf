@@ -18,6 +18,11 @@ func (t *Teler) inThreatIndex(kind threat.Threat, substr string) bool {
 }
 
 func (t *Teler) inThreatRegex(kind threat.Threat, substr string) bool {
+	// Do not process if substring is empty
+	if substr == "" {
+		return false
+	}
+
 	pattern := fmt.Sprintf("(?m)^%s$", regexp.QuoteMeta(substr))
 
 	match, err := regexp.MatchString(pattern, t.threat.data[kind])
