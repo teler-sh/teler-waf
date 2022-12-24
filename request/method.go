@@ -21,5 +21,6 @@ const (
 	CONNECT          = http.MethodConnect // CONNECT is the HTTP CONNECT method.
 	OPTIONS          = http.MethodOptions // OPTIONS is the HTTP OPTIONS method.
 	TRACE            = http.MethodTrace   // TRACE is the HTTP TRACE method.
+	ALL              = "ALL"              // ALL is representing as any HTTP method.
 	UNDEFINED        = ""                 // UNDEFINED is undefined HTTP method.
 )
