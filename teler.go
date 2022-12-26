@@ -18,7 +18,7 @@ import (
 )
 
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Bad Request", http.StatusBadRequest)
+	http.Error(w, "Forbidden", http.StatusForbidden)
 }
 
 // Threat defines what threat category should be excluded
