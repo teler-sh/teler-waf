@@ -1,10 +1,7 @@
 package teler
 
 import (
-	"bytes"
 	"strings"
-
-	"net/http"
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
@@ -29,13 +26,4 @@ func isValidMethod(method request.Method) bool {
 	}
 
 	return false
-}
-
-func toRaw(r *http.Request) string {
-	// Create a new bytes.Buffer & write the request into it
-	buf := new(bytes.Buffer)
-	r.Write(buf)
-
-	// Convert the buffer to a string & return it
-	return buf.String()
 }
