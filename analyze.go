@@ -83,15 +83,6 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 	// Decode the raw query string of the URL using the mdurl.Decode() method
 	query := mdurl.Decode(r.URL.RawQuery)
 
-	// Create a new bytes.Buffer object and attempt to write the header of the request to it
-	buf := new(bytes.Buffer)
-	if err := r.Header.Write(buf); err != nil {
-		// If the header write fails, create a new bytes.Buffer object
-		buf = new(bytes.Buffer)
-	}
-	// Decode the buffer using the mdurl.Decode() method
-	header := mdurl.Decode(buf.String())
-
 	// Read the entire request body into a byte slice using ioutil.ReadAll()
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -115,8 +106,8 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 			continue
 		}
 
-		// If the pattern matches the query, header, or body, return an error indicating a common web attack has been detected
-		if pattern.MatchString(query) || pattern.MatchString(header) || pattern.MatchString(body) {
+		// If the pattern matches the query, or body, return an error indicating a common web attack has been detected
+		if pattern.MatchString(query) || pattern.MatchString(body) {
 			return errors.New(filter.Description)
 		}
 	}
