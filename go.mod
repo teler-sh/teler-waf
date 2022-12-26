@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/hashicorp/go-getter v1.6.2
+	gitlab.com/golang-commonmark/mdurl v0.0.0-20191124015652-932350d1cb84
 	go.uber.org/zap v1.24.0
 	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
 )

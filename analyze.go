@@ -1,16 +1,19 @@
 package teler
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"regexp"
 	"strings"
 
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path/filepath"
 
 	"github.com/kitabisa/teler-waf/threat"
+	"gitlab.com/golang-commonmark/mdurl"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -77,17 +80,43 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 // If a match is found, it returns an error indicating a common web attack has been detected.
 // If no match is found, it returns nil.
 func (t *Teler) checkCommonWebAttack(r *http.Request) error {
-	// Convert the request to a RAW HTTP request string
-	raw := toRaw(r)
+	// Decode the raw query string of the URL using the mdurl.Decode() method
+	query := mdurl.Decode(r.URL.RawQuery)
 
-	// Iterate over the filters in the CommonWebAttack data
+	// Create a new bytes.Buffer object and attempt to write the header of the request to it
+	buf := new(bytes.Buffer)
+	if err := r.Header.Write(buf); err != nil {
+		// If the header write fails, create a new bytes.Buffer object
+		buf = new(bytes.Buffer)
+	}
+	// Decode the buffer using the mdurl.Decode() method
+	header := mdurl.Decode(buf.String())
+
+	// Read the entire request body into a byte slice using ioutil.ReadAll()
+	b, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		// If the read fails, set the byte slice to an empty slice of bytes
+		b = []byte("")
+	}
+
+	// Replace the request body with a new io.ReadCloser that reads from the byte slice
+	r.Body = ioutil.NopCloser(bytes.NewReader(b))
+
+	// Decode the byte slice using mdurl.Decode() and convert it to a string
+	body := mdurl.Decode(string(b))
+
+	// Iterate over the filters in the CommonWebAttack data stored in the t.threat.cwa.Filters field
 	for _, filter := range t.threat.cwa.Filters {
 		// Get the compiled regex pattern for the current filter
 		pattern := filter.pattern
 
-		// Check if the pattern matches the RAW HTTP request using regexp.MatchString
-		if pattern != nil && pattern.MatchString(raw) {
-			// If the pattern matches, return an error indicating a common web attack has been detected
+		// Do not process the check if pattern is nil
+		if pattern == nil {
+			continue
+		}
+
+		// If the pattern matches the query, header, or body, return an error indicating a common web attack has been detected
+		if pattern.MatchString(query) || pattern.MatchString(header) || pattern.MatchString(body) {
 			return errors.New(filter.Description)
 		}
 	}
