@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/kitabisa/teler-waf"
+	"gitlab.com/golang-commonmark/mdurl"
 )
 
 var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -18,7 +19,7 @@ var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 </head>
 <body>
 <h1>teler WAF tester</h1>
-<p>Test your payloads below</p>
+<p>Put your payload below</p>
 <hr>
 <h2>GET</h2>
 <form method="get">
@@ -33,15 +34,15 @@ var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
   <input type="submit" value="Submit">
 </form>
 <hr>
-Your payload writen here:
+Your payload is written here:
 <p>
-<textarea placeholder="query" readonly>%s</textarea>
-<textarea placeholder="body" readonly>%s</textarea>
+<input type="text" placeholder="querystring" value="%s" readonly>
+<input type="text" placeholder="body" value="%s" readonly>
 </p>
 </body>
 </html>`
 
-	fmt.Fprintf(w, form, r.URL.RawQuery, r.FormValue("body"))
+	fmt.Fprintf(w, form, mdurl.Decode(r.URL.RawQuery), r.FormValue("body"))
 })
 
 var ouch = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -76,6 +77,5 @@ func main() {
 	app := waf.Handler(myHandler)
 
 	waf.SetHandler(ouch)
-
 	http.ListenAndServe("127.0.0.1:3000", app)
 }
