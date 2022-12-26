@@ -288,8 +288,8 @@ func (t *Teler) processResource(k threat.Threat) error {
 
 		// Compile the Rule field of each filter in the Filters slice
 		// and save it in the pattern field of the filter.
-		for _, filter := range t.threat.cwa.Filters {
-			filter.pattern, err = regexp.Compile(filter.Rule)
+		for i, filter := range t.threat.cwa.Filters {
+			t.threat.cwa.Filters[i].pattern, err = regexp.Compile(filter.Rule)
 			if err != nil {
 				continue
 			}
