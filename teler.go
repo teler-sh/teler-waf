@@ -91,8 +91,12 @@ func New(opts ...Options) *Teler {
 		panic(fmt.Sprintf(errResources, err))
 	}
 
-	// Initialize writer for logging
-	ws := []zapcore.WriteSyncer{os.Stderr}
+	// Initialize writer for logging and add standard error (stderr)
+	// as writer if NoStderr is false
+	ws := []zapcore.WriteSyncer{}
+	if o.NoStderr == false {
+		ws = append(ws, os.Stderr)
+	}
 
 	// If the LogFile option is set, open the log file and
 	// set the log field of the Teler struct to the file descriptor
