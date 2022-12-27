@@ -11,7 +11,7 @@ import (
 
 func TestNew(t *testing.T) {
 	// Initialize teler
-	telerMiddleware := New()
+	telerMiddleware := New(Options{NoStderr: true})
 
 	// Create a custom handler
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -119,48 +119,48 @@ func BenchmarkTelerCommonWebAttackOnly(b *testing.B) {
 	}
 }
 
-// func BenchmarkTelerCVEOnly(b *testing.B) {
-// 	// Initialize teler
-// 	telerMiddleware := New(Options{
-// 		Excludes: []threat.Threat{
-// 			threat.CommonWebAttack,
-// 			threat.BadIPAddress,
-// 			threat.BadReferrer,
-// 			threat.BadCrawler,
-// 			threat.DirectoryBruteforce,
-// 		},
-// 		NoStderr: true,
-// 	})
+func BenchmarkTelerCVEOnly(b *testing.B) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+		NoStderr: true,
+	})
 
-// 	// Create a custom handler
-// 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		w.WriteHeader(http.StatusOK)
-// 	})
-// 	wrappedHandler := telerMiddleware.Handler(handler)
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
 
-// 	// Create a test server with the wrapped handler
-// 	ts := httptest.NewServer(wrappedHandler)
-// 	defer ts.Close()
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
 
-// 	// Create a client to send requests to the test server
-// 	client := &http.Client{}
+	// Create a client to send requests to the test server
+	client := &http.Client{}
 
-// 	// Create a request to send to the test server
-// 	req, err := http.NewRequest("GET", ts.URL, nil)
-// 	if err != nil {
-// 		b.Fatal(err)
-// 	}
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
 
-// 	// Run the benchmark
-// 	b.ReportAllocs()
-// 	for i := 0; i < b.N; i++ {
-// 		// Send the request to the test server and discard the response
-// 		_, err := client.Do(req)
-// 		if err != nil {
-// 			b.Fatal(err)
-// 		}
-// 	}
-// }
+	// Run the benchmark
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		// Send the request to the test server and discard the response
+		_, err := client.Do(req)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
 
 func BenchmarkTelerBadIPAddressOnly(b *testing.B) {
 	// Initialize teler
@@ -300,6 +300,240 @@ func BenchmarkTelerDirectoryBruteforceOnly(b *testing.B) {
 			threat.BadIPAddress,
 			threat.BadReferrer,
 			threat.BadCrawler,
+		},
+		NoStderr: true,
+	})
+
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		// Send the request to the test server and discard the response
+		_, err := client.Do(req)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkTelerWithoutCommonWebAttack(b *testing.B) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+		},
+		NoStderr: true,
+	})
+
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		// Send the request to the test server and discard the response
+		_, err := client.Do(req)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkTelerWithoutCVE(b *testing.B) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.CVE,
+		},
+		NoStderr: true,
+	})
+
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		// Send the request to the test server and discard the response
+		_, err := client.Do(req)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkTelerWithoutBadIPAddress(b *testing.B) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.BadIPAddress,
+		},
+		NoStderr: true,
+	})
+
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		// Send the request to the test server and discard the response
+		_, err := client.Do(req)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkTelerWithoutBadReferrer(b *testing.B) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.BadReferrer,
+		},
+		NoStderr: true,
+	})
+
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		// Send the request to the test server and discard the response
+		_, err := client.Do(req)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkTelerWithoutBadCrawler(b *testing.B) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.BadCrawler,
+		},
+		NoStderr: true,
+	})
+
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		// Send the request to the test server and discard the response
+		_, err := client.Do(req)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkTelerWithoutDirectoryBruteforce(b *testing.B) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.DirectoryBruteforce,
 		},
 		NoStderr: true,
 	})
