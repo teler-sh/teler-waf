@@ -40,7 +40,7 @@ func TestNew(t *testing.T) {
 
 func BenchmarkTelerDefaultOptions(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New()
+	telerMiddleware := New(Options{NoStderr: true})
 
 	// Create a custom handler
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -60,6 +60,10 @@ func BenchmarkTelerDefaultOptions(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
+
+	// Set the custom User-Agent so that the operation does
+	// not stop at the BadCrawler check
+	req.Header.Set("User-Agent", "awikwok")
 
 	// Run the benchmark
 	b.ReportAllocs()
@@ -82,6 +86,7 @@ func BenchmarkTelerCommonWebAttackOnly(b *testing.B) {
 			threat.BadCrawler,
 			threat.DirectoryBruteforce,
 		},
+		NoStderr: true,
 	})
 
 	// Create a custom handler
@@ -124,6 +129,7 @@ func BenchmarkTelerCommonWebAttackOnly(b *testing.B) {
 // 			threat.BadCrawler,
 // 			threat.DirectoryBruteforce,
 // 		},
+// 		NoStderr: true,
 // 	})
 
 // 	// Create a custom handler
@@ -166,6 +172,7 @@ func BenchmarkTelerBadIPAddressOnly(b *testing.B) {
 			threat.BadCrawler,
 			threat.DirectoryBruteforce,
 		},
+		NoStderr: true,
 	})
 
 	// Create a custom handler
@@ -208,6 +215,7 @@ func BenchmarkTelerBadReferrerOnly(b *testing.B) {
 			threat.BadCrawler,
 			threat.DirectoryBruteforce,
 		},
+		NoStderr: true,
 	})
 
 	// Create a custom handler
@@ -250,6 +258,7 @@ func BenchmarkTelerBadCrawlerOnly(b *testing.B) {
 			threat.BadReferrer,
 			threat.DirectoryBruteforce,
 		},
+		NoStderr: true,
 	})
 
 	// Create a custom handler
@@ -292,6 +301,7 @@ func BenchmarkTelerDirectoryBruteforceOnly(b *testing.B) {
 			threat.BadReferrer,
 			threat.BadCrawler,
 		},
+		NoStderr: true,
 	})
 
 	// Create a custom handler
