@@ -1,6 +1,7 @@
 package teler
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 	"path/filepath"
 
 	"github.com/kitabisa/teler-waf/threat"
+	"github.com/valyala/fastjson"
 	"gitlab.com/golang-commonmark/mdurl"
 	"golang.org/x/net/publicsuffix"
 )
@@ -56,7 +58,7 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 		case threat.CommonWebAttack:
 			err = t.checkCommonWebAttack(r)
 		case threat.CVE:
-			// TODO
+			err = t.checkCVE(r)
 		case threat.BadIPAddress:
 			err = t.checkBadIPAddress(r)
 		case threat.BadReferrer:
@@ -112,6 +114,82 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 	}
 
 	// Return nil if no match is found
+	return nil
+}
+
+func (t *Teler) checkCVE(r *http.Request) error {
+	data, err := fastjson.Parse(t.threat.data[threat.CVE])
+	if err != nil {
+		return nil
+	}
+
+	var kind string
+
+	for _, tpl := range data.GetArray("templates") {
+		for _, req := range tpl.GetArray("requests") {
+			var diff *url.URL
+
+			switch {
+			case len(req.GetArray("path")) > 0:
+				kind = "path"
+			case len(req.GetArray("raw")) > 0:
+				kind = "raw"
+			}
+
+			if kind == "path" && string(req.GetStringBytes("method")) != r.Method {
+				continue
+			}
+
+			for _, p := range req.GetArray(kind) {
+				switch kind {
+				case "path":
+					diff, err = url.ParseRequestURI(
+						strings.TrimPrefix(
+							strings.Trim(p.String(), `"`),
+							"{{BaseURL}}",
+						),
+					)
+
+					if err != nil {
+						continue
+					}
+				case "raw":
+					rawHTTP := normalizeRawStringReader(p.String())
+
+					raw, err := http.ReadRequest(bufio.NewReader(rawHTTP))
+					if err != nil {
+						continue
+					}
+
+					if raw.Method != r.Method {
+						continue
+					}
+
+					diff = raw.URL
+				}
+
+				if len(diff.Path) <= 1 {
+					continue
+				}
+
+				if r.URL.Path != diff.Path {
+					break
+				}
+
+				fq := 0
+				for q := range r.URL.Query() {
+					if diff.Query().Get(q) != "" {
+						fq++
+					}
+				}
+
+				if fq >= len(diff.Query()) {
+					return errors.New(string(tpl.GetStringBytes("id")))
+				}
+			}
+		}
+	}
+
 	return nil
 }
 

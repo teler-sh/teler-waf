@@ -27,3 +27,12 @@ func isValidMethod(method request.Method) bool {
 
 	return false
 }
+
+func normalizeRawStringReader(raw string) *strings.Reader {
+	raw = strings.Trim(raw, `"`)
+	raw = strings.ReplaceAll(raw, "\\n", "\n")
+	raw = strings.ReplaceAll(raw, "\\r", "\r")
+	raw += "\r\n\r\n"
+
+	return strings.NewReader(raw)
+}
