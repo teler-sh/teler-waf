@@ -20,10 +20,17 @@ type Options struct {
 	Customs []Rule
 
 	// LogFile is the file path for the log file to store the security logs.
+	// If LogFile is specified, log messages will be written to the specified
+	// file in addition to stderr (if NoStderr is false).
 	LogFile string
 
 	// TODO:
-	// LogRotate specifies whether to rotate the log file when it reaches a
-	// certain size or at a specified time interval.
+	// LogRotate specifies whether to rotate the log file when it reaches a new day.
 	// LogRotate bool
+
+	// NoStderr is a boolean flag indicating whether or not to suppress log messages
+	// from being printed to the standard error (stderr) stream. When set to true, log messages
+	// will not be printed to stderr. If set to false, log messages will be printed to stderr.
+	// By default, log messages are printed to stderr (false).
+	NoStderr bool
 }
