@@ -14,7 +14,6 @@ import (
 	"path/filepath"
 
 	"github.com/kitabisa/teler-waf/threat"
-	"github.com/valyala/fastjson"
 	"gitlab.com/golang-commonmark/mdurl"
 	"golang.org/x/net/publicsuffix"
 )
@@ -117,18 +116,34 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 	return nil
 }
 
+// checkCVE checks the request against a set of templates to see if it matches a known
+// Common Vulnerabilities and Exposures (CVE) threat.
+// It takes a pointer to an HTTP request as an input and returns an error if the request
+// matches a known threat. Otherwise, it returns nil.
 func (t *Teler) checkCVE(r *http.Request) error {
-	data, err := fastjson.Parse(t.threat.data[threat.CVE])
-	if err != nil {
-		return nil
+	// data is the set of templates to check against.
+	data := t.threat.cve
+
+	// kind is the type of template to check (either "path" or "raw").
+	// err is used to store any error that occurs during the parsing of the request URI or the raw string.
+	var kind string
+	var err error
+
+	// requestParams is a map that stores the query parameters of the request URI and
+	// iterate over the query parameters of the request URI and add them to the map.
+	requestParams := make(map[string]string)
+	for q, v := range r.URL.Query() {
+		requestParams[q] = v[0]
 	}
 
-	var kind string
-
+	// Iterate over the templates in the data set.
 	for _, tpl := range data.GetArray("templates") {
+		// Iterate over the requests in the template.
 		for _, req := range tpl.GetArray("requests") {
+			// diff is a pointer to a URL that represents the difference between the request URI and the URI in the template.
 			var diff *url.URL
 
+			// Determine the kind of template (either "path" or "raw").
 			switch {
 			case len(req.GetArray("path")) > 0:
 				kind = "path"
@@ -136,11 +151,14 @@ func (t *Teler) checkCVE(r *http.Request) error {
 				kind = "raw"
 			}
 
+			// If the template is a "path" type and the request method doesn't match, skip this template.
 			if kind == "path" && string(req.GetStringBytes("method")) != r.Method {
 				continue
 			}
 
+			// Iterate over the paths or raw strings in the template.
 			for _, p := range req.GetArray(kind) {
+				// Parse the request URI or the raw string based on the kind of template.
 				switch kind {
 				case "path":
 					diff, err = url.ParseRequestURI(
@@ -150,17 +168,23 @@ func (t *Teler) checkCVE(r *http.Request) error {
 						),
 					)
 
+					// If an error occurs during the parsing, skip this path.
 					if err != nil {
 						continue
 					}
 				case "raw":
+					// TODO: avoid parsing the request URI and normalizing the raw
+					// string multiple times by storing the result in a variable and reusing it
+					// by using a prefix tree (also known as a trie) data structure
 					rawHTTP := normalizeRawStringReader(p.String())
 
 					raw, err := http.ReadRequest(bufio.NewReader(rawHTTP))
+					// If an error occurs during the parsing, skip this raw string.
 					if err != nil {
 						continue
 					}
 
+					// If the request method doesn't match, skip this raw string.
 					if raw.Method != r.Method {
 						continue
 					}
@@ -168,28 +192,44 @@ func (t *Teler) checkCVE(r *http.Request) error {
 					diff = raw.URL
 				}
 
+				// If the diff path is empty or contains only a single character, skip this path or raw string.
 				if len(diff.Path) <= 1 {
 					continue
 				}
 
+				// If the request path doesn't match the diff path, break out of the innermost loop.
 				if r.URL.Path != diff.Path {
 					break
 				}
 
-				fq := 0
-				for q := range r.URL.Query() {
-					if diff.Query().Get(q) != "" {
-						fq++
+				// diffParams is a map that stores the query parameters of the diff URI and iterate over the
+				// query parameters of the diff URI and add them to the diffParams map.
+				diffParams := make(map[string]string)
+				for q, v := range diff.Query() {
+					diffParams[q] = v[0]
+				}
+
+				// allParamsMatch is a flag that indicates whether all the query parameters in the diff URI are
+				// present in the request URI and iterate over the query parameters of the diff URI.
+				allParamsMatch := true
+				for q, v := range diffParams {
+					// If a query parameter in the diff URI is not present in the request URI,
+					// set allParamsMatch to false and break out of the loop.
+					if requestParams[q] != v {
+						allParamsMatch = false
+						break
 					}
 				}
 
-				if fq >= len(diff.Query()) {
+				// If all the query parameters in the diff URI are present in the request URI, return an error of CVE ID.
+				if allParamsMatch {
 					return errors.New(string(tpl.GetStringBytes("id")))
 				}
 			}
 		}
 	}
 
+	// Return nil if the request doesn't match any known threat.
 	return nil
 }
 
