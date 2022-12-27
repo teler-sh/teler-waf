@@ -197,8 +197,12 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 // If no match is found or there was an error during the regex matching process,
 // it returns nil.
 func (t *Teler) checkDirectoryBruteforce(r *http.Request) error {
-	// Extract the file extension from the request path
+	// Extract the file extension from the request path and if
+	// file extension is empty string, do not process the check
 	ext := filepath.Ext(r.URL.Path)
+	if ext == "" {
+		return nil
+	}
 
 	// Trim the leading slash from the request path, and if path
 	// is empty string after the trim, do not process the check
