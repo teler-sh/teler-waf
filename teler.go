@@ -13,13 +13,10 @@ import (
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
+	"github.com/twharmon/gouid"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
-
-func defaultHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Forbidden", http.StatusForbidden)
-}
 
 // Threat defines what threat category should be excluded
 // and what is the corresponding data.
@@ -201,26 +198,8 @@ func (t *Teler) Handler(h http.Handler) http.Handler {
 		// that indicates the request should not continue.
 		k, err := t.analyzeRequest(w, r)
 		if err != nil {
-			// Convert the error from analyzeRequest as string message
-			msg := err.Error()
-
-			// Read the request body and initialize empty byte if returns an error
-			body, err := ioutil.ReadAll(r.Body)
-			if err != nil {
-				body = []byte{}
-			}
-			r.Body = ioutil.NopCloser(bytes.NewReader(body))
-
-			// Log the detected threats
-			t.log.With(
-				zap.String("category", k.String()),
-				zap.Namespace("request"),
-				zap.String("method", r.Method),
-				zap.String("URL", r.URL.String()),
-				zap.String("remote_addr", r.RemoteAddr),
-				zap.Any("headers", r.Header),
-				zap.ByteString("body", body),
-			).Warn(msg)
+			// Process the analyzeRequest
+			t.postAnalyze(w, r, k, err)
 
 			return
 		}
@@ -229,9 +208,47 @@ func (t *Teler) Handler(h http.Handler) http.Handler {
 	})
 }
 
-// SetHandler sets the handler to call when the teler rejects a request.
-func (t *Teler) SetHandler(handler http.Handler) {
-	t.handler = handler
+// postAnalyze is a function that processes the HTTP response after an error is returned from the analyzeRequest function.
+func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Threat, err error) {
+	// If there is no error, return early.
+	if err == nil {
+		return
+	}
+
+	// Generate a unique ID using the gouid package.
+	id := gouid.Bytes(10)
+
+	// Set the "X-Teler-Req-Id" header in the response with the unique ID.
+	w.Header().Set(xTelerReqId, id.String())
+
+	// Get the error message & convert to string as a message
+	msg := err.Error()
+
+	// Read the request body.
+	body, err := ioutil.ReadAll(r.Body)
+
+	// If there is an error reading the request body, set the body to an empty slice.
+	if err != nil {
+		body = []byte{}
+	}
+
+	// Reset the request body.
+	r.Body = ioutil.NopCloser(bytes.NewReader(body))
+
+	// Log the detected threat, request details and the error message.
+	t.log.With(
+		zap.String("id", id.String()),
+		zap.String("category", k.String()),
+		zap.Namespace("request"),
+		zap.String("method", r.Method),
+		zap.String("path", r.URL.String()),
+		zap.String("remote_addr", r.RemoteAddr),
+		zap.Any("headers", r.Header),
+		zap.ByteString("body", body),
+	).Warn(msg)
+
+	// Serve the reject handler
+	t.handler.ServeHTTP(w, r)
 }
 
 // getResources to download datasets of threat ruleset from teler-resources
