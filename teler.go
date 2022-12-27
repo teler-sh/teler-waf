@@ -2,6 +2,7 @@ package teler
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
@@ -14,6 +15,7 @@ import (
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
 	"github.com/twharmon/gouid"
+	"github.com/valyala/fastjson"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -36,8 +38,8 @@ type Threat struct {
 	// objects of BadCrawler threat data.
 	badCrawler []*regexp.Regexp
 
-	// cve is a struct of CVEs threat data
-	cve *cve
+	// cve contains the compiled JSON CVEs data of pointers to fastjson.Value
+	cve *fastjson.Value
 
 	// cwa is a struct of CommonWebAttack threat data
 	cwa *cwa
@@ -317,12 +319,13 @@ func (t *Teler) processResource(k threat.Threat) error {
 		}
 	case threat.CVE:
 		// Initialize the cve field of the threat struct.
-		t.threat.cve = &cve{}
-
-		// Unmarshal the data into the cve field.
-		err = json.Unmarshal([]byte(t.threat.data[k]), &t.threat.cve)
+		t.threat.cve, err = fastjson.Parse(t.threat.data[k])
 		if err != nil {
 			return err
+		}
+
+		if t.threat.cve.Exists("templates") == false {
+			return errors.New("the CVE templates didn't exist")
 		}
 	case threat.BadCrawler:
 		// Split the data into a slice of strings, compile each string
