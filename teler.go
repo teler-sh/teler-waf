@@ -93,7 +93,7 @@ func New(opts ...Options) *Teler {
 	// Initialize writer for logging and add standard error (stderr)
 	// as writer if NoStderr is false
 	ws := []zapcore.WriteSyncer{}
-	if o.NoStderr == false {
+	if !o.NoStderr {
 		ws = append(ws, os.Stderr)
 	}
 
@@ -333,7 +333,7 @@ func (t *Teler) processResource(k threat.Threat) error {
 			return err
 		}
 
-		if t.threat.cve.Exists("templates") == false {
+		if !t.threat.cve.Exists("templates") {
 			return errors.New("the CVE templates didn't exist")
 		}
 	case threat.BadCrawler:
