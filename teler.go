@@ -115,7 +115,16 @@ func New(opts ...Options) *Teler {
 		mw,            // Use the multiwriter
 		zap.WarnLevel, // Set the logging level to debug
 	))
-	defer t.log.Sync() // Flush any buffered writes before exiting
+
+	// The defer statement is used to ensure that the Sync function is called before the function exits.
+	// This is used to flush any buffered writes to the output stream.
+	defer func() {
+		// The Sync function is called and the error return value is checked.
+		if err := t.log.Sync(); err != nil {
+			// If an error occurs, it is logged using the log.Error function.
+			t.log.Error(err.Error())
+		}
+	}()
 
 	// Initialize the excludes field of the Threat struct to a new map and
 	// set the boolean flag for each threat category specified in the Excludes option to true
