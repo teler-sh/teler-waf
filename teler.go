@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 	"strings"
 
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/kitabisa/teler-waf/request"
@@ -236,7 +236,7 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 	msg := err.Error()
 
 	// Read the request body.
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 
 	// If there is an error reading the request body, set the body to an empty slice.
 	if err != nil {
@@ -244,7 +244,7 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 	}
 
 	// Reset the request body.
-	r.Body = ioutil.NopCloser(bytes.NewReader(body))
+	r.Body = io.NopCloser(bytes.NewReader(body))
 
 	// Log the detected threat, request details and the error message.
 	t.log.With(
@@ -286,7 +286,7 @@ func (t *Teler) getResources() error {
 
 		// Read the contents of the data file and store it
 		// as a string in the data field of the Threat struct
-		b, err := ioutil.ReadFile(path)
+		b, err := os.ReadFile(path)
 		if err != nil {
 			return err
 		}

@@ -5,10 +5,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"regexp"
 	"strings"
 
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -83,15 +83,15 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 	// Decode the raw query string of the URL using the mdurl.Decode() method
 	query := mdurl.Decode(r.URL.RawQuery)
 
-	// Read the entire request body into a byte slice using ioutil.ReadAll()
-	b, err := ioutil.ReadAll(r.Body)
+	// Read the entire request body into a byte slice using io.ReadAll()
+	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		// If the read fails, set the byte slice to an empty slice of bytes
 		b = []byte("")
 	}
 
 	// Replace the request body with a new io.ReadCloser that reads from the byte slice
-	r.Body = ioutil.NopCloser(bytes.NewReader(b))
+	r.Body = io.NopCloser(bytes.NewReader(b))
 
 	// Decode the byte slice using mdurl.Decode() and convert it to a string
 	body := mdurl.Decode(string(b))
