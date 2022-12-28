@@ -119,11 +119,7 @@ func New(opts ...Options) *Teler {
 	// The defer statement is used to ensure that the Sync function is called before the function exits.
 	// This is used to flush any buffered writes to the output stream.
 	defer func() {
-		// The Sync function is called and the error return value is checked.
-		if err := t.log.Sync(); err != nil {
-			// If an error occurs, it is logged using the log.Error function.
-			t.log.Error(err.Error())
-		}
+		_ = t.log.Sync()
 	}()
 
 	// Initialize the excludes field of the Threat struct to a new map and
