@@ -1,6 +1,6 @@
 # teler-waf
 
-<!-- [![GoDoc](https://godoc.org/github.com/kitabisa/teler-waf?status.svg)](http://godoc.org/github.com/kitabisa/teler-waf) [![Test](https://github.com/kitabisa/teler-waf/workflows/tests/badge.svg?branch=master)] -->
+<!-- [![GoDoc](https://pkg.go.dev/static/frontend/badge/badge.svg)](http://pkg.go.dev/github.com/kitabisa/teler-waf) [![Test](https://github.com/kitabisa/teler-waf/workflows/tests/badge.svg] -->
 
 <img src="https://user-images.githubusercontent.com/25837540/97091757-7200d880-1668-11eb-82c4-e5c4971d2bc8.png" align="right" width="250px"/>
 
@@ -10,11 +10,16 @@ The package comes with a standard [`net/http.Handler`](https://pkg.go.dev/net/ht
 
 In addition to providing protection against web-based attacks, teler-waf can also help improve the overall security and integrity of your application. It is highly configurable, allowing you to tailor it to fit the specific needs of your application.
 
+**See also:**
+
+- [kitabisa/teler](https://github.com/kitabisa/teler): Real-time HTTP intrusion detection.
+- [dwisiswant0/cox](https://github.com/dwisiswant0/cox): Cox is [bluemonday](https://github.com/microcosm-cc/bluemonday)-wrapper to perform a deep-clean and/or sanitization of <i>(nested-)</i>interfaces from HTML to prevent XSS payloads.
+
 ## Features
 
 Some core features of teler-waf include:
 
-- HTTP middleware for Go web applications.
+- **HTTP middleware** for Go web applications.
 - Integration of **teler IDS** functionality.
 - **Detection of known malicious patterns** using the teler IDS.
   - Common web attacks, such as cross-site scripting (XSS) and SQL injection, etc.
@@ -67,11 +72,103 @@ http.Handle("/path", handler)
 
 That's it! You have configured teler-waf in your Go application.
 
+**Options:**
+
+For a list of the options available to customize teler-waf, see the [`teler.Options`](https://pkg.go.dev/github.com/kitabisa/teler-waf#Options) struct.
+
 ### Examples
 
-_TODO_
+Here is an example of how to customize the options and rules for teler-waf:
+
+```go
+// main.go
+package main
+
+import (
+	"net/http"
+
+	"github.com/kitabisa/teler-waf"
+	"github.com/kitabisa/teler-waf/request"
+	"github.com/kitabisa/teler-waf/threat"
+)
+
+var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// this is the handler function for the route that we want to protect
+	// with teler-waf's security measures
+	w.Write([]byte("hello world"))
+})
+
+func main() {
+	// create a new instance of the Teler type using the New function
+	// and configure it using the Options struct
+	telerMiddleware := teler.New(teler.Options{
+		// exclude specific threats from being checked by the teler IDS
+		Excludes: []threat.Threat{
+			threat.BadReferrer,
+			threat.BadCrawler,
+		},
+		// specify whitelisted paths or headers that will always be allowed
+		// by the teler IDS
+		Whitelists: []string{
+			`(curl|Go-http-client|okhttp)/*`,
+			`^/wp-login\.php`,
+			`https?:\/\/www\.facebook\.com`,
+			`192\.168\.0\.1`,
+		},
+		// specify custom rules for the teler IDS to follow
+		Customs: []teler.Rule{
+			{
+				// give the rule a name for easy identification
+				Name:      "Log4j Attack",
+				// specify the logical operator to use when evaluating the rule's conditions
+				Condition: "or",
+				// specify the conditions that must be met for the rule to trigger
+				Rules: []teler.Condition{
+					{
+						// specify the HTTP method that the rule applies to
+						Method: request.GET,
+						// specify the element of the request that the rule applies to
+						// (e.g. path, headers, etc.)
+						Element: request.Path,
+						// specify the pattern to match against the element of the request
+						Pattern: `\$\{.*:\/\/.*\/?\w+?\}`,
+					},
+				},
+			},
+		},
+		// specify the file path to use for logging
+		LogFile: "/tmp/teler.log",
+	})
+
+	// create a new handler using the handler method of the Teler instance
+	// and pass in the handler function for the route we want to protect
+	app := telerMiddleware.Handler(myHandler)
+	// use the handler as the handler for the route in the http package's ListenAndServe function
+	http.ListenAndServe("127.0.0.1:3000", app)
+}
+```
 
 For more examples of how to use teler-waf, check out the [examples/](https://github.com/kitabisa/teler-waf/tree/master/examples) directory.
+
+#### Logs
+
+Here is an example of what the log lines would look like if teler-waf detects a threat on a request:
+
+```json
+{"level":"warn","ts":1672261174.5995026,"msg":"bad crawler","id":"654b85325e1b2911258a","category":"BadCrawler","request":{"method":"GET","path":"/","remote_addr":"127.0.0.1:37702","headers":{"Accept":["*/*"],"User-Agent":["curl/7.81.0"]},"body":""}}
+{"level":"warn","ts":1672261175.9567692,"msg":"directory bruteforce","id":"b29546945276ed6b1fba","category":"DirectoryBruteforce","request":{"method":"GET","path":"/.git","remote_addr":"127.0.0.1:37716","headers":{"Accept":["*/*"],"User-Agent":["X"]},"body":""}}
+{"level":"warn","ts":1672261177.1487508,"msg":"Detects common comment types","id":"75412f2cc0ec1cf79efd","category":"CommonWebAttack","request":{"method":"GET","path":"/?id=1%27%20or%201%3D1%23","remote_addr":"127.0.0.1:37728","headers":{"Accept":["*/*"],"User-Agent":["X"]},"body":""}}
+```
+
+The **id** is a unique identifier that is generated when a request is rejected by teler-waf. It is included in the HTTP response headers of the request (`X-Teler-Req-Id`), and can be used to troubleshoot issues with requests that are being made to the website.
+
+For example, if a request to a website returns an HTTP error status code, such as a 403 Forbidden, the teler request ID can be used to identify the specific request that caused the error and help troubleshoot the issue.
+
+Teler request IDs are used by teler-waf to track requests made to its web application and can be useful for debugging and analyzing traffic patterns on a website.
+
+#### Demo
+
+You are free to use the following site for testing, https://waf.teler.app.
 
 ## Limitations
 
@@ -106,6 +203,10 @@ ok  	github.com/kitabisa/teler-waf	23.131s
 
 - **Configuration complexity**: Configuring teler-waf to suit the specific needs of your application can be complex, and may require a certain level of expertise in web security. This can make it difficult for those who are not familiar with application firewalls and IDS systems to properly set up and use teler-waf.
 - **Limited protection**: teler-waf is not a perfect security solution, and it may not be able to protect against all possible types of attacks. As with any security system, it is important to regularly monitor and maintain teler-waf to ensure that it is providing the desired level of protection.
+
+#### Known Issues
+
+To view a list of known issues with teler-waf, please filter the issues by the ["known-issue" label](https://github.com/kitabisa/teler-waf/issues?q=is%3Aopen+is%3Aissue+label%3Aknown-issue).
 
 ## License
 
