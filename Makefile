@@ -8,7 +8,7 @@ test: ## Runs the tests, vetting, and golangci-lint, and semgrep.
 	semgrep --config auto
 	golangci-lint run .
 	go test -v -cover -race -count=1 .
-	go vet .
+	go vet ./...
 
 ci: ## Runs the tests and vetting checks (specific for CI).
 	go test -cover -race -count=1 .
@@ -16,3 +16,9 @@ ci: ## Runs the tests and vetting checks (specific for CI).
 
 bench: ## Runs the tests and benchmarking
 	go test -bench . -cpu=4
+
+coverage: FILE := /tmp/teler-coverage.out # Define coverage file
+coverage: ## Runs the tests and check & view the test coverage
+	go test -coverprofile=$(FILE) .
+	go tool cover -func=$(FILE)
+	rm -f $(FILE)
