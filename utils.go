@@ -5,6 +5,7 @@ import (
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
+	"gitlab.com/golang-commonmark/mdurl"
 )
 
 func (t *Teler) inThreatIndex(kind threat.Threat, substr string) bool {
@@ -13,6 +14,10 @@ func (t *Teler) inThreatIndex(kind threat.Threat, substr string) bool {
 	}
 
 	return false
+}
+
+func toURLDecode(s string) string {
+	return mdurl.Decode(s)
 }
 
 func isValidMethod(method request.Method) bool {
