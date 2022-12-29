@@ -83,8 +83,8 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 	// Declare byte slice for request body
 	var b []byte
 
-	// Decode the raw query string of the URL using the mdurl.Decode() method
-	query := mdurl.Decode(r.URL.RawQuery)
+	// Decode the request URI of the URL using the mdurl.Decode() method
+	uri := mdurl.Decode(r.URL.RequestURI())
 
 	// Read the entire request body into a byte slice using io.ReadAll()
 	b, err := io.ReadAll(r.Body)
@@ -106,8 +106,8 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 			continue
 		}
 
-		// If the pattern matches the query, or body, return an error indicating a common web attack has been detected
-		if pattern.MatchString(query) || pattern.MatchString(body) {
+		// If the pattern matches the request URI or body, return an error indicating a common web attack has been detected
+		if pattern.MatchString(uri) || pattern.MatchString(body) {
 			return errors.New(filter.Description)
 		}
 	}
