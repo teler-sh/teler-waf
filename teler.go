@@ -259,9 +259,18 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 
 // getResources to download datasets of threat ruleset from teler-resources
 func (t *Teler) getResources() error {
-	// Download the datasets of threat ruleset from teler-resources
-	if err := threat.Get(); err != nil {
+	// Check if threat datasets is updated
+	updated, err := threat.IsUpdated()
+	if err != nil {
 		return err
+	}
+
+	// Download the datasets of threat ruleset from teler-resources
+	// if threat datasets is not up-to-date
+	if !updated {
+		if err := threat.Get(); err != nil {
+			return err
+		}
 	}
 
 	// Initialize the data field of the Threat struct to a new map
