@@ -14,7 +14,6 @@ import (
 	"path/filepath"
 
 	"github.com/kitabisa/teler-waf/threat"
-	"gitlab.com/golang-commonmark/mdurl"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -83,8 +82,8 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 	// Declare byte slice for request body
 	var b []byte
 
-	// Decode the request URI of the URL using the mdurl.Decode() method
-	uri := mdurl.Decode(r.URL.RequestURI())
+	// Decode the URL-encoded request URI of the URL
+	uri := toURLDecode(r.URL.RequestURI())
 
 	// Read the entire request body into a byte slice using io.ReadAll()
 	b, err := io.ReadAll(r.Body)
@@ -93,8 +92,8 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 		r.Body = io.NopCloser(bytes.NewReader(b))
 	}
 
-	// Decode the byte slice using mdurl.Decode() and convert it to a string
-	body := mdurl.Decode(string(b))
+	// Decode the URL-encoded byte slice of request body and convert it to a string
+	body := toURLDecode(string(b))
 
 	// Iterate over the filters in the CommonWebAttack data stored in the t.threat.cwa.Filters field
 	for _, filter := range t.threat.cwa.Filters {
