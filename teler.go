@@ -100,7 +100,7 @@ func New(opts ...Options) *Teler {
 	// If the LogFile option is set, open the log file and
 	// set the log field of the Teler struct to the file descriptor
 	if o.LogFile != "" {
-		t.out, err = os.OpenFile(o.LogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		t.out, err = os.OpenFile(o.LogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644) // nosemgrep: trailofbits.go.questionable-assignment.questionable-assignment
 		if err != nil {
 			panic(fmt.Sprintf(errLogFile, err))
 		}
@@ -222,6 +222,9 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 		return
 	}
 
+	// Declare byte slice for request body
+	var body []byte
+
 	// Generate a unique ID using the gouid package.
 	id := gouid.Bytes(10)
 
@@ -231,16 +234,12 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 	// Get the error message & convert to string as a message
 	msg := err.Error()
 
-	// Read the request body.
-	body, err := io.ReadAll(r.Body)
-
-	// If there is an error reading the request body, set the body to an empty slice.
-	if err != nil {
-		body = []byte{}
+	// Read the entire request body into a byte slice using io.ReadAll()
+	body, err = io.ReadAll(r.Body)
+	if err == nil {
+		// If the read not fails, replace the request body with a new io.ReadCloser that reads from the byte slice
+		r.Body = io.NopCloser(bytes.NewReader(body))
 	}
-
-	// Reset the request body.
-	r.Body = io.NopCloser(bytes.NewReader(body))
 
 	// Log the detected threat, request details and the error message.
 	t.log.With(
@@ -317,14 +316,14 @@ func (t *Teler) processResource(k threat.Threat) error {
 		// Compile the Rule field of each filter in the Filters slice
 		// and save it in the pattern field of the filter.
 		for i, filter := range t.threat.cwa.Filters {
-			t.threat.cwa.Filters[i].pattern, err = regexp.Compile(filter.Rule)
+			t.threat.cwa.Filters[i].pattern, err = regexp.Compile(filter.Rule) // nosemgrep: trailofbits.go.questionable-assignment.questionable-assignment
 			if err != nil {
 				continue
 			}
 		}
 	case threat.CVE:
 		// Initialize the cve field of the threat struct.
-		t.threat.cve, err = fastjson.Parse(t.threat.data[k])
+		t.threat.cve, err = fastjson.Parse(t.threat.data[k]) // nosemgrep: trailofbits.go.questionable-assignment.questionable-assignment
 		if err != nil {
 			return err
 		}

@@ -80,18 +80,18 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 // If a match is found, it returns an error indicating a common web attack has been detected.
 // If no match is found, it returns nil.
 func (t *Teler) checkCommonWebAttack(r *http.Request) error {
+	// Declare byte slice for request body
+	var b []byte
+
 	// Decode the raw query string of the URL using the mdurl.Decode() method
 	query := mdurl.Decode(r.URL.RawQuery)
 
 	// Read the entire request body into a byte slice using io.ReadAll()
 	b, err := io.ReadAll(r.Body)
-	if err != nil {
-		// If the read fails, set the byte slice to an empty slice of bytes
-		b = []byte("")
+	if err == nil {
+		// If the read not fails, replace the request body with a new io.ReadCloser that reads from the byte slice
+		r.Body = io.NopCloser(bytes.NewReader(b))
 	}
-
-	// Replace the request body with a new io.ReadCloser that reads from the byte slice
-	r.Body = io.NopCloser(bytes.NewReader(b))
 
 	// Decode the byte slice using mdurl.Decode() and convert it to a string
 	body := mdurl.Decode(string(b))
