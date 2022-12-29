@@ -9,7 +9,7 @@ import (
 	"github.com/kitabisa/teler-waf/threat"
 )
 
-func TestNew(t *testing.T) {
+func TestNewDefaultOptions(t *testing.T) {
 	// Initialize teler
 	telerMiddleware := New(Options{NoStderr: true})
 
@@ -31,6 +31,243 @@ func TestNew(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNewCommonWebAttackOnly(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+		NoStderr: true,
+	})
+
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNewCVEOnly(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+		NoStderr: true,
+	})
+
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNewBadIPAddressOnly(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+		NoStderr: true,
+	})
+
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Set the RemoteAddr of the request
+	req.RemoteAddr = "1.14.77.81"
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNewBadReferrerOnly(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+		NoStderr: true,
+	})
+
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Set the HTTP referrer of the request
+	req.Header.Set("Referer", "http://34.gs/")
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNewBadCrawlerOnly(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.DirectoryBruteforce,
+		},
+		NoStderr: true,
+	})
+
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNewDirectoryBruteforceOnly(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+		},
+		NoStderr: true,
+	})
+
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Set the request path
+	req.URL.Path = "/.git"
 
 	_, err = client.Do(req)
 	if err != nil {
