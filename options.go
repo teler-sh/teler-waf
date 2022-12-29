@@ -10,8 +10,8 @@ type Options struct {
 
 	// Whitelists is a list of regular expressions that match request elements
 	// that should be excluded from the security checks. The request elements
-	// that can be matched are user-agent, request path, HTTP referrer,
-	// IP address, and request query values.
+	// that can be matched are request URI (path and query parameters) user-agent,
+	// HTTP referrer, and IP address.
 	Whitelists []string
 
 	// Customs is a list of custom security rules to apply to incoming requests.
