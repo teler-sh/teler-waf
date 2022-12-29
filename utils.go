@@ -16,6 +16,18 @@ func (t *Teler) inThreatIndex(kind threat.Threat, substr string) bool {
 	return false
 }
 
+func (t *Teler) inWhitelist(substr string) bool {
+	substr = toURLDecode(substr)
+
+	for _, pattern := range t.whitelistRegexes {
+		if pattern.MatchString(substr) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func toURLDecode(s string) string {
 	return mdurl.Decode(s)
 }
