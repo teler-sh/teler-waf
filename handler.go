@@ -15,7 +15,7 @@ func defaultHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusForbidden)
 
 	// Write a response from forbidden template
-	fmt.Fprintf(w, forbiddenTpl, w.Header().Get(xTelerReqId))
+	fmt.Fprintf(w, forbiddenTpl, w.Header().Get(xTelerReqId)) // nosemgrep: go.lang.security.audit.xss.no-fprintf-to-responsewriter.no-fprintf-to-responsewriter
 }
 
 // SetHandler sets the handler to call when the teler rejects a request.
