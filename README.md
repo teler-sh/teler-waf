@@ -128,8 +128,8 @@ func main() {
 						// specify the HTTP method that the rule applies to
 						Method: request.GET,
 						// specify the element of the request that the rule applies to
-						// (e.g. path, headers, etc.)
-						Element: request.Path,
+						// (e.g. URI, headers, body)
+						Element: request.URI,
 						// specify the pattern to match against the element of the request
 						Pattern: `\$\{.*:\/\/.*\/?\w+?\}`,
 					},

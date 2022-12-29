@@ -32,7 +32,7 @@ func main() {
 					{
 						Method: request.GET,
 						// if Method is not set or invalid, defaulting to request.GET.
-						Element: request.Path,
+						Element: request.URI,
 						// you can use request.Any: it useful when you want to
 						// match against multiple elements of the request at once,
 						// rather than just a single element.
