@@ -3,7 +3,6 @@ package threat
 import (
 	"os"
 
-	"io/ioutil"
 	"path/filepath"
 
 	"github.com/hashicorp/go-getter"
@@ -23,7 +22,7 @@ func Get() error {
 	}
 
 	// Check destination directory if already have threat datasets
-	files, err := ioutil.ReadDir(dst)
+	files, err := os.ReadDir(dst)
 	if err != nil {
 		return err
 	}
