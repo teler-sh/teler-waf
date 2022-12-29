@@ -44,7 +44,14 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 
 	// TODO:
 	// - analyze from custom rules
-	// - implement whitelisting
+
+	// Checks whether the request URI, referer, user agent, or remote address are included
+	// in a whitelist of patterns. If any of those values are in the whitelist, returns early.
+	switch {
+	case t.inWhitelist(r.URL.RequestURI()), t.inWhitelist(r.Referer()):
+	case t.inWhitelist(r.UserAgent()), t.inWhitelist(r.RemoteAddr):
+		return threat.Undefined, nil
+	}
 
 	th := t.threat
 	for k, v := range th.excludes {
