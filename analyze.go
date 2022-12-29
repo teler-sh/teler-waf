@@ -239,12 +239,25 @@ func (t *Teler) checkCVE(r *http.Request) error {
 	return nil
 }
 
-// checkBadIPAddress checks if the request remote address is in the BadIPAddress index.
-// It returns an error if the remote address is found in the index, indicating a bad IP address.
+// checkBadIPAddress checks if the client IP address is in the BadIPAddress index.
+// It returns an error if the client IP address is found in the index, indicating a bad IP address.
 // Otherwise, it returns nil.
 func (t *Teler) checkBadIPAddress(r *http.Request) error {
-	// Check if the request remote address is in BadIPAddress index
-	if t.inThreatIndex(threat.BadIPAddress, r.RemoteAddr) {
+	// Get the client's IP address from the X-Real-Ip header field
+	clientIP := r.Header.Get("X-Real-Ip")
+
+	// If the X-Real-Ip header field is not present, try the X-Forwarded-For header field
+	if clientIP == "" {
+		clientIP = r.Header.Get("X-Forwarded-For")
+	}
+
+	// If the X-Forwarded-For header field is not present, use the RemoteAddr field
+	if clientIP == "" {
+		clientIP = r.RemoteAddr
+	}
+
+	// Check if the client IP address is in BadIPAddress index
+	if t.inThreatIndex(threat.BadIPAddress, clientIP) {
 		// Return an error indicating a bad IP address has been detected
 		return errors.New("bad IP address")
 	}
