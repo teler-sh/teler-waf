@@ -104,17 +104,8 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 // If any of the custom rules are violated, the function returns an error with the name of the violated rule as the message.
 // If no custom rules are violated, the function returns nil.
 func (t *Teler) checkCustomRules(r *http.Request) error {
-	// Create a new strings.Builder to hold the request headers
-	var headers strings.Builder
-
-	// Iterate over the request headers and append each key-value pair to the builder
-	for key, values := range r.Header {
-		for _, value := range values {
-			headers.WriteString(
-				fmt.Sprintf("%s: %s\n", toURLDecode(key), toURLDecode(value)),
-			)
-		}
-	}
+	// Converts map of headers to RAW string
+	headers := headersToRawString(r.Header)
 
 	// Decode the URL-encoded request URI of the URL
 	uri := toURLDecode(r.URL.RequestURI())
@@ -162,11 +153,11 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 			case request.URI:
 				ok = pattern.MatchString(uri)
 			case request.Headers:
-				ok = pattern.MatchString(headers.String())
+				ok = pattern.MatchString(headers)
 			case request.Body:
 				ok = pattern.MatchString(body)
 			case request.Any:
-				ok = (pattern.MatchString(uri) || pattern.MatchString(headers.String()) || pattern.MatchString(body))
+				ok = (pattern.MatchString(uri) || pattern.MatchString(headers) || pattern.MatchString(body))
 			}
 
 			// If the rule condition is satisfied, increment the found match counter
