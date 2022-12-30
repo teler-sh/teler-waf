@@ -19,6 +19,9 @@ const (
 	// Undefined threat type didn't covers anything
 	Undefined Threat = iota - 1
 
+	// Custom threat type is a custom threat that doesn't fit into any of the other defined categories.
+	Custom
+
 	// CommonWebAttack threat type covers common web-based attacks such as cross-site scripting (XSS) and SQL injection.
 	CommonWebAttack
 

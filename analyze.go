@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"path/filepath"
 
+	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
 	"golang.org/x/net/publicsuffix"
 )
@@ -42,8 +43,9 @@ The types of threats that are checked for are:
 func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.Threat, error) {
 	var err error
 
-	// TODO:
-	// - analyze from custom rules
+	if err = t.checkCustomRules(r); err != nil {
+		return threat.Undefined, err
+	}
 
 	// Checks whether the request URI, referer, user agent, or remote address are included
 	// in a whitelist of patterns. If any of those values are in the whitelist, returns early.
@@ -80,6 +82,99 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 	}
 
 	return threat.Undefined, nil
+}
+
+// checkCustomRules checks the given http.Request against a set of custom rules defined in the Teler struct.
+// If any of the custom rules are violated, the function returns an error with the name of the violated rule as the message.
+// If no custom rules are violated, the function returns nil.
+func (t *Teler) checkCustomRules(r *http.Request) error {
+	// Create a new strings.Builder to hold the request headers
+	var headers strings.Builder
+
+	// Iterate over the request headers and append each key-value pair to the builder
+	for key, values := range r.Header {
+		for _, value := range values {
+			headers.WriteString(
+				fmt.Sprintf("%s: %s\n", toURLDecode(key), toURLDecode(value)),
+			)
+		}
+	}
+
+	// Decode the URL-encoded request URI of the URL
+	uri := toURLDecode(r.URL.RequestURI())
+
+	// Read the entire request body into a byte slice using io.ReadAll()
+	b, err := io.ReadAll(r.Body)
+	if err == nil {
+		// If the read not fails, replace the request body with a new io.ReadCloser that reads from the byte slice
+		r.Body = io.NopCloser(bytes.NewReader(b))
+	}
+
+	// Decode the URL-encoded byte slice of request body and convert it to a string
+	body := toURLDecode(string(b))
+
+	// Iterate over the Customs field of the Teler struct, which is a slice of custom rules
+	for _, rule := range t.opt.Customs {
+		// Initialize the found match counter to zero
+		f := 0
+
+		// Iterate over the Rules field of the current custom rule, which is a slice of rule conditions
+		for _, cond := range rule.Rules {
+			ok := false
+
+			// Check if the Method field of the current rule condition matches the request method
+			// If the Method field is ALL, match any request method
+			switch {
+			case cond.Method == request.ALL:
+			case string(cond.Method) == r.Method:
+				ok = true
+			}
+
+			// If the request method doesn't match, skip the current rule condition
+			if !ok {
+				break
+			}
+
+			ok = false
+
+			// Get the compiled regex pattern for the current rule condition
+			pattern := cond.patternRegex
+
+			// Check if the Element field of the current rule condition matches the request URI, headers, body, or any of them
+			// If it matches, set ok to true
+			switch cond.Element {
+			case request.URI:
+				ok = pattern.MatchString(uri)
+			case request.Headers:
+				ok = pattern.MatchString(headers.String())
+			case request.Body:
+				ok = pattern.MatchString(body)
+			case request.Any:
+				ok = (pattern.MatchString(uri) || pattern.MatchString(headers.String()) || pattern.MatchString(body))
+			}
+
+			// If the rule condition is satisfied, increment the found match counter
+			if ok {
+				// If the rule condition "or", return an error with the Name field of the custom rule as the message
+				// If the rule condition is "and", increment the found match counter
+				switch rule.Condition {
+				case "or":
+					return errors.New(rule.Name)
+				case "and":
+					f++
+				}
+			}
+		}
+
+		// If the rule condition is "and", and number of found matches is equal to the number of rule conditions,
+		// return an error with the Name field of the custom rule as the message
+		if rule.Condition == "and" && f >= len(rule.Rules) {
+			return errors.New(rule.Name)
+		}
+	}
+
+	// If no custom rules were violated, return nil
+	return nil
 }
 
 // checkCommonWebAttack checks if the request contains any patterns that match the common web attacks data.

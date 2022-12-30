@@ -38,11 +38,17 @@ func (t Threat) Filepath() (string, error) {
 	return "", fmt.Errorf(errFilepath, t.String())
 }
 
-// List returns a slice of all Threat constants
+// List returns a slice of all Threat type categories
 func List() []Threat {
 	var threats []Threat
 
 	for t := range str {
+		// Skip if it is undefined or custom
+		switch t {
+		case Undefined, Custom:
+			continue
+		}
+
 		threats = append(threats, t)
 	}
 
