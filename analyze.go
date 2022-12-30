@@ -29,7 +29,7 @@ The function first checks the request against any custom rules defined in the Te
 If a custom rule is violated, the function returns an error with the name of the violated rule as the message.
 If no custom rules are violated, the function continues processing.
 
-The function then checks whether the request URI, referer, user agent, or remote address are included
+The function then checks whether the request URI, headers, or client IP address are included
 in a whitelist of patterns. If any of those values are in the whitelist, the function returns early.
 
 The function then retrieves the threat struct from the Teler struct.
@@ -55,12 +55,8 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 		return threat.Custom, err
 	}
 
-	// Check the request URI, referer, user agent, and remote address against the whitelist
-	switch {
-	case t.inWhitelist(r.URL.RequestURI()): // Check the request URI
-	case t.inWhitelist(r.Referer()): // Check the referer
-	case t.inWhitelist(r.UserAgent()): // Check the user agent
-	case t.inWhitelist(getClientIP(r)): // Check the remote address
+	// Check the request against the whitelists
+	if t.inWhitelist(r) {
 		return threat.Undefined, nil
 	}
 
