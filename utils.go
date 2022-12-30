@@ -44,8 +44,6 @@ func isValidMethod(method request.Method) bool {
 	case request.DELETE, request.CONNECT, request.OPTIONS, request.TRACE, request.ALL:
 	case "":
 		return true
-	default:
-		return false
 	}
 
 	return false
