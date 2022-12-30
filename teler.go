@@ -263,7 +263,7 @@ func (t *Teler) getResources() error {
 	var updated bool
 
 	// Check if threat datasets is updated
-	updated, err := threat.IsUpdated()
+	updated, err := threat.IsUpdated() // nosemgrep: trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable
 	if err != nil {
 		updated = false
 	}
