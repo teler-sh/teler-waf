@@ -23,10 +23,17 @@ analyzeRequest checks an incoming HTTP request for certain types of threats or v
 If a threat is detected, the function returns an error and the request is stopped from continuing through the middleware chain.
 
 The function takes in two arguments: a http.ResponseWriter and an http.Request.
-It returns threat type and an error value.
+It returns a threat type and an error value.
 
-The function first retrieves the threat struct from the Teler struct.
-It then iterates over the elements in the excludes map of the threat struct.
+The function first checks the request against any custom rules defined in the Teler struct.
+If a custom rule is violated, the function returns an error with the name of the violated rule as the message.
+If no custom rules are violated, the function continues processing.
+
+The function then checks whether the request URI, referer, user agent, or remote address are included
+in a whitelist of patterns. If any of those values are in the whitelist, the function returns early.
+
+The function then retrieves the threat struct from the Teler struct.
+It iterates over the elements in the excludes map of the threat struct.
 For each element in the excludes map, the function checks whether the value is true.
 If it is true, the loop continues to the next iteration.
 Otherwise, the function performs a check based on the type of threat specified by the key in the excludes map.
@@ -43,44 +50,53 @@ The types of threats that are checked for are:
 func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.Threat, error) {
 	var err error
 
+	// Check the request against custom rules
 	if err = t.checkCustomRules(r); err != nil {
-		return threat.Undefined, err
+		return threat.Custom, err
 	}
 
-	// Checks whether the request URI, referer, user agent, or remote address are included
-	// in a whitelist of patterns. If any of those values are in the whitelist, returns early.
+	// Check the request URI, referer, user agent, and remote address against the whitelist
 	switch {
-	case t.inWhitelist(r.URL.RequestURI()), t.inWhitelist(r.Referer()):
-	case t.inWhitelist(r.UserAgent()), t.inWhitelist(r.RemoteAddr):
+	case t.inWhitelist(r.URL.RequestURI()): // Check the request URI
+	case t.inWhitelist(r.Referer()): // Check the referer
+	case t.inWhitelist(r.UserAgent()): // Check the user agent
+	case t.inWhitelist(r.RemoteAddr): // Check the remote address
 		return threat.Undefined, nil
 	}
 
+	// Retrieve the threat struct from the Teler struct
 	th := t.threat
+
+	// Iterate over the excludes map in the threat struct
 	for k, v := range th.excludes {
+		// If the value in the excludes map is true, skip to the next iteration
 		if v {
 			continue
 		}
 
+		// Check for the threat type specified by the key in the excludes map
 		switch k {
 		case threat.CommonWebAttack:
-			err = t.checkCommonWebAttack(r)
+			err = t.checkCommonWebAttack(r) // Check for common web attacks
 		case threat.CVE:
-			err = t.checkCVE(r)
+			err = t.checkCVE(r) // Check for Common Vulnerabilities and Exposures (CVEs)
 		case threat.BadIPAddress:
-			err = t.checkBadIPAddress(r)
+			err = t.checkBadIPAddress(r) // Check for bad IP addresses
 		case threat.BadReferrer:
-			err = t.checkBadReferrer(r)
+			err = t.checkBadReferrer(r) // Check for bad referrers
 		case threat.BadCrawler:
-			err = t.checkBadCrawler(r)
+			err = t.checkBadCrawler(r) // Check for bad crawlers
 		case threat.DirectoryBruteforce:
-			err = t.checkDirectoryBruteforce(r)
+			err = t.checkDirectoryBruteforce(r) // Check for directory bruteforce attacks
 		}
 
+		// If a threat is detected, return the threat type and an error
 		if err != nil {
 			return k, err
 		}
 	}
 
+	// If no threats are detected, return Undefined and a nil error
 	return threat.Undefined, nil
 }
 
