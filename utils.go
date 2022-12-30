@@ -10,6 +10,7 @@ import (
 	"gitlab.com/golang-commonmark/mdurl"
 )
 
+// inThreatIndex checks if the given substring is in specific threat datasets
 func (t *Teler) inThreatIndex(kind threat.Threat, substr string) bool {
 	if i := strings.Index(t.threat.data[kind], substr); i >= 0 {
 		return true
@@ -18,6 +19,7 @@ func (t *Teler) inThreatIndex(kind threat.Threat, substr string) bool {
 	return false
 }
 
+// inWhitelist checks if the given substring is in whitelist patterns
 func (t *Teler) inWhitelist(substr string) bool {
 	substr = toURLDecode(substr)
 
@@ -30,10 +32,12 @@ func (t *Teler) inWhitelist(substr string) bool {
 	return false
 }
 
+// toURLDecode decode URL-decoded characters string using mdurl package
 func toURLDecode(s string) string {
 	return mdurl.Decode(s)
 }
 
+// isValidMethod check if the given request.Method is valid
 func isValidMethod(method request.Method) bool {
 	switch method {
 	case request.GET, request.HEAD, request.POST, request.PUT, request.PATCH:
@@ -47,6 +51,9 @@ func isValidMethod(method request.Method) bool {
 	return false
 }
 
+// normalizeRawStringReader trim double-quotes of HTTP raw string,
+// replace double-escape of CR and LF, and double it in the end, and
+// returning as pointer of strings.Reader
 func normalizeRawStringReader(raw string) *strings.Reader {
 	raw = strings.Trim(raw, `"`)
 	raw = strings.ReplaceAll(raw, "\\n", "\n")
@@ -56,6 +63,7 @@ func normalizeRawStringReader(raw string) *strings.Reader {
 	return strings.NewReader(raw)
 }
 
+// getClientIP to get client IP address from request
 func getClientIP(r *http.Request) string {
 	// Get the client's IP address from the X-Real-Ip header field
 	clientIP := r.Header.Get("X-Real-Ip")
