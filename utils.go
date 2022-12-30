@@ -3,6 +3,8 @@ package teler
 import (
 	"strings"
 
+	"net/http"
+
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
 	"gitlab.com/golang-commonmark/mdurl"
@@ -52,4 +54,22 @@ func normalizeRawStringReader(raw string) *strings.Reader {
 	raw += "\r\n\r\n"
 
 	return strings.NewReader(raw)
+}
+
+func getClientIP(r *http.Request) string {
+	// Get the client's IP address from the X-Real-Ip header field
+	clientIP := r.Header.Get("X-Real-Ip")
+
+	// If the X-Real-Ip header field is not present, try the X-Forwarded-For header field
+	if clientIP == "" {
+		clientIP = r.Header.Get("X-Forwarded-For")
+	}
+
+	// If the X-Forwarded-For header field is not present, use the RemoteAddr field
+	if clientIP == "" {
+		clientIP = r.RemoteAddr
+	}
+
+	// Returning client IP address
+	return clientIP
 }
