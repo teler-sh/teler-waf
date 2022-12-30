@@ -1,6 +1,8 @@
 # teler-waf
 
-<!-- [![GoDoc](https://pkg.go.dev/static/frontend/badge/badge.svg)](http://pkg.go.dev/github.com/kitabisa/teler-waf) [![Test](https://github.com/kitabisa/teler-waf/workflows/tests/badge.svg] -->
+[![Kitabisa Security](https://img.shields.io/badge/kitabisa-security%20project-blue)](#)
+[![GoDoc](https://pkg.go.dev/static/frontend/badge/badge.svg)](http://pkg.go.dev/github.com/kitabisa/teler-waf)
+[![tests](https://github.com/kitabisa/teler-waf/actions/workflows/test.yaml/badge.svg)](https://github.com/kitabisa/teler-waf/actions/workflows/test.yaml)
 
 <img src="https://user-images.githubusercontent.com/25837540/97091757-7200d880-1668-11eb-82c4-e5c4971d2bc8.png" align="right" width="250px"/>
 
@@ -148,7 +150,7 @@ func main() {
 }
 ```
 
-For more examples of how to use teler-waf, check out the [examples/](https://github.com/kitabisa/teler-waf/tree/master/examples) directory.
+For more examples of how to use teler-waf or integrate it with any framework, take a look at [examples/](https://github.com/kitabisa/teler-waf/tree/master/examples) directory.
 
 #### Logs
 
@@ -182,24 +184,24 @@ goos: linux
 goarch: amd64
 pkg: github.com/kitabisa/teler-waf
 cpu: 11th Gen Intel(R) Core(TM) i9-11900H @ 2.50GHz
-BenchmarkTelerDefaultOptions-4               	     392	   2930161 ns/op	 6131716 B/op	   14885 allocs/op
-BenchmarkTelerCommonWebAttackOnly-4          	   54973	     21006 ns/op	    4485 B/op	      50 allocs/op
-BenchmarkTelerCVEOnly-4                      	     414	   2752341 ns/op	 6107559 B/op	   14866 allocs/op
-BenchmarkTelerBadIPAddressOnly-4             	   22608	     52756 ns/op	    4315 B/op	      49 allocs/op
-BenchmarkTelerBadReferrerOnly-4              	   53136	     21410 ns/op	    4127 B/op	      50 allocs/op
-BenchmarkTelerBadCrawlerOnly-4               	    9387	    120534 ns/op	   29265 B/op	     168 allocs/op
-BenchmarkTelerDirectoryBruteforceOnly-4      	   53097	     22979 ns/op	    3917 B/op	      47 allocs/op
-BenchmarkTelerWithoutCommonWebAttack-4       	     482	   2138415 ns/op	 3850371 B/op	    9443 allocs/op
-BenchmarkTelerWithoutCVE-4                   	    8017	    149552 ns/op	   29429 B/op	     173 allocs/op
-BenchmarkTelerWithoutBadIPAddress-4          	     535	   2017782 ns/op	 3811759 B/op	    9348 allocs/op
-BenchmarkTelerWithoutBadReferrer-4           	     598	   2148427 ns/op	 3910542 B/op	    9582 allocs/op
-BenchmarkTelerWithoutBadCrawler-4            	     385	   3202302 ns/op	 6108932 B/op	   14873 allocs/op
-BenchmarkTelerWithoutDirectoryBruteforce-4   	     553	   2164306 ns/op	 3952144 B/op	    9687 allocs/op
+BenchmarkTelerDefaultOptions-4               	     409	   2857855 ns/op	 6175304 B/op	   15018 allocs/op
+BenchmarkTelerCommonWebAttackOnly-4          	   49710	     22639 ns/op	    5985 B/op	      77 allocs/op
+BenchmarkTelerCVEOnly-4                      	     421	   2813190 ns/op	 6149272 B/op	   15001 allocs/op
+BenchmarkTelerBadIPAddressOnly-4             	   21986	     53939 ns/op	    5737 B/op	      74 allocs/op
+BenchmarkTelerBadReferrerOnly-4              	   54886	     20587 ns/op	    5517 B/op	      75 allocs/op
+BenchmarkTelerBadCrawlerOnly-4               	    9981	    115795 ns/op	   31248 B/op	     193 allocs/op
+BenchmarkTelerDirectoryBruteforceOnly-4      	   55833	     19818 ns/op	    5303 B/op	      72 allocs/op
+BenchmarkTelerWithoutCommonWebAttack-4       	     475	   2228018 ns/op	 3998443 B/op	    9831 allocs/op
+BenchmarkTelerWithoutCVE-4                   	    8610	    145808 ns/op	   30012 B/op	     197 allocs/op
+BenchmarkTelerWithoutBadIPAddress-4          	     597	   2271590 ns/op	 4056607 B/op	    9970 allocs/op
+BenchmarkTelerWithoutBadReferrer-4           	     550	   2217256 ns/op	 4045543 B/op	    9942 allocs/op
+BenchmarkTelerWithoutBadCrawler-4            	     387	   3238036 ns/op	 6151230 B/op	   15010 allocs/op
+BenchmarkTelerWithoutDirectoryBruteforce-4   	     577	   2136434 ns/op	 3931940 B/op	    9668 allocs/op
 PASS
-ok  	github.com/kitabisa/teler-waf	23.131s
+ok  	github.com/kitabisa/teler-waf	38.374s
 ```
 
-> **Note**: It's important to note that the benchmarking results for execution time, byte allocation, and heap allocation may vary and may not be consistent. Those results were obtained when there were **1545** CVE templates and the [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.
+> **Note**: It's important to note that the benchmarking results may vary and may not be consistent. Those results were obtained when there were **>1.5k** CVE templates and the [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.
 
 - **Configuration complexity**: Configuring teler-waf to suit the specific needs of your application can be complex, and may require a certain level of expertise in web security. This can make it difficult for those who are not familiar with application firewalls and IDS systems to properly set up and use teler-waf.
 - **Limited protection**: teler-waf is not a perfect security solution, and it may not be able to protect against all possible types of attacks. As with any security system, it is important to regularly monitor and maintain teler-waf to ensure that it is providing the desired level of protection.
