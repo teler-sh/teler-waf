@@ -165,7 +165,7 @@ func New(opts ...Options) *Teler {
 		}
 
 		// Iterate over the rules in the custom rules
-		for _, cond := range rule.Rules {
+		for i, cond := range rule.Rules {
 			// Check if the method rule condition is valid, and
 			// set to UNDEFINED if it isn't.
 			if !isValidMethod(cond.Method) {
@@ -188,7 +188,7 @@ func New(opts ...Options) *Teler {
 				panic(fmt.Sprintf(errPattern, rule.Name, err))
 			}
 
-			cond.patternRegex = regex
+			rule.Rules[i].patternRegex = regex
 		}
 	}
 
@@ -277,11 +277,6 @@ func (t *Teler) getResources() error {
 	t.threat.data = make(map[threat.Threat]string)
 
 	for _, k := range threat.List() {
-		// Skip if it is undefined
-		if k == threat.Undefined {
-			continue
-		}
-
 		// Get the location of respective threat type
 		path, err := k.Filepath()
 		if err != nil {
