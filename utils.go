@@ -1,6 +1,7 @@
 package teler
 
 import (
+	"fmt"
 	"strings"
 
 	"net/http"
@@ -30,6 +31,39 @@ func (t *Teler) inWhitelist(substr string) bool {
 	}
 
 	return false
+}
+
+// headersToRawString converts a map of http.Header to
+// multiline string, example:
+// from,
+//
+//	Header = map[string][]string{
+//		"Accept-Encoding": {"gzip, deflate"},
+//		"Accept-Language": {"en-us"},
+//		"Foo": {"Bar", "two"},
+//	}
+//
+// to
+//
+//	Host: example.com
+//	accept-encoding: gzip, deflate
+//	Accept-Language: en-us
+//	fOO: Bar
+//	foo: two
+func headersToRawString(headers http.Header) string {
+	var h strings.Builder
+
+	// Iterate over the request headers and append each key-value pair to the builder
+	for key, values := range headers {
+		for _, value := range values {
+			h.WriteString(
+				fmt.Sprintf("%s: %s\n", toURLDecode(key), toURLDecode(value)),
+			)
+		}
+	}
+
+	// Returns the accumulated string of builder
+	return h.String()
 }
 
 // toURLDecode decode URL-decoded characters string using mdurl package
