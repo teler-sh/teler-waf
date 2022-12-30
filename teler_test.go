@@ -1152,3 +1152,76 @@ func BenchmarkTelerWithoutDirectoryBruteforce(b *testing.B) {
 		}
 	}
 }
+
+func ExampleNew_default() {
+	var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("hello world"))
+	})
+
+	telerMiddleware := New()
+
+	app := telerMiddleware.Handler(myHandler)
+	go func() {
+		_ = http.ListenAndServe("127.0.0.1:3000", app)
+	}()
+}
+
+func ExampleNew_setHandler() {
+	var forbidden = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "We're sorry, but your request has been denied for security reasons.", http.StatusForbidden)
+	})
+
+	var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("hello world"))
+	})
+
+	telerMiddleware := New()
+	telerMiddleware.SetHandler(forbidden)
+
+	app := telerMiddleware.Handler(myHandler)
+	go func() {
+		_ = http.ListenAndServe("127.0.0.1:3000", app)
+	}()
+}
+
+func ExampleNew_custom() {
+	var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("hello world"))
+	})
+
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.BadReferrer,
+			threat.BadCrawler,
+		},
+		Whitelists: []string{
+			`(curl|Go-http-client|okhttp)/*`,
+			`^/wp-login\.php`,
+			`(?i)Referer: https?:\/\/www\.facebook\.com`,
+			`192\.168\.0\.1`,
+		},
+		Customs: []Rule{
+			{
+				Name:      "Log4j Attack",
+				Condition: "or",
+				Rules: []Condition{
+					{
+						Method: request.GET,
+						// if Method is not set or invalid, defaulting to request.GET.
+						Element: request.URI,
+						// you can use request.Any: it useful when you want to
+						// match against multiple elements of the request at once,
+						// rather than just a single element.
+						Pattern: `\$\{.*:\/\/.*\/?\w+?\}`,
+					},
+				},
+			},
+		},
+		LogFile: "/tmp/teler.log",
+	})
+
+	app := telerMiddleware.Handler(myHandler)
+	go func() {
+		_ = http.ListenAndServe("127.0.0.1:3000", app)
+	}()
+}
