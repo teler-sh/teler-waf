@@ -215,6 +215,28 @@ func (t *Teler) Handler(h http.Handler) http.Handler {
 	})
 }
 
+// HandlerFuncWithNext is a special implementation for Negroni, but could be used elsewhere.
+func (t *Teler) HandlerFuncWithNext(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	// Let teler analyze the request. If it returns an error,
+	// that indicates the request should not continue.
+	k, err := t.analyzeRequest(w, r)
+	if err != nil {
+		// Process the analyzeRequest
+		t.postAnalyze(w, r, k, err)
+
+		return
+	}
+
+	next(w, r)
+}
+
+// Analyze runs the actual checks.
+func (t *Teler) Analyze(w http.ResponseWriter, r *http.Request) error {
+	_, err := t.analyzeRequest(w, r)
+
+	return err
+}
+
 // postAnalyze is a function that processes the HTTP response after an error is returned from the analyzeRequest function.
 func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Threat, err error) {
 	// If there is no error, return early.
