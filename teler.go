@@ -259,10 +259,13 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 
 // getResources to download datasets of threat ruleset from teler-resources
 func (t *Teler) getResources() error {
+	// Initialize updated
+	var updated bool
+
 	// Check if threat datasets is updated
 	updated, err := threat.IsUpdated()
 	if err != nil {
-		return err
+		updated = false
 	}
 
 	// Download the datasets of threat ruleset from teler-resources
