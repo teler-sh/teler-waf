@@ -21,7 +21,7 @@ func main() {
 		Whitelists: []string{
 			`(curl|Go-http-client|okhttp)/*`,
 			`^/wp-login\.php`,
-			`https?:\/\/www\.facebook\.com`,
+			`(?i)Referer: https?:\/\/www\.facebook\.com`,
 			`192\.168\.0\.1`,
 		},
 		Customs: []teler.Rule{

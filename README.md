@@ -104,20 +104,20 @@ func main() {
 	// create a new instance of the Teler type using the New function
 	// and configure it using the Options struct
 	telerMiddleware := teler.New(teler.Options{
-		// exclude specific threats from being checked by the teler IDS
+		// exclude specific threats from being checked by the teler-waf
 		Excludes: []threat.Threat{
 			threat.BadReferrer,
 			threat.BadCrawler,
 		},
-		// specify whitelisted paths or headers that will always be allowed
-		// by the teler IDS
+		// specify whitelisted URIs (path & query parameters), headers,
+		// or IP addresses that will always be allowed by the teler-waf
 		Whitelists: []string{
 			`(curl|Go-http-client|okhttp)/*`,
 			`^/wp-login\.php`,
-			`https?:\/\/www\.facebook\.com`,
+			`(?i)Referer: https?:\/\/www\.facebook\.com`,
 			`192\.168\.0\.1`,
 		},
-		// specify custom rules for the teler IDS to follow
+		// specify custom rules for the teler-waf to follow
 		Customs: []teler.Rule{
 			{
 				// give the rule a name for easy identification

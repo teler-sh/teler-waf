@@ -21,11 +21,14 @@ func (t *Teler) inThreatIndex(kind threat.Threat, substr string) bool {
 }
 
 // inWhitelist checks if the given substring is in whitelist patterns
-func (t *Teler) inWhitelist(substr string) bool {
-	substr = toURLDecode(substr)
+func (t *Teler) inWhitelist(r *http.Request) bool {
+	uri := toURLDecode(r.URL.RequestURI())
+	headers := headersToRawString(r.Header)
+	clientIP := getClientIP(r)
 
+	// Check the request URI, headers, and client IP address against the whitelist
 	for _, pattern := range t.whitelistRegexes {
-		if pattern.MatchString(substr) {
+		if pattern.MatchString(uri) || pattern.MatchString(headers) || pattern.MatchString(clientIP) {
 			return true
 		}
 	}
