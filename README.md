@@ -176,7 +176,7 @@ You are free to use the following site for testing, https://waf.teler.app.
 
 Here are some limitations of using teler-waf:
 
-- **Performance overhead**: teler-waf may introduce some performance overhead, as the teler-waf will need to process each incoming request. This can potentially slow down the overall performance of your application, especially if you have a high volume of traffic. Benchmark:
+- **Performance overhead**: teler-waf may introduce some performance overhead, as the teler-waf will need to process each incoming request. If you have a high volume of traffic, this can potentially slow down the overall performance of your application significantly, _especially_ if you enable the CVEs threat detection. See benchmark below:
 
 ```console
 $ go test -bench . -cpu=4
@@ -184,22 +184,23 @@ goos: linux
 goarch: amd64
 pkg: github.com/kitabisa/teler-waf
 cpu: 11th Gen Intel(R) Core(TM) i9-11900H @ 2.50GHz
-BenchmarkTelerDefaultOptions-4               	     405	   2850735 ns/op	 6222168 B/op	   15166 allocs/op
-BenchmarkTelerCommonWebAttackOnly-4          	   48074	     23407 ns/op	    6356 B/op	      89 allocs/op
-BenchmarkTelerCVEOnly-4                      	     420	   2816830 ns/op	 6195842 B/op	   15149 allocs/op
-BenchmarkTelerBadIPAddressOnly-4             	   21339	     54421 ns/op	    6118 B/op	      86 allocs/op
-BenchmarkTelerBadReferrerOnly-4              	   53463	     21660 ns/op	    5885 B/op	      87 allocs/op
-BenchmarkTelerBadCrawlerOnly-4               	    9579	    118740 ns/op	   31328 B/op	     205 allocs/op
-BenchmarkTelerDirectoryBruteforceOnly-4      	   55725	     21850 ns/op	    5663 B/op	      84 allocs/op
-BenchmarkTelerCustomRule-4                   	   51076	     22270 ns/op	    5688 B/op	      84 allocs/op
-BenchmarkTelerWithoutCommonWebAttack-4       	     486	   2180835 ns/op	 3760499 B/op	    9280 allocs/op
-BenchmarkTelerWithoutCVE-4                   	    8268	    151963 ns/op	   30669 B/op	     210 allocs/op
-BenchmarkTelerWithoutBadIPAddress-4          	     537	   2183133 ns/op	 3910229 B/op	    9643 allocs/op
-BenchmarkTelerWithoutBadReferrer-4           	     567	   2100129 ns/op	 3813752 B/op	    9404 allocs/op
-BenchmarkTelerWithoutBadCrawler-4            	     367	   3286813 ns/op	 6199679 B/op	   15164 allocs/op
-BenchmarkTelerWithoutDirectoryBruteforce-4   	     466	   2231431 ns/op	 3999320 B/op	    9863 allocs/op
+BenchmarkTelerDefaultOptions-4               	     388	   2977031 ns/op	 6223692 B/op	   15171 allocs/op
+BenchmarkTelerCommonWebAttackOnly-4          	   49270	     23293 ns/op	    6348 B/op	      89 allocs/op
+BenchmarkTelerCVEOnly-4                      	     412	   2840528 ns/op	 6196558 B/op	   15151 allocs/op
+BenchmarkTelerBadIPAddressOnly-4             	   21774	     54411 ns/op	    6103 B/op	      86 allocs/op
+BenchmarkTelerBadReferrerOnly-4              	   49377	     22058 ns/op	    5909 B/op	      88 allocs/op
+BenchmarkTelerBadCrawlerOnly-4               	   45627	     25385 ns/op	    5935 B/op	      85 allocs/op
+BenchmarkTelerDirectoryBruteforceOnly-4      	   54097	     20715 ns/op	    5881 B/op	      84 allocs/op
+BenchmarkTelerCustomRule-4                   	   55306	     20780 ns/op	    5666 B/op	      84 allocs/op
+BenchmarkTelerWithoutCommonWebAttack-4       	     415	   2841453 ns/op	 6196685 B/op	   15153 allocs/op
+BenchmarkTelerWithoutCVE-4                   	   19422	     61103 ns/op	    7256 B/op	      93 allocs/op
+BenchmarkTelerWithoutBadIPAddress-4          	     398	   3080801 ns/op	 6218924 B/op	   15165 allocs/op
+BenchmarkTelerWithoutBadReferrer-4           	     378	   2927092 ns/op	 6223691 B/op	   15169 allocs/op
+BenchmarkTelerWithoutBadCrawler-4            	     405	   2884396 ns/op	 6220082 B/op	   15163 allocs/op
+BenchmarkTelerWithoutDirectoryBruteforce-4   	     408	   2872112 ns/op	 6219485 B/op	   15161 allocs/op
 PASS
-ok  	github.com/kitabisa/teler-waf	24.996s
+ok  	github.com/kitabisa/teler-waf	20.764s
+
 ```
 
 > **Note**: It's important to note that the benchmarking results may vary and may not be consistent. Those results were obtained when there were **>1.5k** CVE templates and the [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.
