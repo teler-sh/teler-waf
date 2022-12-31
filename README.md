@@ -176,7 +176,7 @@ You are free to use the following site for testing, https://waf.teler.app.
 
 Here are some limitations of using teler-waf:
 
-- **Performance overhead**: teler-waf may introduce some performance overhead, as the application firewall and teler IDS will need to process each incoming request. This can potentially slow down the overall performance of your application, especially if you have a high volume of traffic. Benchmark:
+- **Performance overhead**: teler-waf may introduce some performance overhead, as the teler-waf will need to process each incoming request. This can potentially slow down the overall performance of your application, especially if you have a high volume of traffic. Benchmark:
 
 ```console
 $ go test -bench . -cpu=4
@@ -184,21 +184,22 @@ goos: linux
 goarch: amd64
 pkg: github.com/kitabisa/teler-waf
 cpu: 11th Gen Intel(R) Core(TM) i9-11900H @ 2.50GHz
-BenchmarkTelerDefaultOptions-4               	     388	   2937588 ns/op	 6178301 B/op	   15036 allocs/op
-BenchmarkTelerCommonWebAttackOnly-4          	   47821	     24201 ns/op	    6359 B/op	      89 allocs/op
-BenchmarkTelerCVEOnly-4                      	     385	   3006622 ns/op	 6153212 B/op	   15024 allocs/op
-BenchmarkTelerBadIPAddressOnly-4             	   21400	     55027 ns/op	    6116 B/op	      86 allocs/op
-BenchmarkTelerBadReferrerOnly-4              	   51009	     22492 ns/op	    5899 B/op	      88 allocs/op
-BenchmarkTelerBadCrawlerOnly-4               	    8815	    119720 ns/op	   31568 B/op	     206 allocs/op
-BenchmarkTelerDirectoryBruteforceOnly-4      	   56838	     21628 ns/op	    5657 B/op	      84 allocs/op
-BenchmarkTelerWithoutCommonWebAttack-4       	     535	   2247803 ns/op	 3976141 B/op	    9785 allocs/op
-BenchmarkTelerWithoutCVE-4                   	    8018	    153460 ns/op	   30594 B/op	     210 allocs/op
-BenchmarkTelerWithoutBadIPAddress-4          	     469	   2246587 ns/op	 4101237 B/op	   10095 allocs/op
-BenchmarkTelerWithoutBadReferrer-4           	     526	   2140843 ns/op	 3718027 B/op	    9161 allocs/op
-BenchmarkTelerWithoutBadCrawler-4            	     380	   3258868 ns/op	 6152343 B/op	   15024 allocs/op
-BenchmarkTelerWithoutDirectoryBruteforce-4   	     513	   2155799 ns/op	 3787573 B/op	    9332 allocs/op
+BenchmarkTelerDefaultOptions-4               	     405	   2850735 ns/op	 6222168 B/op	   15166 allocs/op
+BenchmarkTelerCommonWebAttackOnly-4          	   48074	     23407 ns/op	    6356 B/op	      89 allocs/op
+BenchmarkTelerCVEOnly-4                      	     420	   2816830 ns/op	 6195842 B/op	   15149 allocs/op
+BenchmarkTelerBadIPAddressOnly-4             	   21339	     54421 ns/op	    6118 B/op	      86 allocs/op
+BenchmarkTelerBadReferrerOnly-4              	   53463	     21660 ns/op	    5885 B/op	      87 allocs/op
+BenchmarkTelerBadCrawlerOnly-4               	    9579	    118740 ns/op	   31328 B/op	     205 allocs/op
+BenchmarkTelerDirectoryBruteforceOnly-4      	   55725	     21850 ns/op	    5663 B/op	      84 allocs/op
+BenchmarkTelerCustomRule-4                   	   51076	     22270 ns/op	    5688 B/op	      84 allocs/op
+BenchmarkTelerWithoutCommonWebAttack-4       	     486	   2180835 ns/op	 3760499 B/op	    9280 allocs/op
+BenchmarkTelerWithoutCVE-4                   	    8268	    151963 ns/op	   30669 B/op	     210 allocs/op
+BenchmarkTelerWithoutBadIPAddress-4          	     537	   2183133 ns/op	 3910229 B/op	    9643 allocs/op
+BenchmarkTelerWithoutBadReferrer-4           	     567	   2100129 ns/op	 3813752 B/op	    9404 allocs/op
+BenchmarkTelerWithoutBadCrawler-4            	     367	   3286813 ns/op	 6199679 B/op	   15164 allocs/op
+BenchmarkTelerWithoutDirectoryBruteforce-4   	     466	   2231431 ns/op	 3999320 B/op	    9863 allocs/op
 PASS
-ok  	github.com/kitabisa/teler-waf	23.035s
+ok  	github.com/kitabisa/teler-waf	24.996s
 ```
 
 > **Note**: It's important to note that the benchmarking results may vary and may not be consistent. Those results were obtained when there were **>1.5k** CVE templates and the [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.
