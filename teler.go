@@ -1,6 +1,7 @@
 package teler
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 
 	"encoding/json"
 	"net/http"
+	"net/url"
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
@@ -359,6 +361,60 @@ func (t *Teler) processResource(k threat.Threat) error {
 
 		if !t.threat.cve.Exists("templates") {
 			return errors.New("the CVE templates didn't exist")
+		}
+
+		// Initialize the CVE URLs map
+		cveURL = make(map[string][]*url.URL)
+
+		// Iterate over the templates in the data set.
+		for _, tpl := range t.threat.cve.GetArray("templates") {
+			// kind is the type of template to check (either "path" or "raw").
+			var kind string
+
+			// Iterate over the requests in the template.
+			for _, req := range tpl.GetArray("requests") {
+				// Determine CVE ID of current requests.
+				id := string(tpl.GetStringBytes("id"))
+
+				// Determine the kind of template (either "path" or "raw").
+				switch {
+				case len(req.GetArray("path")) > 0:
+					kind = "path"
+				case len(req.GetArray("raw")) > 0:
+					kind = "raw"
+				}
+
+				// Iterate over the paths or raw strings in the template.
+				for _, p := range req.GetArray(kind) {
+					// Parse the request URI or the raw string based on the kind of template.
+					switch kind {
+					case "path":
+						parsedURL, err := url.ParseRequestURI(
+							strings.TrimPrefix(
+								strings.Trim(p.String(), `"`),
+								"{{BaseURL}}",
+							),
+						)
+
+						// If an error occurs during the parsing, skip this path.
+						if err != nil {
+							continue
+						}
+
+						cveURL[id] = append(cveURL[id], parsedURL)
+					case "raw":
+						raw := bufio.NewReader(normalizeRawStringReader(p.String()))
+						parsedReq, err := http.ReadRequest(raw)
+
+						// If an error occurs during the parsing, skip this raw string.
+						if err != nil {
+							continue
+						}
+
+						cveURL[id] = append(cveURL[id], parsedReq.URL)
+					}
+				}
+			}
 		}
 	case threat.BadCrawler:
 		// Split the data into a slice of strings, compile each string
