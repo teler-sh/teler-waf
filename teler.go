@@ -207,9 +207,6 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 		return
 	}
 
-	// Declare byte slice for request body
-	var body []byte
-
 	// Generate a unique ID using the gouid package.
 	id := gouid.Bytes(10)
 
@@ -219,11 +216,21 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 	// Get the error message & convert to string as a message
 	msg := err.Error()
 
-	// Read the entire request body into a byte slice using io.ReadAll()
-	body, err = io.ReadAll(r.Body)
+	// Declare byte slice for request body.
+	var body []byte
+
+	// Initialize buffer to hold request body.
+	buf := &bytes.Buffer{}
+
+	// Use io.Copy to copy the request body to the buffer.
+	_, err = io.Copy(buf, r.Body)
 	if err == nil {
-		// If the read not fails, replace the request body with a new io.ReadCloser that reads from the byte slice
-		r.Body = io.NopCloser(bytes.NewReader(body))
+		// If the read not fails, replace the request body
+		// with a new io.ReadCloser that reads from the buffer.
+		r.Body = io.NopCloser(buf)
+
+		// Convert the buffer to a string.
+		body = buf.Bytes()
 	}
 
 	// Log the detected threat, request details and the error message.

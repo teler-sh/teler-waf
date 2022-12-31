@@ -112,15 +112,25 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 	// Decode the URL-encoded request URI of the URL
 	uri := toURLDecode(r.URL.RequestURI())
 
-	// Read the entire request body into a byte slice using io.ReadAll()
-	b, err := io.ReadAll(r.Body)
+	// Declare byte slice for request body.
+	var body string
+
+	// Initialize buffer to hold request body.
+	buf := &bytes.Buffer{}
+
+	// Use io.Copy to copy the request body to the buffer.
+	_, err := io.Copy(buf, r.Body)
 	if err == nil {
-		// If the read not fails, replace the request body with a new io.ReadCloser that reads from the byte slice
-		r.Body = io.NopCloser(bytes.NewReader(b))
+		// If the read not fails, replace the request body
+		// with a new io.ReadCloser that reads from the buffer.
+		r.Body = io.NopCloser(buf)
+
+		// Convert the buffer to a string.
+		body = buf.String()
 	}
 
-	// Decode the URL-encoded byte slice of request body and convert it to a string
-	body := toURLDecode(string(b))
+	// Decode the URL-encoded of body
+	body = toURLDecode(body)
 
 	// Iterate over the Customs field of the Teler struct, which is a slice of custom rules
 	for _, rule := range t.opt.Customs {
@@ -190,21 +200,28 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 // If a match is found, it returns an error indicating a common web attack has been detected.
 // If no match is found, it returns nil.
 func (t *Teler) checkCommonWebAttack(r *http.Request) error {
-	// Declare byte slice for request body
-	var b []byte
-
 	// Decode the URL-encoded request URI of the URL
 	uri := toURLDecode(r.URL.RequestURI())
 
-	// Read the entire request body into a byte slice using io.ReadAll()
-	b, err := io.ReadAll(r.Body)
+	// Declare byte slice for request body.
+	var body string
+
+	// Initialize buffer to hold request body.
+	buf := &bytes.Buffer{}
+
+	// Use io.Copy to copy the request body to the buffer.
+	_, err := io.Copy(buf, r.Body)
 	if err == nil {
-		// If the read not fails, replace the request body with a new io.ReadCloser that reads from the byte slice
-		r.Body = io.NopCloser(bytes.NewReader(b))
+		// If the read not fails, replace the request body
+		// with a new io.ReadCloser that reads from the buffer.
+		r.Body = io.NopCloser(buf)
+
+		// Convert the buffer to a string.
+		body = buf.String()
 	}
 
-	// Decode the URL-encoded byte slice of request body and convert it to a string
-	body := toURLDecode(string(b))
+	// Decode the URL-encoded of body
+	body = toURLDecode(body)
 
 	// Iterate over the filters in the CommonWebAttack data stored in the t.threat.cwa.Filters field
 	for _, filter := range t.threat.cwa.Filters {
