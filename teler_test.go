@@ -919,6 +919,63 @@ func BenchmarkTelerDirectoryBruteforceOnly(b *testing.B) {
 	}
 }
 
+func BenchmarkTelerCustomRule(b *testing.B) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+		Customs: []Rule{
+			{
+				Name:      "Log4j Attack",
+				Condition: "or",
+				Rules: []Condition{
+					{
+						Method:  request.GET,
+						Element: request.URI,
+						Pattern: `\$\{.*:\/\/.*\/?\w+?\}`,
+					},
+				},
+			},
+		},
+		NoStderr: true,
+	})
+
+	// Create a custom handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		// Send the request to the test server and discard the response
+		_, err := client.Do(req)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
 func BenchmarkTelerWithoutCommonWebAttack(b *testing.B) {
 	// Initialize teler
 	telerMiddleware := New(Options{
