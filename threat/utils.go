@@ -40,8 +40,10 @@ func (t Threat) Filepath() (string, error) {
 
 // List returns a slice of all Threat type categories
 func List() []Threat {
-	var threats []Threat
+	// Pre-allocate a slice of Threat with the str (size)-2
+	threats := make([]Threat, len(str)-2)
 
+	i := 0
 	for t := range str {
 		// Skip if it is undefined or custom
 		switch t {
@@ -49,7 +51,9 @@ func List() []Threat {
 			continue
 		}
 
-		threats = append(threats, t)
+		// Set the value in the slice using the index operator
+		threats[i] = t
+		i++
 	}
 
 	return threats
