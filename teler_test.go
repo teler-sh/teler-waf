@@ -865,6 +865,9 @@ func BenchmarkTelerBadCrawlerOnly(b *testing.B) {
 		b.Fatal(err)
 	}
 
+	// Set the user agent to "X"
+	req.Header.Set("User-Agent", "X")
+
 	// Run the benchmark
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
@@ -907,6 +910,9 @@ func BenchmarkTelerDirectoryBruteforceOnly(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
+
+	// Set the user agent to "X"
+	req.Header.Set("User-Agent", "X")
 
 	// Run the benchmark
 	b.ReportAllocs()
@@ -1004,6 +1010,9 @@ func BenchmarkTelerWithoutCommonWebAttack(b *testing.B) {
 		b.Fatal(err)
 	}
 
+	// Set the user agent to "X"
+	req.Header.Set("User-Agent", "X")
+
 	// Run the benchmark
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
@@ -1042,6 +1051,9 @@ func BenchmarkTelerWithoutCVE(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
+
+	// Set the user agent to "X"
+	req.Header.Set("User-Agent", "X")
 
 	// Run the benchmark
 	b.ReportAllocs()
@@ -1082,6 +1094,9 @@ func BenchmarkTelerWithoutBadIPAddress(b *testing.B) {
 		b.Fatal(err)
 	}
 
+	// Set the user agent to "X"
+	req.Header.Set("User-Agent", "X")
+
 	// Run the benchmark
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
@@ -1120,6 +1135,9 @@ func BenchmarkTelerWithoutBadReferrer(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
+
+	// Set the user agent to "X"
+	req.Header.Set("User-Agent", "X")
 
 	// Run the benchmark
 	b.ReportAllocs()
@@ -1198,6 +1216,9 @@ func BenchmarkTelerWithoutDirectoryBruteforce(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
+
+	// Set the user agent to "X"
+	req.Header.Set("User-Agent", "X")
 
 	// Run the benchmark
 	b.ReportAllocs()
