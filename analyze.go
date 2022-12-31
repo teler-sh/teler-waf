@@ -397,7 +397,7 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 	// Retrieve the User-Agent from the request
 	ua := r.UserAgent()
 
-	// Do not proccess the check if User-Agent is empty
+	// Do not process the check if User-Agent is empty
 	if ua == "" {
 		return nil
 	}

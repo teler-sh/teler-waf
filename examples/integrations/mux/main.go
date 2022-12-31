@@ -1,20 +1,20 @@
 package main
 
 import (
-    "fmt"
-    "log"
+	"fmt"
+	"log"
 
-    "net/http"
+	"net/http"
 
-    "github.com/gorilla/mux"
-    "github.com/kitabisa/teler-waf"
+	"github.com/gorilla/mux"
+	"github.com/kitabisa/teler-waf"
 )
 
 func main() {
-    telerMiddleware := teler.New()
+	telerMiddleware := teler.New()
 
-    r := mux.NewRouter()
-    r.Use(telerMiddleware.Handler)
-    http.Handle("/", r)
-    log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", 8080), nil))
+	r := mux.NewRouter()
+	r.Use(telerMiddleware.Handler)
+	http.Handle("/", r)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", 8080), nil))
 }
