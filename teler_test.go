@@ -13,16 +13,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewDefaultOptions(t *testing.T) {
-	// Clear teler-resources cache
+func init() {
+	cache := os.Getenv("CACHE")
+
+	switch cache {
+	case "1", "true", "TRUE":
+		return
+	}
+
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		t.Fatal(err)
+		panic(err)
 	}
 
 	cacheDir := filepath.Join(homeDir, ".cache", "teler-waf")
 	os.RemoveAll(cacheDir)
+}
 
+func TestNewDefaultOptions(t *testing.T) {
 	// Initialize teler
 	telerMiddleware := New(Options{NoStderr: true})
 
