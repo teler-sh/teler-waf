@@ -270,7 +270,7 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 		zap.Namespace("request"),
 		zap.String("method", r.Method),
 		zap.String("path", r.URL.String()),
-		zap.String("remote_addr", r.RemoteAddr),
+		zap.String("ip_addr", getClientIP(r)),
 		zap.Any("headers", r.Header),
 		zap.ByteString("body", body),
 	).Warn(msg)
