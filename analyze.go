@@ -17,6 +17,13 @@ import (
 	"golang.org/x/net/publicsuffix"
 )
 
+// Analyze runs the actual checks.
+func (t *Teler) Analyze(w http.ResponseWriter, r *http.Request) error {
+	_, err := t.analyzeRequest(w, r)
+
+	return err
+}
+
 /*
 analyzeRequest checks an incoming HTTP request for certain types of threats or vulnerabilities.
 If a threat is detected, the function returns an error and the request is stopped from continuing through the middleware chain.
