@@ -90,12 +90,15 @@ func isValidMethod(method request.Method) bool {
 // replace double-escape of CR and LF, and double it in the end, and
 // returning as pointer of strings.Reader
 func normalizeRawStringReader(raw string) *strings.Reader {
+	var builder strings.Builder
+
 	raw = strings.Trim(raw, `"`)
 	raw = strings.ReplaceAll(raw, "\\n", "\n")
 	raw = strings.ReplaceAll(raw, "\\r", "\r")
-	raw += "\r\n\r\n"
+	builder.WriteString(raw)
+	builder.WriteString("\r\n\r\n")
 
-	return strings.NewReader(raw)
+	return strings.NewReader(builder.String())
 }
 
 // getClientIP to get client IP address from request
