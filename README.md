@@ -95,57 +95,67 @@ import (
 )
 
 var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	// this is the handler function for the route that we want to protect
-	// with teler-waf's security measures
+	// This is the handler function for the route that we want to protect
+	// with teler-waf's security measures.
 	w.Write([]byte("hello world"))
 })
 
+var rejectHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// This is the handler function for the route that we want to be rejected
+	// if the teler-waf's security measures are triggered.
+	http.Error(w, "Sorry, your request has been denied for security reasons.", http.StatusForbidden)
+})
+
 func main() {
-	// create a new instance of the Teler type using the New function
-	// and configure it using the Options struct
+	// Create a new instance of the Teler type using the New function
+	// and configure it using the Options struct.
 	telerMiddleware := teler.New(teler.Options{
-		// exclude specific threats from being checked by the teler-waf
+		// Exclude specific threats from being checked by the teler-waf.
 		Excludes: []threat.Threat{
 			threat.BadReferrer,
 			threat.BadCrawler,
 		},
-		// specify whitelisted URIs (path & query parameters), headers,
-		// or IP addresses that will always be allowed by the teler-waf
+		// Specify whitelisted URIs (path & query parameters), headers,
+		// or IP addresses that will always be allowed by the teler-waf.
 		Whitelists: []string{
 			`(curl|Go-http-client|okhttp)/*`,
 			`^/wp-login\.php`,
 			`(?i)Referer: https?:\/\/www\.facebook\.com`,
 			`192\.168\.0\.1`,
 		},
-		// specify custom rules for the teler-waf to follow
+		// Specify custom rules for the teler-waf to follow.
 		Customs: []teler.Rule{
 			{
-				// give the rule a name for easy identification
+				// Give the rule a name for easy identification.
 				Name:      "Log4j Attack",
-				// specify the logical operator to use when evaluating the rule's conditions
+				// Specify the logical operator to use when evaluating the rule's conditions.
 				Condition: "or",
-				// specify the conditions that must be met for the rule to trigger
+				// Specify the conditions that must be met for the rule to trigger.
 				Rules: []teler.Condition{
 					{
-						// specify the HTTP method that the rule applies to
+						// Specify the HTTP method that the rule applies to.
 						Method: request.GET,
-						// specify the element of the request that the rule applies to
-						// (e.g. URI, headers, body)
+						// Specify the element of the request that the rule applies to
+						// (e.g. URI, headers, body).
 						Element: request.URI,
-						// specify the pattern to match against the element of the request
+						// Specify the pattern to match against the element of the request.
 						Pattern: `\$\{.*:\/\/.*\/?\w+?\}`,
 					},
 				},
 			},
 		},
-		// specify the file path to use for logging
+		// Specify the file path to use for logging.
 		LogFile: "/tmp/teler.log",
 	})
 
-	// create a new handler using the handler method of the Teler instance
-	// and pass in the handler function for the route we want to protect
+	// Set the rejectHandler as the handler for the telerMiddleware.
+	telerMiddleware.SetHandler(rejectHandler)
+
+	// Create a new handler using the handler method of the Teler instance
+	// and pass in the myHandler function for the route we want to protect.
 	app := telerMiddleware.Handler(myHandler)
-	// use the handler as the handler for the route in the http package's ListenAndServe function
+
+	// Use the app handler as the handler for the route.
 	http.ListenAndServe("127.0.0.1:3000", app)
 }
 ```
