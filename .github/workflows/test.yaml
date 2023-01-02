@@ -2,6 +2,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "**.go"
   pull_request:
     branches:
       - "**"
