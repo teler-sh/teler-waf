@@ -14,6 +14,7 @@ import (
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
+	"github.com/scorpionknifes/go-pcre"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -225,16 +226,21 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 
 	// Iterate over the filters in the CommonWebAttack data stored in the t.threat.cwa.Filters field
 	for _, filter := range t.threat.cwa.Filters {
-		// Get the compiled regex pattern for the current filter
-		pattern := filter.pattern
+		// Initialize a variable to track whether a match is found
+		var match bool
 
-		// Do not process the check if pattern is nil
-		if pattern == nil {
+		// Check the type of the filter's pattern
+		switch pattern := filter.pattern.(type) {
+		case *regexp.Regexp: // If the pattern is a regex
+			match = pattern.MatchString(uri) || pattern.MatchString(body)
+		case *pcre.Matcher: // If the pattern is a PCRE expr
+			match = pattern.MatchString(uri, 0) || pattern.MatchString(body, 0)
+		default: // If the pattern is of an unknown type, skip to the next iteration
 			continue
 		}
 
 		// If the pattern matches the request URI or body, return an error indicating a common web attack has been detected
-		if pattern.MatchString(uri) || pattern.MatchString(body) {
+		if match {
 			return errors.New(filter.Description)
 		}
 	}
