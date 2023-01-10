@@ -397,8 +397,21 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 
 	// Iterate over BadCrawler compiled patterns and do the check
 	for _, pattern := range t.threat.badCrawler {
+		// Initialize a variable to track whether a match is found
+		var match bool
+
+		// Check the type of the pattern
+		switch p := pattern.(type) {
+		case *regexp.Regexp: // If the pattern is a regex
+			match = p.MatchString(ua)
+		case *pcre.Matcher: // If the pattern is a PCRE expr
+			match = p.MatchString(ua, 0)
+		default: // If the pattern is of an unknown type, skip to the next iteration
+			continue
+		}
+
 		// Check if the pattern is not nil and matches the User-Agent
-		if pattern != nil && pattern.MatchString(ua) {
+		if match {
 			return errors.New("bad crawler")
 		}
 	}
