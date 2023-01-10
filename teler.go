@@ -38,8 +38,8 @@ type Threat struct {
 	data map[threat.Threat]string
 
 	// badCrawler contains the compiled slices of pointers to regexp.Regexp
-	// objects of BadCrawler threat data.
-	badCrawler []*regexp.Regexp
+	// and pcre.Matcher objects of BadCrawler threat data as interface.
+	badCrawler []interface{}
 
 	// cve contains the compiled JSON CVEs data of pointers to fastjson.Value
 	cve *fastjson.Value
@@ -394,14 +394,21 @@ func (t *Teler) processResource(k threat.Threat) error {
 		}
 	case threat.BadCrawler:
 		// Split the data into a slice of strings, compile each string
-		// into a regexp, and save it in the badCrawler field.
+		// into a regex or pcre expr, and save it in the badCrawler field.
 		patterns := strings.Split(t.threat.data[k], "\n")
-		t.threat.badCrawler = make([]*regexp.Regexp, len(patterns))
+		t.threat.badCrawler = make([]interface{}, len(patterns))
 
 		for i, pattern := range patterns {
 			t.threat.badCrawler[i], err = regexp.Compile(pattern)
 			if err != nil {
-				continue
+				// If the regular expression cannot be compiled,
+				// try to compile it as a PCRE pattern
+				cpcre, err := pcre.Compile(pattern, pcre.MULTILINE)
+				if err == nil {
+					// If the PCRE pattern is successfully compiled,
+					// create a new Matcher and assign it to the pattern field
+					t.threat.badCrawler[i] = cpcre.NewMatcher()
+				}
 			}
 		}
 	}
