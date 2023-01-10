@@ -16,6 +16,7 @@ import (
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
+	"github.com/scorpionknifes/go-pcre"
 	"github.com/twharmon/gouid"
 	"github.com/valyala/fastjson"
 	"go.uber.org/zap"
@@ -312,12 +313,19 @@ func (t *Teler) processResource(k threat.Threat) error {
 			return err
 		}
 
-		// Compile the Rule field of each filter in the Filters slice
-		// and save it in the pattern field of the filter.
+		// Compile the regular expression patterns from the filter rules
 		for i, filter := range t.threat.cwa.Filters {
+			// Compile the filter rule as a regular expression
 			t.threat.cwa.Filters[i].pattern, err = regexp.Compile(filter.Rule) // nosemgrep: trailofbits.go.questionable-assignment.questionable-assignment
 			if err != nil {
-				continue
+				// If the regular expression cannot be compiled,
+				// try to compile it as a PCRE pattern
+				cpcre, err := pcre.Compile(filter.Rule, pcre.MULTILINE)
+				if err == nil {
+					// If the PCRE pattern is successfully compiled,
+					// create a new Matcher and assign it to the pattern field
+					t.threat.cwa.Filters[i].pattern = cpcre.NewMatcher()
+				}
 			}
 		}
 	case threat.CVE:

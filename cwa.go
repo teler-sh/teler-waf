@@ -1,7 +1,5 @@
 package teler
 
-import "regexp"
-
 type cwa struct {
 	Filters []struct {
 		Description string      `json:"description"`
@@ -9,6 +7,6 @@ type cwa struct {
 		Impact      string      `json:"impact"`
 		Rule        string      `json:"rule"`
 		Tags        interface{} `json:"tags"`
-		pattern     *regexp.Regexp
+		pattern     interface{}
 	} `json:"filters"`
 }
