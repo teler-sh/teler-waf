@@ -2,6 +2,7 @@ package teler
 
 import (
 	"fmt"
+	"html"
 	"strings"
 
 	"net/http"
@@ -69,9 +70,22 @@ func headersToRawString(headers http.Header) string {
 	return h.String()
 }
 
-// toURLDecode decode URL-decoded characters string using mdurl package
+// unescapeHTML to unescapes any HTML entities, i.e. &aacute;"
+// unescapes to "á", as does "&#225;" and "&#xE1;".
+func unescapeHTML(s string) string {
+	return html.UnescapeString(s)
+}
+
+// toURLDecode decode URL-decoded characters string using mdurl
 func toURLDecode(s string) string {
 	return mdurl.Decode(s)
+}
+
+// stringDeUnescape to decode URL-decoded characters, and
+// unescapes any HTML entities
+func stringDeUnescape(s string) string {
+	s = toURLDecode(s)
+	return unescapeHTML(s)
 }
 
 // isValidMethod check if the given request.Method is valid

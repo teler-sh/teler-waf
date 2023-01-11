@@ -110,8 +110,8 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 	// Converts map of headers to RAW string
 	headers := headersToRawString(r.Header)
 
-	// Decode the URL-encoded request URI of the URL
-	uri := toURLDecode(r.URL.RequestURI())
+	// Decode the URL-encoded and unescape HTML entities request URI of the URL
+	uri := stringDeUnescape(r.URL.RequestURI())
 
 	// Declare byte slice for request body.
 	var body string
@@ -130,8 +130,8 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 		body = buf.String()
 	}
 
-	// Decode the URL-encoded of body
-	body = toURLDecode(body)
+	// Decode the URL-encoded and unescape HTML entities of body
+	body = stringDeUnescape(body)
 
 	// Iterate over the Customs field of the Teler struct, which is a slice of custom rules
 	for _, rule := range t.opt.Customs {
@@ -201,8 +201,8 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 // If a match is found, it returns an error indicating a common web attack has been detected.
 // If no match is found, it returns nil.
 func (t *Teler) checkCommonWebAttack(r *http.Request) error {
-	// Decode the URL-encoded request URI of the URL
-	uri := toURLDecode(r.URL.RequestURI())
+	// Decode the URL-encoded and unescape HTML entities request URI of the URL
+	uri := stringDeUnescape(r.URL.RequestURI())
 
 	// Declare byte slice for request body.
 	var body string
@@ -221,8 +221,8 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 		body = buf.String()
 	}
 
-	// Decode the URL-encoded of body
-	body = toURLDecode(body)
+	// Decode the URL-encoded and unescape HTML entities of body
+	body = stringDeUnescape(body)
 
 	// Iterate over the filters in the CommonWebAttack data stored in the t.threat.cwa.Filters field
 	for _, filter := range t.threat.cwa.Filters {
