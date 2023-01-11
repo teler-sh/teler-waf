@@ -22,6 +22,11 @@ import (
 func (t *Teler) Analyze(w http.ResponseWriter, r *http.Request) error {
 	_, err := t.analyzeRequest(w, r)
 
+	// If threat detected, set teler request ID to the header
+	if err != nil {
+		setReqIdHeader(w)
+	}
+
 	return err
 }
 
