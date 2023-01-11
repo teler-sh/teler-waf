@@ -9,6 +9,7 @@ import (
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
+	"github.com/twharmon/gouid"
 	"gitlab.com/golang-commonmark/mdurl"
 )
 
@@ -132,4 +133,15 @@ func getClientIP(r *http.Request) string {
 
 	// Returning client IP address
 	return clientIP
+}
+
+// setReqIdHeader to set teler request ID header response
+func setReqIdHeader(w http.ResponseWriter) string {
+	// Generate a unique ID using the gouid package.
+	id := gouid.Bytes(10)
+
+	// Set the "X-Teler-Req-Id" header in the response with the unique ID.
+	w.Header().Set(xTelerReqId, id.String())
+
+	return id.String()
 }

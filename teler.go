@@ -17,7 +17,6 @@ import (
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
 	"github.com/scorpionknifes/go-pcre"
-	"github.com/twharmon/gouid"
 	"github.com/valyala/fastjson"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -208,11 +207,8 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 		return
 	}
 
-	// Generate a unique ID using the gouid package.
-	id := gouid.Bytes(10)
-
-	// Set the "X-Teler-Req-Id" header in the response with the unique ID.
-	w.Header().Set(xTelerReqId, id.String())
+	// Set teler request ID to the header
+	id := setReqIdHeader(w)
 
 	// Get the error message & convert to string as a message
 	msg := err.Error()
@@ -236,7 +232,7 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 
 	// Log the detected threat, request details and the error message.
 	t.log.With(
-		zap.String("id", id.String()),
+		zap.String("id", id),
 		zap.String("category", k.String()),
 		zap.Namespace("request"),
 		zap.String("method", r.Method),
