@@ -1,6 +1,7 @@
 package teler
 
 import (
+	"errors"
 	"fmt"
 	"html"
 	"strings"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
+	"github.com/patrickmn/go-cache"
 	"github.com/twharmon/gouid"
 	"gitlab.com/golang-commonmark/mdurl"
 )
@@ -156,4 +158,42 @@ func removeSpecialChars(str string) string {
 	str = strings.Replace(str, "\f", "", -1) // Replace all form feed
 
 	return str
+}
+
+// getCache returns the cached error value for the given key.
+// If the key is not found in the cache or the value is nil, it returns nil, false.
+// When development flag is not set it will always return nil, false
+func (t *Teler) getCache(key string) (error, bool) {
+	if t.opt.Development {
+		return nil, false
+	}
+
+	if msg, ok := t.cache.Get(key); ok {
+		if msg == nil {
+			return nil, ok
+		}
+
+		return msg.(error), ok
+	}
+
+	return nil, false
+}
+
+// setCache sets the error value for the given key in the cache.
+// if msg is empty it sets a nil error, otherwise it creates a new error with the msg.
+// When development flag is not set it will return without setting anything in the cache
+func (t *Teler) setCache(key string, msg string) {
+	if t.opt.Development {
+		return
+	}
+
+	var err error
+
+	if msg != "" {
+		err = errors.New(msg)
+	} else {
+		err = nil
+	}
+
+	t.cache.Set(key, err, cache.DefaultExpiration)
 }

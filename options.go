@@ -33,4 +33,8 @@ type Options struct {
 	// will not be printed to stderr. If set to false, log messages will be printed to stderr.
 	// By default, log messages are printed to stderr (false).
 	NoStderr bool
+
+	// Development is a boolean flag that determines whether the request is cached or not.
+	// By default, development mode is disabled (false) or requests will cached.
+	Development bool
 }

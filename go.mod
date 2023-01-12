@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/hashicorp/go-getter v1.6.2
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/scorpionknifes/go-pcre v0.0.0-20210805092536-77486363b797
 	github.com/stretchr/testify v1.8.0
 	github.com/twharmon/gouid v0.5.2

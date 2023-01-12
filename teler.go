@@ -9,6 +9,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"encoding/json"
 	"net/http"
@@ -16,6 +17,7 @@ import (
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
+	"github.com/patrickmn/go-cache"
 	"github.com/scorpionknifes/go-pcre"
 	"github.com/valyala/fastjson"
 	"go.uber.org/zap"
@@ -67,6 +69,8 @@ type Teler struct {
 	// whitelistRegexes is a slice of regular expression pointers
 	// that are used to check whether a request should be whitelisted.
 	whitelistRegexes []*regexp.Regexp
+
+	cache *cache.Cache
 }
 
 // New constructs a new Teler instance with the supplied options.
@@ -192,6 +196,12 @@ func New(opts ...Options) *Teler {
 
 			rule.Rules[i].patternRegex = regex
 		}
+	}
+
+	// If development mode is enabled, create a cache with no default
+	// expiration time and clean up interval by 15 minutes.
+	if !o.Development {
+		t.cache = cache.New(time.Duration(0), 15*time.Minute)
 	}
 
 	// Set the opt field of the Teler struct to the options

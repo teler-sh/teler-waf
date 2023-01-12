@@ -138,6 +138,12 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 	// Decode the URL-encoded and unescape HTML entities of body
 	body = stringDeUnescape(body)
 
+	// Check if the request is in cache
+	key := headers + uri + body
+	if err, ok := t.getCache(key); ok {
+		return err
+	}
+
 	// Iterate over the Customs field of the Teler struct, which is a slice of custom rules
 	for _, rule := range t.opt.Customs {
 		// Initialize the found match counter to zero
@@ -180,10 +186,12 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 
 			// If the rule condition is satisfied, increment the found match counter
 			if ok {
-				// If the rule condition "or", return an error with the Name field of the custom rule as the message
+				// If the rule condition "or", cache the request and return an error with
+				// the Name field of the custom rule as the message.
 				// If the rule condition is "and", increment the found match counter
 				switch rule.Condition {
 				case "or":
+					t.setCache(key, rule.Name)
 					return errors.New(rule.Name)
 				case "and":
 					f++
@@ -192,11 +200,15 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 		}
 
 		// If the rule condition is "and", and number of found matches is equal to the number of rule conditions,
-		// return an error with the Name field of the custom rule as the message
+		// cache the request and return an error with the Name field of the custom rule as the message
 		if rule.Condition == "and" && f >= len(rule.Rules) {
+			t.setCache(key, rule.Name)
 			return errors.New(rule.Name)
 		}
 	}
+
+	// Cache the request
+	t.setCache(key, "")
 
 	// If no custom rules were violated, return nil
 	return nil
@@ -231,6 +243,12 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 	// body of request then remove all special characters
 	body = removeSpecialChars(stringDeUnescape(body))
 
+	// Check if the request is in cache
+	key := uri + body
+	if err, ok := t.getCache(key); ok {
+		return err
+	}
+
 	// Iterate over the filters in the CommonWebAttack data stored in the t.threat.cwa.Filters field
 	for _, filter := range t.threat.cwa.Filters {
 		// Initialize a variable to track whether a match is found
@@ -246,11 +264,16 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 			continue
 		}
 
-		// If the pattern matches the request URI or body, return an error indicating a common web attack has been detected
+		// If the pattern matches the request URI or body, cache the request
+		// and return an error indicating a common web attack has been detected
 		if match {
+			t.setCache(key, filter.Description)
 			return errors.New(filter.Description)
 		}
 	}
+
+	// Cache the request
+	t.setCache(key, "")
 
 	// Return nil if no match is found
 	return nil
@@ -272,6 +295,11 @@ func (t *Teler) checkCVE(r *http.Request) error {
 	requestParams := make(map[string]string)
 	for q, v := range r.URL.Query() {
 		requestParams[q] = v[0]
+	}
+
+	key := fmt.Sprintf("%v", requestParams)
+	if err, ok := t.getCache(key); ok {
+		return err
 	}
 
 	// Iterate over the templates in the data set.
@@ -325,13 +353,18 @@ func (t *Teler) checkCVE(r *http.Request) error {
 					}
 				}
 
-				// If all the query parameters in the CVE URI are present in the request URI, return an error of CVE ID.
+				// If all the query parameters in the CVE URI are present in the request URI,
+				// cache the request and return an error of CVE ID.
 				if allParamsMatch {
+					t.setCache(key, cveID)
 					return errors.New(cveID)
 				}
 			}
 		}
 	}
+
+	// Cache the request
+	t.setCache(key, "")
 
 	// Return nil if the request doesn't match any known threat.
 	return nil
@@ -344,11 +377,21 @@ func (t *Teler) checkBadIPAddress(r *http.Request) error {
 	// Get the client's IP address
 	clientIP := getClientIP(r)
 
+	// Check if the client's IP address is in the cache
+	if err, ok := t.getCache(clientIP); ok {
+		return err
+	}
+
 	// Check if the client IP address is in BadIPAddress index
 	if t.inThreatIndex(threat.BadIPAddress, clientIP) {
-		// Return an error indicating a bad IP address has been detected
-		return errors.New("bad IP address")
+		// Cache the client's IP address and return an error
+		// indicating a bad IP address has been detected
+		t.setCache(clientIP, errBadIPAddress)
+		return errors.New(errBadIPAddress)
 	}
+
+	// Cache the client's IP address
+	t.setCache(clientIP, "")
 
 	// Return nil if the remote address is not found in the index
 	return nil
@@ -376,11 +419,21 @@ func (t *Teler) checkBadReferrer(r *http.Request) error {
 		return nil
 	}
 
+	// Check if the referrer request is in cache
+	if err, ok := t.getCache(eTLD1); ok {
+		return err
+	}
+
 	// Check if the root domain of request referer header is in the BadReferrer index
 	if t.inThreatIndex(threat.BadReferrer, eTLD1) {
-		// If the domain is found in the index, return an error indicating a bad HTTP referer
-		return errors.New("bad HTTP referer")
+		// If the domain is found in the index, cache the referrer
+		// request and return an error indicating a bad HTTP referer
+		t.setCache(eTLD1, errBadIPAddress)
+		return errors.New(errBadReferer)
 	}
+
+	// Cache the referrer of the request
+	t.setCache(eTLD1, "")
 
 	// Return nil if no match is found in the BadReferrer index
 	return nil
@@ -402,6 +455,11 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 		return nil
 	}
 
+	// Check if the referrer request is in cache
+	if err, ok := t.getCache(ua); ok {
+		return err
+	}
+
 	// Iterate over BadCrawler compiled patterns and do the check
 	for _, pattern := range t.threat.badCrawler {
 		// Initialize a variable to track whether a match is found
@@ -417,11 +475,16 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 			continue
 		}
 
-		// Check if the pattern is not nil and matches the User-Agent
+		// Check if the pattern is not nil and matches the User-Agent,
+		// cache the User-Agent if it matched
 		if match {
-			return errors.New("bad crawler")
+			t.setCache(ua, errBadCrawler)
+			return errors.New(errBadCrawler)
 		}
 	}
+
+	// Cache the User-Agent of the request
+	t.setCache(ua, "")
 
 	return nil
 }
@@ -449,6 +512,11 @@ func (t *Teler) checkDirectoryBruteforce(r *http.Request) error {
 		return nil
 	}
 
+	// Check if the request path is in cache
+	if err, ok := t.getCache(path); ok {
+		return err
+	}
+
 	// Create a regex pattern that matches the entire request path
 	pattern := fmt.Sprintf("(?m)^%s$", regexp.QuoteMeta(path))
 
@@ -462,10 +530,15 @@ func (t *Teler) checkDirectoryBruteforce(r *http.Request) error {
 		return nil
 	}
 
-	// If the pattern matches the data, return an error indicating a directory bruteforce attack has been detected
+	// If the pattern matches the data, cache the request path and
+	// return an error indicating a directory bruteforce attack has been detected
 	if match {
-		return errors.New("directory bruteforce")
+		t.setCache(path, errDirectoryBruteforce)
+		return errors.New(errDirectoryBruteforce)
 	}
+
+	// Cache the request path
+	t.setCache(path, "")
 
 	// Return nil if no match is found
 	return nil
