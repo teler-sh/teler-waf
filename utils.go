@@ -145,3 +145,15 @@ func setReqIdHeader(w http.ResponseWriter) string {
 
 	return id.String()
 }
+
+// removeSpecialChars to remove special characters with empty string
+// includes line feed/newline, horizontal tab, backspace & form feed
+func removeSpecialChars(str string) string {
+	str = strings.Replace(str, "\n", "", -1) // Replace all newline
+	str = strings.Replace(str, "\r", "", -1) // Replace all carriage return
+	str = strings.Replace(str, "\t", "", -1) // Replace all horizontal tab
+	str = strings.Replace(str, "\b", "", -1) // Replace all backspace
+	str = strings.Replace(str, "\f", "", -1) // Replace all form feed
+
+	return str
+}
