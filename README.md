@@ -194,22 +194,22 @@ goos: linux
 goarch: amd64
 pkg: github.com/kitabisa/teler-waf
 cpu: 11th Gen Intel(R) Core(TM) i9-11900H @ 2.50GHz
-BenchmarkTelerDefaultOptions-4               	    4662	    259275 ns/op	   35647 B/op	    1695 allocs/op
-BenchmarkTelerCommonWebAttackOnly-4          	   32944	     35173 ns/op	    5941 B/op	     118 allocs/op
-BenchmarkTelerCVEOnly-4                      	    6151	    182757 ns/op	   33548 B/op	    1652 allocs/op
-BenchmarkTelerBadIPAddressOnly-4             	   20850	     55341 ns/op	    5967 B/op	      86 allocs/op
-BenchmarkTelerBadReferrerOnly-4              	   48957	     22397 ns/op	    5545 B/op	      87 allocs/op
-BenchmarkTelerBadCrawlerOnly-4               	   41954	     26680 ns/op	    5633 B/op	      85 allocs/op
-BenchmarkTelerDirectoryBruteforceOnly-4      	   48690	     21711 ns/op	    5549 B/op	      84 allocs/op
-BenchmarkTelerCustomRule-4                   	   48640	     21429 ns/op	    5340 B/op	      84 allocs/op
-BenchmarkTelerWithoutCommonWebAttack-4       	    5395	    222878 ns/op	   34488 B/op	    1658 allocs/op
-BenchmarkTelerWithoutCVE-4                   	   15279	     75008 ns/op	    7165 B/op	     124 allocs/op
-BenchmarkTelerWithoutBadIPAddress-4          	    5887	    205871 ns/op	   34557 B/op	    1690 allocs/op
-BenchmarkTelerWithoutBadReferrer-4           	    5082	    235075 ns/op	   34996 B/op	    1689 allocs/op
-BenchmarkTelerWithoutBadCrawler-4            	    5019	    228486 ns/op	   35012 B/op	    1691 allocs/op
-BenchmarkTelerWithoutDirectoryBruteforce-4   	    5049	    247648 ns/op	   35225 B/op	    1692 allocs/op
+BenchmarkTelerDefaultOptions-4               	    4503	    270623 ns/op	   35854 B/op	    1696 allocs/op
+BenchmarkTelerCommonWebAttackOnly-4          	   30057	     36854 ns/op	    6007 B/op	     118 allocs/op
+BenchmarkTelerCVEOnly-4                      	    6204	    186777 ns/op	   33515 B/op	    1652 allocs/op
+BenchmarkTelerBadIPAddressOnly-4             	   20185	     56954 ns/op	    6001 B/op	      86 allocs/op
+BenchmarkTelerBadReferrerOnly-4              	   45590	     23255 ns/op	    5580 B/op	      87 allocs/op
+BenchmarkTelerBadCrawlerOnly-4               	   39682	     27489 ns/op	    5665 B/op	      85 allocs/op
+BenchmarkTelerDirectoryBruteforceOnly-4      	   48837	     22702 ns/op	    5547 B/op	      84 allocs/op
+BenchmarkTelerCustomRule-4                   	   48655	     22113 ns/op	    5340 B/op	      84 allocs/op
+BenchmarkTelerWithoutCommonWebAttack-4       	    5245	    229363 ns/op	   34611 B/op	    1658 allocs/op
+BenchmarkTelerWithoutCVE-4                   	   15054	     77636 ns/op	    7189 B/op	     124 allocs/op
+BenchmarkTelerWithoutBadIPAddress-4          	    5712	    210326 ns/op	   34652 B/op	    1690 allocs/op
+BenchmarkTelerWithoutBadReferrer-4           	    4851	    242548 ns/op	   35156 B/op	    1689 allocs/op
+BenchmarkTelerWithoutBadCrawler-4            	    5016	    239909 ns/op	   34997 B/op	    1691 allocs/op
+BenchmarkTelerWithoutDirectoryBruteforce-4   	    4872	    244313 ns/op	   35343 B/op	    1692 allocs/op
 PASS
-ok  	github.com/kitabisa/teler-waf	23.583s
+ok  	github.com/kitabisa/teler-waf	23.464s
 ```
 
 > **Note**: It's important to note that the benchmarking results may vary and may not be consistent. Those results were obtained when there were **>1.5k** CVE templates and the [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.

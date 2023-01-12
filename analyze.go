@@ -206,8 +206,9 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 // If a match is found, it returns an error indicating a common web attack has been detected.
 // If no match is found, it returns nil.
 func (t *Teler) checkCommonWebAttack(r *http.Request) error {
-	// Decode the URL-encoded and unescape HTML entities request URI of the URL
-	uri := stringDeUnescape(r.URL.RequestURI())
+	// Decode the URL-encoded and unescape HTML entities in the
+	// request URI of the URL then remove all special characters
+	uri := removeSpecialChars(stringDeUnescape(r.URL.RequestURI()))
 
 	// Declare byte slice for request body.
 	var body string
@@ -226,8 +227,9 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 		body = buf.String()
 	}
 
-	// Decode the URL-encoded and unescape HTML entities of body
-	body = stringDeUnescape(body)
+	// Decode the URL-encoded and unescape HTML entities in the
+	// body of request then remove all special characters
+	body = removeSpecialChars(stringDeUnescape(body))
 
 	// Iterate over the filters in the CommonWebAttack data stored in the t.threat.cwa.Filters field
 	for _, filter := range t.threat.cwa.Filters {
