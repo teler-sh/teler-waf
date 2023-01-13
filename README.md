@@ -162,6 +162,18 @@ func main() {
 
 For more examples of how to use teler-waf or integrate it with any framework, take a look at [examples/](https://github.com/kitabisa/teler-waf/tree/master/examples) directory.
 
+#### Development
+
+By default, teler-waf caches all incoming requests for 15 minutes & clear them every 20 minutes to improve the performance. However, if you're still customizing the settings to match the requirements of your application, you can disable caching during development by setting the development mode option to `true`. This will prevent incoming requests from being cached and can be helpful for debugging purposes.
+
+```go
+// Create a new instance of the Teler type using
+// the New function & enable development mode option.
+telerMiddleware := teler.New(teler.Options{
+	Development: true,
+})
+```
+
 #### Logs
 
 Here is an example of what the log lines would look like if teler-waf detects a threat on a request:
