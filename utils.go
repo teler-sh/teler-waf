@@ -128,8 +128,10 @@ func getClientIP(r *http.Request) string {
 		clientIP = r.Header.Get("X-Forwarded-For")
 	}
 
-	// If the X-Forwarded-For header field is not present, use the RemoteAddr field
-	if clientIP == "" {
+	// If the X-Forwarded-For header field is present, else use the RemoteAddr field
+	if clientIP != "" {
+		clientIP = strings.TrimSpace(strings.Split(clientIP, ",")[0])
+	} else {
 		clientIP = r.RemoteAddr
 	}
 
