@@ -133,6 +133,7 @@ func getClientIP(r *http.Request) string {
 		clientIP = strings.TrimSpace(strings.Split(clientIP, ",")[0])
 	} else {
 		clientIP = r.RemoteAddr
+		clientIP = strings.Split(clientIP, ":")[0]
 	}
 
 	// Returning client IP address
