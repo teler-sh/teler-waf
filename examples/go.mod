@@ -7,7 +7,7 @@ require (
 	github.com/go-chi/chi v1.5.4
 	github.com/gorilla/mux v1.8.0
 	github.com/kataras/iris/v12 v12.1.8
-	github.com/kitabisa/teler-waf v0.0.0-20221230022420-f6a93bc97d43
+	github.com/kitabisa/teler-waf v0.2.1
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/urfave/negroni v1.0.0
 	github.com/zenazn/goji v1.0.1
@@ -60,9 +60,11 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/moul/http2curl v1.0.0 // indirect
+	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/ryanuber/columnize v2.1.0+incompatible // indirect
 	github.com/schollz/closestmatch v2.1.0+incompatible // indirect
+	github.com/scorpionknifes/go-pcre v0.0.0-20210805092536-77486363b797 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/smartystreets/goconvey v1.7.2 // indirect
