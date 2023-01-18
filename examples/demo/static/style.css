@@ -1,0 +1,198 @@
+/**
+ * Variables.
+ *
+ * Colors via: https://dribbble.com/shots/3386542--Distil-slide-from-conference-talk-slide-deck
+ */
+:root {
+  --border-radius: .5rem;
+  --red: #D64541;
+  --teal: #27C3EE;
+  --black: #163331;
+  --white: #FFFFF7;
+}
+
+/** Global styles */
+*,
+*:after,
+*:before {
+  box-sizing: border-box;
+}
+html {
+  background: var(--teal);
+  color: var(--white);
+  font-family: Nunito, 'Avenir Next', sans-serif;
+  font-weight: 300;
+  line-height: 1.4;
+}
+body {
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 40rem;
+  width: 90%;
+}
+@media (min-width: 30rem) {
+  body {
+    width: 80%;
+  }
+}
+
+
+.teler {
+  width: 350px;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+
+/** Header */
+header[role=banner] {
+  padding: 1rem 0;
+  text-align: center;
+}
+@media (min-width: 30rem) {
+  header[role=banner] {
+    padding: 2rem 0;
+  }
+}
+header[role=banner] h1 {
+  animation: shadowizer 600ms step-end forwards;
+  font-size: 220%;
+  letter-spacing: .1ex;
+  line-height: 1;
+  margin: 0 0 .8rem;
+  text-transform: uppercase;
+}
+header[role=banner] p {
+  font-size: 112.5%;
+  font-style: italic;
+  margin: 0;
+}
+header[role=banner] p a {
+  color: inherit;
+}
+header[role=banner] p a:active,
+header[role=banner] p a:focus,
+header[role=banner] p a:hover {
+  color: var(--black);  
+}
+
+header[role=banner] code {
+  background: rgba(255, 255, 255, .2);
+  border-radius: var(--border-radius);
+  font-size: 108%;
+  padding: .1em .2em;
+}
+
+/** Main styles */
+main[role=main] {
+  background: var(--red);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+}
+@media (min-width: 30rem) {
+  main[role=main] {
+    padding: 2rem;
+  }
+}
+
+/** Form Items */
+.form-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/** Form Item */
+.form-item {
+  
+}
+.form-item label {
+  display: block;
+  font-size: 85.7%;
+  font-weight: 600;
+  letter-spacing: .075ex;
+  text-transform: uppercase;
+}
+.form-item input {
+  background: var(--white);
+  border: none;
+  border-radius: var(--border-radius);
+  color: var(--black);
+  font-family: inherit;
+  line-height: inherit;
+  padding: .5rem 1rem;
+}
+.form-item input:focus {
+  box-shadow:
+/*     .125rem solid var(--red), */
+    0 0 .25rem var(--black);
+  outline: 0;
+}
+
+/** Buttons */
+.btn {
+  background: var(--black);
+  border: none;
+  border-radius: var(--border-radius);
+  color: var(--white);
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 600;
+  font-family: inherit;
+  font-size: 100%;
+  line-height: inherit;
+  padding: .5rem 1rem;
+}
+
+/** Animations */
+
+@keyframes shadowizer {
+  0% {
+    text-shadow: none;
+  }
+  33.33% {
+    text-shadow:
+      1px 1px var(--black),
+      2px 2px var(--black);
+  }
+  66.67% {
+    text-shadow:
+      1px 1px var(--black),
+      2px 2px var(--black),
+      3px 3px var(--red),
+      4px 4px var(--red);
+  }
+  100% {
+    text-shadow:
+      1px 1px var(--black),
+      2px 2px var(--black),
+      3px 3px var(--red),
+      4px 4px var(--red),
+      5px 5px var(--black),
+      6px 6px var(--black);
+  }
+}
+
+/** Inputs */
+
+.test {
+  width: 80%;
+}
+
+@media (min-width: 360px) {
+  .test {
+    width: 65%;
+  }
+}
+
+@media (min-width: 498px) {
+  .test {
+    width: 70%;
+  }
+}
+
+@media (min-width: 686px) {
+  .test {
+    width: 80%;
+  }
+}

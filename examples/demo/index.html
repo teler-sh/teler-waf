@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" media="screen" href="/static/style.css" />
+  <!-- Primary Meta Tags -->
+  <title>teler WAF tester!</title>
+  <meta name="title" content="teler WAF tester!">
+  <meta name="description" content="Testing your common web attack payloads here!">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://waf.teler.app/">
+  <meta property="og:title" content="teler WAF tester!">
+  <meta property="og:description" content="Testing your common web attack payloads here!">
+  <meta property="og:image" content="https://user-images.githubusercontent.com/25837540/213121513-79986c70-d21c-4a1a-94c9-4eb5df2982bd.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://waf.teler.app/">
+  <meta property="twitter:title" content="teler WAF tester!">
+  <meta property="twitter:description" content="Testing your common web attack payloads here!">
+  <meta property="twitter:image" content="https://user-images.githubusercontent.com/25837540/213121513-79986c70-d21c-4a1a-94c9-4eb5df2982bd.png">
+</head>
+<body>
+<header role="banner">
+  <h1>teler-waf tester</h1>
+  <p>Testing your common web attack payloads here!</p>
+</header>
+
+<main id="app" role="main">
+  <form method="GET">
+    <fieldset class="form-item">
+      <legend>GET</legend>
+      <div>
+        <input type="text" name="query" placeholder="query=" class="test">
+        <button class="btn" type="submit"><span aria-hidden="true" class="material-icons">Submit</span></button>
+      </div>
+    </fieldset>
+  </form>
+  <form method="POST">
+    <fieldset class="form-item">
+      <legend>POST</legend>
+      <div>
+        <input type="text" name="body" placeholder="body=" class="test">
+        <button class="btn" type="submit"><span aria-hidden="true" class="material-icons">Submit</span></button>
+      </div>
+    </fieldset>
+  </form>
+  <p>Your payload is written here:</p>
+  <div class="form-item">
+    <input type="text" value="{{.Query}}" placeholder="querystring" style="width: 49%;">
+    <input type="text" value="{{.Body}}" placeholder="body" style="width: 49%;">
+  </div>
+</main>
+<img src="https://user-images.githubusercontent.com/25837540/212849713-c9c73940-cc0e-4da0-a34e-c97ba479cfcd.png" class="teler">
+</body>
+</html>
