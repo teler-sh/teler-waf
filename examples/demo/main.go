@@ -32,11 +32,7 @@ var forbidden = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 })
 
 func main() {
-	waf := teler.New(teler.Options{
-		Whitelists: []string{
-			"(?i)(referr?er|user-agent): .*?(twitter|facebook|linkedin|google|slack).*?",
-		},
-	})
+	waf := teler.New()
 	app := waf.Handler(http.HandlerFunc(myHandler))
 
 	http.Handle("/static/", http.StripPrefix("/static/", static))
