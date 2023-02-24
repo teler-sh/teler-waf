@@ -11,5 +11,5 @@ require (
 	github.com/valyala/fastjson v1.6.3
 	gitlab.com/golang-commonmark/mdurl v0.0.0-20191124015652-932350d1cb84
 	go.uber.org/zap v1.24.0
-	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
+	golang.org/x/net v0.7.0
 )
