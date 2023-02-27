@@ -13,6 +13,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// Prepraring handler for all cases
+var handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+})
+
 func init() {
 	cache := os.Getenv("CACHE")
 
@@ -32,12 +37,7 @@ func init() {
 
 func TestNewDefaultOptions(t *testing.T) {
 	// Initialize teler
-	telerMiddleware := New(Options{NoStderr: true})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
+	telerMiddleware := New(Options{})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -65,11 +65,30 @@ func TestNewDefaultOptions(t *testing.T) {
 func TestNewWithNoStderr(t *testing.T) {
 	// Initialize teler
 	telerMiddleware := New(Options{NoStderr: true})
+	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a client to send requests to the test server
+	client := &http.Client{}
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNewWithNoUpdateCheck(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{NoStderr: true, NoUpdateCheck: true})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -94,11 +113,6 @@ func TestNewWithNoStderr(t *testing.T) {
 func TestNewWithLogFile(t *testing.T) {
 	// Initialize teler
 	telerMiddleware := New(Options{NoStderr: true, LogFile: "/dev/null"})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -125,11 +139,6 @@ func TestNewWithWhitelist(t *testing.T) {
 	telerMiddleware := New(Options{
 		Whitelists: []string{"Go-http-client"},
 		NoStderr:   true,
-	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
 	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
@@ -212,11 +221,6 @@ func TestNewCustom(t *testing.T) {
 		},
 		NoStderr: true,
 	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -250,11 +254,6 @@ func TestNewCommonWebAttackOnly(t *testing.T) {
 		},
 		NoStderr: true,
 	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -287,11 +286,6 @@ func TestNewCVEOnly(t *testing.T) {
 			threat.DirectoryBruteforce,
 		},
 		NoStderr: true,
-	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
 	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
@@ -329,11 +323,6 @@ func TestNewBadIPAddressOnly(t *testing.T) {
 		},
 		NoStderr: true,
 	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -369,11 +358,6 @@ func TestNewBadReferrerOnly(t *testing.T) {
 			threat.DirectoryBruteforce,
 		},
 		NoStderr: true,
-	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
 	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
@@ -411,11 +395,6 @@ func TestNewBadCrawlerOnly(t *testing.T) {
 		},
 		NoStderr: true,
 	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -448,11 +427,6 @@ func TestNewDirectoryBruteforceOnly(t *testing.T) {
 			threat.BadCrawler,
 		},
 		NoStderr: true,
-	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
 	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
@@ -492,10 +466,6 @@ func TestNewInvalidWhitelist(t *testing.T) {
 		NoStderr:   true,
 	})
 
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	telerMiddleware.Handler(handler)
 }
 
@@ -525,10 +495,6 @@ func TestNewInvalidCustomRuleName(t *testing.T) {
 		NoStderr: true,
 	})
 
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	telerMiddleware.Handler(handler)
 }
 
@@ -558,10 +524,6 @@ func TestNewInvalidCustomRuleCondition(t *testing.T) {
 		NoStderr: true,
 	})
 
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	telerMiddleware.Handler(handler)
 }
 
@@ -591,10 +553,6 @@ func TestNewBlankCustomRulePattern(t *testing.T) {
 		NoStderr: true,
 	})
 
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	telerMiddleware.Handler(handler)
 }
 
@@ -624,21 +582,12 @@ func TestNewInvalidCustomRulePattern(t *testing.T) {
 		NoStderr: true,
 	})
 
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	telerMiddleware.Handler(handler)
 }
 
 func BenchmarkTelerDefaultOptions(b *testing.B) {
 	// Initialize teler
 	telerMiddleware := New(Options{NoStderr: true})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -681,11 +630,6 @@ func BenchmarkTelerCommonWebAttackOnly(b *testing.B) {
 		},
 		NoStderr: true,
 	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -723,11 +667,6 @@ func BenchmarkTelerCVEOnly(b *testing.B) {
 			threat.DirectoryBruteforce,
 		},
 		NoStderr: true,
-	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
 	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
@@ -767,11 +706,6 @@ func BenchmarkTelerBadIPAddressOnly(b *testing.B) {
 		},
 		NoStderr: true,
 	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -810,11 +744,6 @@ func BenchmarkTelerBadReferrerOnly(b *testing.B) {
 		},
 		NoStderr: true,
 	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -852,11 +781,6 @@ func BenchmarkTelerBadCrawlerOnly(b *testing.B) {
 			threat.DirectoryBruteforce,
 		},
 		NoStderr: true,
-	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
 	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
@@ -898,11 +822,6 @@ func BenchmarkTelerDirectoryBruteforceOnly(b *testing.B) {
 			threat.BadCrawler,
 		},
 		NoStderr: true,
-	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
 	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
@@ -959,11 +878,6 @@ func BenchmarkTelerCustomRule(b *testing.B) {
 		},
 		NoStderr: true,
 	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -997,11 +911,6 @@ func BenchmarkTelerWithoutCommonWebAttack(b *testing.B) {
 			threat.CommonWebAttack,
 		},
 		NoStderr: true,
-	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
 	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
@@ -1040,11 +949,6 @@ func BenchmarkTelerWithoutCVE(b *testing.B) {
 		},
 		NoStderr: true,
 	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -1081,11 +985,6 @@ func BenchmarkTelerWithoutBadIPAddress(b *testing.B) {
 			threat.BadIPAddress,
 		},
 		NoStderr: true,
-	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
 	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
@@ -1124,11 +1023,6 @@ func BenchmarkTelerWithoutBadReferrer(b *testing.B) {
 		},
 		NoStderr: true,
 	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -1166,11 +1060,6 @@ func BenchmarkTelerWithoutBadCrawler(b *testing.B) {
 		},
 		NoStderr: true,
 	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
@@ -1204,11 +1093,6 @@ func BenchmarkTelerWithoutDirectoryBruteforce(b *testing.B) {
 			threat.DirectoryBruteforce,
 		},
 		NoStderr: true,
-	})
-
-	// Create a custom handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
 	})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
