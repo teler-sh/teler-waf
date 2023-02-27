@@ -285,11 +285,32 @@ func (t *Teler) getResources() error {
 			return err
 		}
 
-		// Read the contents of the data file and store it
-		// as a string in the data field of the Threat struct
+		// Read the contents of the data file at the specified path and store it
+		// as a string in the data field of the Threat struct. If the file is not
+		// found, the function will attempt to retrieve the threat from an external
+		// source using the `Get()` method on the `threat` object. If the threat
+		// retrieval fails, an error will be returned. Otherwise, the function will
+		// retry reading the file as usual. If any other error occurs while reading
+		// the file, it will be returned immediately.
 		b, err := os.ReadFile(path)
 		if err != nil {
-			return err
+			if os.IsNotExist(err) {
+				// If the error is a file not found error, attempt to retrieve the
+				// threat from an external source using the `Get()` method on the
+				// `threat` object.
+				if err := threat.Get(); err != nil {
+					return err
+				}
+
+				// Retry reading the file after retrieving the threat.
+				b, err = os.ReadFile(path)
+				if err != nil {
+					return err
+				}
+			} else {
+				// If the error is not a file not found error, return it immediately.
+				return err
+			}
 		}
 		t.threat.data[k] = string(b)
 
