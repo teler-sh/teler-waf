@@ -34,6 +34,11 @@ type Options struct {
 	// By default, log messages are printed to stderr (false).
 	NoStderr bool
 
+	// NoUpdateCheck is a boolean flag indicating whether or not to disable automatic threat
+	// dataset updates. When set to true, automatic updates will be disabled. If set to false,
+	// automatic updates will be enabled. By default, automatic updates are enabled (false).
+	NoUpdateCheck bool
+
 	// Development is a boolean flag that determines whether the request is cached or not.
 	// By default, development mode is disabled (false) or requests will cached.
 	Development bool

@@ -268,8 +268,8 @@ func (t *Teler) getResources() error {
 	}
 
 	// Download the datasets of threat ruleset from teler-resources
-	// if threat datasets is not up-to-date
-	if !updated {
+	// if threat datasets is not up-to-date and NoUpdateCheck is false
+	if !updated && !t.opt.NoUpdateCheck {
 		if err := threat.Get(); err != nil {
 			return err
 		}
