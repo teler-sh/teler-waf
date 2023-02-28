@@ -1,6 +1,7 @@
 package threat
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -32,8 +33,8 @@ func Get() error {
 		return err
 	}
 
-	// Retrieve the files from the GitHub repository using go-getter
-	err = getter.Get(dst, dbURL)
+	// Retrieve the compressed archive DB file from the GitHub repository using go-getter
+	err = getter.Get(dst, fmt.Sprintf("%s?%s", dbURL, dbQuery))
 	if err != nil {
 		// If there was an error retrieving the files, return the error
 		return err
