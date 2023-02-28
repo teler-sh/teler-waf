@@ -30,6 +30,16 @@
 </header>
 
 <main id="app" role="main">
+  <div class="popup" id="init">
+    <div class="popup-inner" id="popup-inner">
+      <div class="popup__text">
+        <h1>What is this?</h1>
+        <p>This page serves as a demonstration of the <a href="https://github.com/kitabisa/teler-waf" target="_blank">teler-waf</a> package implementation, which is configured with default settings to test the resilience of web applications against common web attack threats.</p>
+        <p>If you are able to successfully execute attacks such as cross-site scripting (XSS) and trigger an alert, kindly report it to us via the <a href="https://github.com/kitabisa/teler-waf/security/advisories/new" target="_blank">vulnerability report form</a> under its GitHub repository or reach us through the <a href="https://security.kitabisa.com/#official-channels" target="_blank">official channels</a> specified on our <a href="https://security.kitabisa.com/" target="_blank">security policy page</a>.</p>
+      </div>
+      <a class="popup__close" href="#">X</a>
+    </div>
+  </div>
   <form method="GET">
     <fieldset class="form-item">
       <legend>GET</legend>
@@ -54,6 +64,7 @@
     <input type="text" value="{{.Body}}" placeholder="body" style="width: 49%;">
   </div>
 </main>
-<img src="https://user-images.githubusercontent.com/25837540/212849713-c9c73940-cc0e-4da0-a34e-c97ba479cfcd.png" class="teler">
+<a href="#init"><img src="https://user-images.githubusercontent.com/25837540/212849713-c9c73940-cc0e-4da0-a34e-c97ba479cfcd.png" class="teler"></a>
+<script src="/static/script.js" defer=""></script>
 </body>
 </html>
