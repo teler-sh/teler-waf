@@ -246,6 +246,10 @@ main[role=main] {
   color: #434343;
   line-height: 1.5;
 }
+.popup__text a {
+  color: var(--red);
+  line-height: 1.5;
+}
 .popup:target {
   visibility: visible;
   opacity: 1;
