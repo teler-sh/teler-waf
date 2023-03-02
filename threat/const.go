@@ -1,7 +1,8 @@
 package threat
 
+import "fmt"
+
 const (
-	dbURL     = "https://github.com/kitabisa/teler-resources/raw/master/db/db.tar.zst"
-	dbQuery   = "checksum=file:https://github.com/kitabisa/teler-resources/raw/master/db/MD5SUMS"
+	repoURL   = "https://github.com/kitabisa/teler-resources"
 	cachePath = "/teler-waf"
 )

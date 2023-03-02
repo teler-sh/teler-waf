@@ -1,5 +1,10 @@
 package threat
 
+var (
+	DbURL   = fmt.Sprintf("%s/raw/master/db/db.tar.zst", repoURL)
+	dbQuery = fmt.Sprintf("checksum=file:%s/raw/master/db/MD5SUMS", repoURL)
+)
+
 var str = map[Threat]string{
 	Undefined:           "Undefined",
 	Custom:              "Custom",
