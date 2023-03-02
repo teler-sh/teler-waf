@@ -11,6 +11,7 @@ import (
 )
 
 // Get retrieves all the teler threat datasets.
+//
 // It returns an error if there was an issue when retrieving the datasets.
 func Get() error {
 	// Get the destination location for the datasets
@@ -34,7 +35,7 @@ func Get() error {
 	}
 
 	// Retrieve the compressed archive DB file from the GitHub repository using go-getter
-	err = getter.Get(dst, fmt.Sprintf("%s?%s", dbURL, dbQuery))
+	err = getter.Get(dst, fmt.Sprintf("%s?%s", DbURL, dbQuery))
 	if err != nil {
 		// If there was an error retrieving the files, return the error
 		return err

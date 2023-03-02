@@ -1,5 +1,7 @@
 package threat
 
+import "fmt"
+
 var (
 	DbURL   = fmt.Sprintf("%s/raw/master/db/db.tar.zst", repoURL)
 	dbQuery = fmt.Sprintf("checksum=file:%s/raw/master/db/MD5SUMS", repoURL)

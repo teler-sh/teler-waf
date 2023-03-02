@@ -11,12 +11,14 @@ import (
 	"strings"
 	"time"
 
+	"archive/tar"
 	"encoding/json"
 	"net/http"
 	"net/url"
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
+	"github.com/klauspost/compress/zstd"
 	"github.com/patrickmn/go-cache"
 	"github.com/scorpionknifes/go-pcre"
 	"github.com/valyala/fastjson"
@@ -89,6 +91,9 @@ func New(opts ...Options) *Teler {
 		handler: http.HandlerFunc(defaultHandler),
 		threat:  &Threat{},
 	}
+
+	// Set the opt field of the Teler struct to the options
+	t.opt = o
 
 	// Retrieve the data for each threat category
 	err := t.getResources()
@@ -204,13 +209,11 @@ func New(opts ...Options) *Teler {
 		t.cache = cache.New(15*time.Minute, 20*time.Minute)
 	}
 
-	// Set the opt field of the Teler struct to the options
-	t.opt = o
-
 	return t
 }
 
-// postAnalyze is a function that processes the HTTP response after an error is returned from the analyzeRequest function.
+// postAnalyze is a function that processes the HTTP response after
+// an error is returned from the analyzeRequest function.
 func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Threat, err error) {
 	// If there is no error, return early.
 	if err == nil {
@@ -268,50 +271,111 @@ func (t *Teler) getResources() error {
 	}
 
 	// Download the datasets of threat ruleset from teler-resources
-	// if threat datasets is not up-to-date and NoUpdateCheck is false
-	if !updated && !t.opt.NoUpdateCheck {
+	// if threat datasets is not up-to-date, update check is disabled
+	// and in-memory option is true
+	if !updated && !t.opt.NoUpdateCheck && !t.opt.InMemory {
 		if err := threat.Get(); err != nil {
 			return err
 		}
 	}
 
+	// Initialize files for in-memory threat datasets
+	files := make(map[string][]byte, 0)
+
+	// If the Threat struct was configured to load data into memory, retrieve the threat data
+	// from the DB URL and uncompress it from Zstandard format, then extract the contents of
+	// each file from the tar archive and store them in a map indexed by their file name
+	if t.opt.InMemory {
+		resp, err := http.Get(threat.DbURL)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+
+		zstdReader, err := zstd.NewReader(resp.Body)
+		if err != nil {
+			return err
+		}
+		defer zstdReader.Close()
+
+		tarReader := tar.NewReader(zstdReader)
+
+		for {
+			// Read the next header from the tar archive
+			header, err := tarReader.Next()
+			if err == io.EOF {
+				break
+			}
+
+			if err != nil {
+				return err
+			}
+
+			// Skip non-regular files
+			if header.Typeflag != tar.TypeReg {
+				continue
+			}
+
+			// Read the contents of the file
+			fileContent, err := io.ReadAll(tarReader)
+			if err != nil {
+				return err
+			}
+
+			// Store the file content in the map indexed by the file name
+			files[header.Name] = fileContent
+		}
+	}
+
 	// Initialize the data field of the Threat struct to a new map
+	// that will be used to store the threat data
 	t.threat.data = make(map[threat.Threat]string)
 
 	for _, k := range threat.List() {
-		// Get the location of respective threat type
-		path, err := k.Filename(true)
+		// Initialize error & threat dataset content variables
+		var err error
+		var b []byte
+
+		// Get the file name and the path of respective threat type
+		path, err := k.Filename(!t.opt.InMemory)
 		if err != nil {
 			return err
 		}
 
-		// Read the contents of the data file at the specified path and store it
-		// as a string in the data field of the Threat struct. If the file is not
-		// found, the function will attempt to retrieve the threat from an external
-		// source using the `Get()` method on the `threat` object. If the threat
-		// retrieval fails, an error will be returned. Otherwise, the function will
-		// retry reading the file as usual. If any other error occurs while reading
-		// the file, it will be returned immediately.
-		b, err := os.ReadFile(path)
-		if err != nil {
-			if os.IsNotExist(err) {
-				// If the error is a file not found error, attempt to retrieve the
-				// threat from an external source using the `Get()` method on the
-				// `threat` object.
-				if err := threat.Get(); err != nil {
-					return err
-				}
+		// If the data is loaded in memory, retrieve it from the files map. Otherwise,
+		// read the contents of the data file at the specified path and store it as a
+		// string in the data field of the Threat struct. If the file is not found,
+		// the function will attempt to retrieve the threat from an external source
+		// using the `Get()` method on the `threat` object. If the threat retrieval
+		// fails, an error will be returned. Otherwise, the function will retry reading
+		// the file as usual. If any other error occurs while reading the file, it will
+		// be returned immediately.
+		if t.opt.InMemory {
+			b = files[path]
+		} else {
+			b, err = os.ReadFile(path)
+			if err != nil {
+				if os.IsNotExist(err) {
+					// If the error is a file not found error, attempt to retrieve the
+					// threat from an external source using the `Get()` method on the
+					// `threat` object.
+					if err := threat.Get(); err != nil {
+						return err
+					}
 
-				// Retry reading the file after retrieving the threat.
-				b, err = os.ReadFile(path)
-				if err != nil {
+					// Retry reading the file after retrieving the threat.
+					b, err = os.ReadFile(path)
+					if err != nil {
+						return err
+					}
+				} else {
+					// If the error is not a file not found error, return it immediately.
 					return err
 				}
-			} else {
-				// If the error is not a file not found error, return it immediately.
-				return err
 			}
 		}
+
+		// Store the threat dataset contents in Threat struct as a string
 		t.threat.data[k] = string(b)
 
 		err = t.processResource(k)

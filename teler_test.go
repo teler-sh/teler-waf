@@ -193,6 +193,27 @@ func TestNewWithMalformedDataset(t *testing.T) {
 	}
 }
 
+func TestNewWithInMemory(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{NoStderr: true, InMemory: true})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestNewCustom(t *testing.T) {
 	// Initialize teler
 	telerMiddleware := New(Options{
