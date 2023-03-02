@@ -15,23 +15,27 @@ func (t Threat) String() string {
 	return ""
 }
 
-// Filepath returns the file path representation of a Threat value
-func (t Threat) Filepath() (string, error) {
-	files := map[Threat]string{
-		CommonWebAttack:     "common-web-attacks.json",
-		CVE:                 "cves.json",
-		BadIPAddress:        "bad-ip-addresses.txt",
-		BadReferrer:         "bad-referrers.txt",
-		BadCrawler:          "bad-crawlers.txt",
-		DirectoryBruteforce: "directory-bruteforces.txt",
+// Filename returns the file name representation of a Threat value
+//
+// If `full` is true, it returns the `full` file path by calling the location
+// function and joining it with the corresponding file name.
+// If `full` is false, it returns only the file name without the path.
+// It returns an error if `full` is true but the location function returns an
+// error or if the corresponding file name cannot be found for the Threat value.
+func (t Threat) Filename(full bool) (string, error) {
+	var path string
+	var err error
+
+	if full {
+		path, err = location()
+		if err != nil {
+			return "", err
+		}
+	} else {
+		path = ""
 	}
 
-	path, err := location()
-	if err != nil {
-		return "", err
-	}
-
-	if file, ok := files[t]; ok {
+	if file, ok := file[t]; ok {
 		return filepath.Join(path, file), nil
 	}
 

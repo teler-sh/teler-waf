@@ -280,7 +280,7 @@ func (t *Teler) getResources() error {
 
 	for _, k := range threat.List() {
 		// Get the location of respective threat type
-		path, err := k.Filepath()
+		path, err := k.Filename(true)
 		if err != nil {
 			return err
 		}
