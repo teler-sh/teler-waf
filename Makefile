@@ -17,7 +17,6 @@ report: ## Run goreportcard
 	goreportcard-cli
 
 ## Runs the tests and vetting
-test: export CACHE=1
 test: vet
 	go test -v -cover -race -count=1 .
 
@@ -27,7 +26,6 @@ ci: vet ## Runs the tests and vetting checks (specific for CI)
 	go test -cover -race -count=1 .
 
 ## Runs the tests and benchmarking
-bench: export CACHE=1
 bench:
 	go test -bench . -cpu=4
 
