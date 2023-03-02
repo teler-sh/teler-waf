@@ -161,7 +161,7 @@ func main() {
 }
 ```
 
-> **Warning**: It's important to note that when using a whitelist, any request that matches it - regardless of the type of threat it poses, it will be returned without further analysis.
+> **Warning**: When using a whitelist, any request that matches it - regardless of the type of threat it poses, it will be returned without further analysis.
 >
 > To illustrate, suppose you set up a whitelist to permit requests containing a certain string. In the event that a request contains that string, but _/also/_ includes a payload such as an SQL injection or cross-site scripting ("XSS") attack, the request may not be thoroughly analyzed for common web attack threats and will be swiftly returned. See issue [#25](https://github.com/kitabisa/teler-waf/issues/25).
 
@@ -194,6 +194,34 @@ The **id** is a unique identifier that is generated when a request is rejected b
 For example, if a request to a website returns an HTTP error status code, such as a 403 Forbidden, the teler request ID can be used to identify the specific request that caused the error and help troubleshoot the issue.
 
 Teler request IDs are used by teler-waf to track requests made to its web application and can be useful for debugging and analyzing traffic patterns on a website.
+
+#### Datasets
+
+The teler-waf package utilizes a dataset of threats to identify and analyze each incoming request for potential security threats. This dataset is updated daily, which means that you will always have the latest resource. The dataset is initially stored in the user-level cache directory _(on Unix systems, it returns `$XDG_CACHE_HOME/teler-waf` as specified by [XDG Base Directory Specification
+](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html) if non-empty, else `$HOME/.cache/teler-waf`. On Darwin, it returns `$HOME/Library/Caches/teler-waf`. On Windows, it returns `%LocalAppData%/teler-waf`. On Plan 9, it returns `$home/lib/cache/teler-waf`)_ on your first launch. Subsequent launch will utilize the cached dataset, rather than downloading it again.
+
+> **Note**: The threat datasets are obtained from the [kitabisa/teler-resources](https://github.com/kitabisa/teler-resources) repository.
+
+However, there may be situations where you want to disable automatic updates to the threat dataset. For example, you may have a slow or limited internet connection, or you may be using a machine with restricted file access. In these cases, you can set an option called **NoUpdateCheck** to `true`, which will prevent the teler-waf from automatically updating the dataset.
+
+```go
+// Create a new instance of the Teler type using the New
+// function & disable automatic updates to the threat dataset.
+telerMiddleware := teler.New(teler.Options{
+	NoUpdateCheck: true,
+})
+```
+
+Finally, there may be cases where it's necessary to load the threat dataset into memory rather than saving it to a user-level cache directory. This can be particularly useful if you're running the application or service on a distroless or runtime image, where file access may be limited or slow. In this scenario, you can set an option called **InMemory** to `true`, which will load the threat dataset into memory for faster access.
+
+```go
+// Create a new instance of the Teler type using the
+// New function & enable in-memory threat datasets store.
+telerMiddleware := teler.New(teler.Options{
+	InMemory: true,
+})
+```
+> **Warning**: This may also consume more system resources, so it's worth considering the trade-offs before making this decision.
 
 ## Resources
 
@@ -237,7 +265,7 @@ PASS
 ok  	github.com/kitabisa/teler-waf	25.759s
 ```
 
-> **Note**: It's important to note that the benchmarking results may vary and may not be consistent. Those results were obtained when there were **>1.5k** CVE templates and the [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.
+> **Note**: Benchmarking results may vary and may not be consistent. Those results were obtained when there were **>1.5k** CVE templates and the [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.
 
 - **Configuration complexity**: Configuring teler-waf to suit the specific needs of your application can be complex, and may require a certain level of expertise in web security. This can make it difficult for those who are not familiar with application firewalls and IDS systems to properly set up and use teler-waf.
 - **Limited protection**: teler-waf is not a perfect security solution, and it may not be able to protect against all possible types of attacks. As with any security system, it is important to regularly monitor and maintain teler-waf to ensure that it is providing the desired level of protection.
