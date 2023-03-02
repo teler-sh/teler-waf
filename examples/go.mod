@@ -1,13 +1,13 @@
 module examples
 
-go 1.19
+go 1.18
 
 require (
 	github.com/gin-gonic/gin v1.8.2
 	github.com/go-chi/chi v1.5.4
 	github.com/gorilla/mux v1.8.0
 	github.com/kataras/iris/v12 v12.1.8
-	github.com/kitabisa/teler-waf v0.3.1
+	github.com/kitabisa/teler-waf v0.4.0
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/urfave/negroni v1.0.0
 	github.com/zenazn/goji v1.0.1
@@ -49,7 +49,7 @@ require (
 	github.com/kataras/golog v0.0.10 // indirect
 	github.com/kataras/pio v0.0.2 // indirect
 	github.com/kataras/sitemap v0.0.5 // indirect
-	github.com/klauspost/compress v1.15.9 // indirect
+	github.com/klauspost/compress v1.16.0 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-colorable v0.1.11 // indirect
