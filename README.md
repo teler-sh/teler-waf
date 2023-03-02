@@ -161,6 +161,10 @@ func main() {
 }
 ```
 
+> **Warning**: It's important to note that when using a whitelist, any request that matches it - regardless of the type of threat it poses, it will be returned without further analysis.
+>
+> To illustrate, suppose you set up a whitelist to permit requests containing a certain string. In the event that a request contains that string, but _/also/_ includes a payload such as an SQL injection or cross-site scripting ("XSS") attack, the request may not be thoroughly analyzed for common web attack threats and will be swiftly returned. See issue [#25](https://github.com/kitabisa/teler-waf/issues/25).
+
 For more examples of how to use teler-waf or integrate it with any framework, take a look at [examples/](https://github.com/kitabisa/teler-waf/tree/master/examples) directory.
 
 #### Development
@@ -191,9 +195,17 @@ For example, if a request to a website returns an HTTP error status code, such a
 
 Teler request IDs are used by teler-waf to track requests made to its web application and can be useful for debugging and analyzing traffic patterns on a website.
 
-#### Demo
+## Resources
 
-You are free to use the following site for testing, https://waf.teler.app.
+- **teler WAF tester!** — You are free to use the following site for testing, https://waf.teler.app.
+
+## Security
+
+If you discover a security issue, please bring it to their attention right away, we take security seriously!
+
+### Reporting a Vulnerability
+
+If you have information about a security issue, or vulnerability in this teler-waf package, and/or you are able to successfully execute such as cross-site scripting (XSS) and pop-up an alert in our [demo site](https://waf.teler.app) (see [resources](#resources)), please do **NOT** file a public issue — instead, kindly send your report privately via the [vulnerability report form](https://github.com/kitabisa/teler-waf/security/advisories/new) or to our [official channels](https://security.kitabisa.com/#official-channels) as per our [security policy](https://security.kitabisa.com/).
 
 ## Limitations
 
@@ -207,22 +219,22 @@ goos: linux
 goarch: amd64
 pkg: github.com/kitabisa/teler-waf
 cpu: 11th Gen Intel(R) Core(TM) i9-11900H @ 2.50GHz
-BenchmarkTelerDefaultOptions-4               	   44451	     25004 ns/op	    6256 B/op	      99 allocs/op
-BenchmarkTelerCommonWebAttackOnly-4          	   48598	     22572 ns/op	    5566 B/op	      89 allocs/op
-BenchmarkTelerCVEOnly-4                      	   44780	     22852 ns/op	    5628 B/op	      90 allocs/op
-BenchmarkTelerBadIPAddressOnly-4             	   48538	     23095 ns/op	    5469 B/op	      87 allocs/op
-BenchmarkTelerBadReferrerOnly-4              	   47866	     23105 ns/op	    5652 B/op	      89 allocs/op
-BenchmarkTelerBadCrawlerOnly-4               	   47344	     22795 ns/op	    5641 B/op	      86 allocs/op
-BenchmarkTelerDirectoryBruteforceOnly-4      	   48648	     22385 ns/op	    5629 B/op	      86 allocs/op
-BenchmarkTelerCustomRule-4                   	   49087	     21970 ns/op	    5432 B/op	      86 allocs/op
-BenchmarkTelerWithoutCommonWebAttack-4       	   45814	     25050 ns/op	    6046 B/op	      94 allocs/op
-BenchmarkTelerWithoutCVE-4                   	   45039	     25223 ns/op	    6035 B/op	      93 allocs/op
-BenchmarkTelerWithoutBadIPAddress-4          	   42312	     25349 ns/op	    6185 B/op	      96 allocs/op
-BenchmarkTelerWithoutBadReferrer-4           	   41907	     25567 ns/op	    6014 B/op	      94 allocs/op
-BenchmarkTelerWithoutBadCrawler-4            	   43669	     25294 ns/op	    6010 B/op	      97 allocs/op
-BenchmarkTelerWithoutDirectoryBruteforce-4   	   43903	     24918 ns/op	    6197 B/op	      97 allocs/op
+BenchmarkTelerDefaultOptions-4               	   42649	     24923 ns/op	    6206 B/op	      97 allocs/op
+BenchmarkTelerCommonWebAttackOnly-4          	   48589	     23069 ns/op	    5560 B/op	      89 allocs/op
+BenchmarkTelerCVEOnly-4                      	   48103	     23909 ns/op	    5587 B/op	      90 allocs/op
+BenchmarkTelerBadIPAddressOnly-4             	   47871	     22846 ns/op	    5470 B/op	      87 allocs/op
+BenchmarkTelerBadReferrerOnly-4              	   47558	     23917 ns/op	    5649 B/op	      89 allocs/op
+BenchmarkTelerBadCrawlerOnly-4               	   42138	     24010 ns/op	    5694 B/op	      86 allocs/op
+BenchmarkTelerDirectoryBruteforceOnly-4      	   45274	     23523 ns/op	    5657 B/op	      86 allocs/op
+BenchmarkTelerCustomRule-4                   	   48193	     22821 ns/op	    5434 B/op	      86 allocs/op
+BenchmarkTelerWithoutCommonWebAttack-4       	   44524	     24822 ns/op	    6054 B/op	      94 allocs/op
+BenchmarkTelerWithoutCVE-4                   	   46023	     25732 ns/op	    6018 B/op	      93 allocs/op
+BenchmarkTelerWithoutBadIPAddress-4          	   39205	     25927 ns/op	    6220 B/op	      96 allocs/op
+BenchmarkTelerWithoutBadReferrer-4           	   45228	     24806 ns/op	    5967 B/op	      94 allocs/op
+BenchmarkTelerWithoutBadCrawler-4            	   45806	     26114 ns/op	    5980 B/op	      97 allocs/op
+BenchmarkTelerWithoutDirectoryBruteforce-4   	   44432	     25636 ns/op	    6185 B/op	      97 allocs/op
 PASS
-ok  	github.com/kitabisa/teler-waf	18.496s
+ok  	github.com/kitabisa/teler-waf	25.759s
 ```
 
 > **Note**: It's important to note that the benchmarking results may vary and may not be consistent. Those results were obtained when there were **>1.5k** CVE templates and the [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.
