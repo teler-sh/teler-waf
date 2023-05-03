@@ -61,4 +61,11 @@ type Options struct {
 	// be downloaded and stored under the user-level cache directory on the first startup.
 	// Subsequent startups will use the cached dataset.
 	InMemory bool
+
+	// FalcoSidekickURL is the URL of the FalcoSidekick endpoint to which teler-waf's events
+	// will be forwarded.
+	//
+	// This field should be set to the URL of your FalcoSidekick instance, including the
+	// protocol & port (e.g. "http://localhost:2801").
+	FalcoSidekickURL string
 }

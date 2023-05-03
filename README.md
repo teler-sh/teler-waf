@@ -195,6 +195,26 @@ For example, if a request to a website returns an HTTP error status code, such a
 
 Teler request IDs are used by teler-waf to track requests made to its web application and can be useful for debugging and analyzing traffic patterns on a website.
 
+#### Falco Sidekick
+
+[Falco Sidekick](https://github.com/falcosecurity/falcosidekick) is a tool that receives events from Falco, an open-source cloud-native runtime security project, and sends them to different output channels. It allows you to forward security alerts to various third-party systems such as Slack, Elasticsearch, Loki, Grafana, Datadog and [more](https://github.com/falcosecurity/falcosidekick#outputs). This enables security teams to efficiently monitor and respond to security threats and events in real-time.
+
+Integrating Falco Sidekick with teler-waf is also possible. By using the `FalcoSidekickURL` option, you can configure teler-waf to send events to Falco Sidekick, which will receive and process them for you. To do this, simply create a new instance of the `Teler` type using the `New` function and provide the `FalcoSidekickURL` option with the URL of your Falco Sidekick instance. For example:
+
+```go
+// Create a new instance of the Teler type using
+// the New function & integrate Falco Sidekick.
+telerMiddleware := teler.New(teler.Options{
+	FalcoSidekickURL: "http://localhost:2801",
+})
+```
+
+Once you have set up this integration, any threats detected by teler-waf will be sent to Falco Sidekick, which can then take appropriate actions based on the configuration you have set up. For instance, you can set up Falco Sidekick to automatically send alerts to your incident response team.
+
+<a href="#"><img src="https://user-images.githubusercontent.com/25837540/235839471-a9d0b35d-4ff8-4c7f-bed2-fcfc4afa4a1e.png" alt="teler-waf's Falco Sidekick event" width="400px"></a>
+
+Overall, Falco Sidekick is a versatile tool that can help you automate your security response process and improve your overall security posture. By leveraging its capabilities, you can ensure that your cloud-native applications are secure and protected against potential threats.
+
 #### Datasets
 
 The teler-waf package utilizes a dataset of threats to identify and analyze each incoming request for potential security threats. This dataset is updated daily, which means that you will always have the latest resource. The dataset is initially stored in the user-level cache directory _(on Unix systems, it returns `$XDG_CACHE_HOME/teler-waf` as specified by [XDG Base Directory Specification

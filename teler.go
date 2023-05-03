@@ -239,6 +239,14 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 	// Get the error message & convert to string as a message
 	msg := err.Error()
 
+	// Send the logs
+	t.sendLogs(r, k, id, msg)
+
+	// Serve the reject handler
+	t.handler.ServeHTTP(w, r)
+}
+
+func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string) {
 	// Declare byte slice for request body.
 	var body []byte
 
@@ -246,7 +254,7 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 	buf := &bytes.Buffer{}
 
 	// Use io.Copy to copy the request body to the buffer.
-	_, err = io.Copy(buf, r.Body)
+	_, err := io.Copy(buf, r.Body)
 	if err == nil {
 		// If the read not fails, replace the request body
 		// with a new io.ReadCloser that reads from the buffer.
@@ -256,20 +264,72 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 		body = buf.Bytes()
 	}
 
+	cat := k.String()
+	path := r.URL.String()
+	ipAddr := getClientIP(r)
+
 	// Log the detected threat, request details and the error message.
 	t.log.With(
 		zap.String("id", id),
-		zap.String("category", k.String()),
+		zap.String("category", cat),
 		zap.Namespace("request"),
 		zap.String("method", r.Method),
-		zap.String("path", r.URL.String()),
-		zap.String("ip_addr", getClientIP(r)),
+		zap.String("path", path),
+		zap.String("ip_addr", ipAddr),
 		zap.Any("headers", r.Header),
 		zap.ByteString("body", body),
 	).Warn(msg)
 
-	// Serve the reject handler
-	t.handler.ServeHTTP(w, r)
+	if t.opt.FalcoSidekickURL == "" {
+		return
+	}
+
+	// Forward the detected threat to FalcoSidekick instance
+	jsonHeaders, err := json.Marshal(r.Header)
+	if err != nil {
+		panic(err)
+	}
+
+	// Initialize time
+	now := time.Now()
+
+	// Build FalcoSidekick event payload
+	data := map[string]interface{}{
+		"output": fmt.Sprintf(
+			"%s: %s attempt at %s by %s (caller=%s threat=%s id=%s)",
+			now.Format("15:04:05.000000000"), msg, path, ipAddr, t.caller, cat, id),
+		"priority": "Warning",
+		"rule":     msg,
+		"time":     now.Format("2006-01-02T15:04:05.999999999Z"),
+		"output_fields": map[string]interface{}{
+			"teler.caller":    t.caller,
+			"teler.id":        id,
+			"teler.threat":    cat,
+			"request.method":  r.Method,
+			"request.path":    path,
+			"request.ip_addr": ipAddr,
+			"request.headers": string(jsonHeaders),
+			"request.body":    string(body),
+		},
+	}
+	payload, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+
+	// Send the POST request to FalcoSidekick instance
+	req, err := http.NewRequest("POST", t.opt.FalcoSidekickURL, bytes.NewBuffer(payload))
+	if err != nil {
+		panic(err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
 }
 
 // getResources to download datasets of threat ruleset from teler-resources
