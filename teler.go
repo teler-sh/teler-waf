@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"regexp"
+	"runtime"
 	"strings"
 	"time"
 
@@ -72,7 +74,12 @@ type Teler struct {
 	// that are used to check whether a request should be whitelisted.
 	whitelistRegexes []*regexp.Regexp
 
+	// cache is an in-memory cache used by Teler middleware to
+	// store data for a short period of time.
 	cache *cache.Cache
+
+	// caller is the name of the package that called the Teler middleware.
+	caller string
 }
 
 // New constructs a new Teler instance with the supplied options.
@@ -90,6 +97,12 @@ func New(opts ...Options) *Teler {
 	t := &Teler{
 		handler: http.HandlerFunc(defaultHandler),
 		threat:  &Threat{},
+	}
+
+	// Get the package name of the calling package
+	_, file, _, ok := runtime.Caller(1)
+	if ok {
+		t.caller = path.Base(path.Dir(file))
 	}
 
 	// Set the opt field of the Teler struct to the options
