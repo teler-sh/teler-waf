@@ -296,8 +296,8 @@ func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string
 	// Build FalcoSidekick event payload
 	data := map[string]interface{}{
 		"output": fmt.Sprintf(
-			"%s: %s attempt at %s by %s (caller=%s threat=%s id=%s)",
-			now.Format("15:04:05.000000000"), msg, path, ipAddr, t.caller, cat, id),
+			"%s: %s at %s by %s (caller=%s threat=%s id=%s)",
+			now.Format("15:04:05.000000000"), msg, r.URL.Path, ipAddr, t.caller, cat, id),
 		"priority": "Warning",
 		"rule":     msg,
 		"time":     now.Format("2006-01-02T15:04:05.999999999Z"),
