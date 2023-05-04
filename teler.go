@@ -108,18 +108,14 @@ func New(opts ...Options) *Teler {
 	// Set the opt field of the Teler struct to the options
 	t.opt = o
 
-	// Retrieve the data for each threat category
-	err := t.getResources()
-	if err != nil {
-		panic(fmt.Sprintf(errResources, err))
-	}
-
 	// Initialize writer for logging and add standard error (stderr)
 	// as writer if NoStderr is false
 	ws := []zapcore.WriteSyncer{}
 	if !o.NoStderr {
 		ws = append(ws, os.Stderr)
 	}
+
+	var err error
 
 	// If the LogFile option is set, open the log file and
 	// set the log field of the Teler struct to the file descriptor
@@ -146,6 +142,12 @@ func New(opts ...Options) *Teler {
 		_ = t.log.Sync()
 	}()
 
+	// Retrieve the data for each threat category
+	err = t.getResources()
+	if err != nil {
+		t.error(zapcore.PanicLevel, fmt.Sprintf(errResources, err))
+	}
+
 	// Initialize the excludes field of the Threat struct to a new map and
 	// set the boolean flag for each threat category specified in the Excludes option to true
 	t.threat.excludes = map[threat.Threat]bool{
@@ -165,7 +167,7 @@ func New(opts ...Options) *Teler {
 	for _, wl := range o.Whitelists {
 		regex, err := regexp.Compile(wl)
 		if err != nil {
-			panic(fmt.Sprintf(errWhitelist, wl, err))
+			t.error(zapcore.PanicLevel, fmt.Sprintf(errWhitelist, wl, err))
 		}
 		t.whitelistRegexes = append(t.whitelistRegexes, regex)
 	}
@@ -174,7 +176,7 @@ func New(opts ...Options) *Teler {
 	// Compile the regular expression pattern for each rule and add it to the patternRegex field of the Rule struct
 	for _, rule := range o.Customs {
 		if rule.Name == "" {
-			panic(errInvalidRuleName)
+			t.error(zapcore.PanicLevel, errInvalidRuleName)
 		}
 
 		// Convert the condition to lowercase, if empty string then defaulting to "or"
@@ -185,7 +187,7 @@ func New(opts ...Options) *Teler {
 
 		// Check the condition is either "or" or "and"
 		if rule.Condition != "or" && rule.Condition != "and" {
-			panic(fmt.Sprintf(errInvalidRuleCond, rule.Name, rule.Condition))
+			t.error(zapcore.PanicLevel, fmt.Sprintf(errInvalidRuleCond, rule.Name, rule.Condition))
 		}
 
 		// Iterate over the rules in the custom rules
@@ -203,13 +205,13 @@ func New(opts ...Options) *Teler {
 
 			// Empty pattern cannot be process
 			if cond.Pattern == "" {
-				panic(fmt.Sprintf(errPattern, rule.Name, "pattern can't be blank"))
+				t.error(zapcore.PanicLevel, fmt.Sprintf(errPattern, rule.Name, "pattern can't be blank"))
 			}
 
 			// Compile the regular expression pattern
 			regex, err := regexp.Compile(cond.Pattern)
 			if err != nil {
-				panic(fmt.Sprintf(errPattern, rule.Name, err))
+				t.error(zapcore.PanicLevel, fmt.Sprintf(errPattern, rule.Name, "pattern can't be blank"))
 			}
 
 			rule.Rules[i].patternRegex = regex
@@ -262,6 +264,8 @@ func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string
 
 		// Convert the buffer to a string.
 		body = buf.Bytes()
+	} else {
+		t.error(zapcore.ErrorLevel, err.Error())
 	}
 
 	cat := k.String()
@@ -287,7 +291,7 @@ func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string
 	// Forward the detected threat to FalcoSidekick instance
 	jsonHeaders, err := json.Marshal(r.Header)
 	if err != nil {
-		panic(err)
+		t.error(zapcore.PanicLevel, err.Error())
 	}
 
 	// Initialize time
@@ -314,22 +318,23 @@ func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string
 	}
 	payload, err := json.Marshal(data)
 	if err != nil {
-		panic(err)
+		t.error(zapcore.ErrorLevel, err.Error())
 	}
 
 	// Send the POST request to FalcoSidekick instance
 	req, err := http.NewRequest("POST", t.opt.FalcoSidekickURL, bytes.NewBuffer(payload))
 	if err != nil {
-		panic(err)
+		t.error(zapcore.ErrorLevel, err.Error())
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		t.error(zapcore.ErrorLevel, err.Error())
+	} else {
+		defer resp.Body.Close()
 	}
-	defer resp.Body.Close()
 }
 
 // getResources to download datasets of threat ruleset from teler-resources

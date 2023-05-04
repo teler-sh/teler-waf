@@ -13,6 +13,8 @@ import (
 	"github.com/patrickmn/go-cache"
 	"github.com/twharmon/gouid"
 	"gitlab.com/golang-commonmark/mdurl"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 // inThreatIndex checks if the given substring is in specific threat datasets
@@ -199,4 +201,17 @@ func (t *Teler) setCache(key string, msg string) {
 	}
 
 	t.cache.Set(key, err, cache.DefaultExpiration)
+}
+
+func (t *Teler) error(level zapcore.Level, msg string) {
+	log := t.log.WithOptions(zap.WithCaller(true), zap.AddCallerSkip(1))
+
+	switch level {
+	case zapcore.ErrorLevel:
+		log.Error(msg)
+	case zapcore.PanicLevel:
+		log.Panic(msg)
+		// case zapcore.FatalLevel:
+		// 	log.Fatal(msg)
+	}
 }
