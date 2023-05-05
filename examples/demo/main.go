@@ -37,6 +37,9 @@ func main() {
 
 	http.Handle("/static/", http.StripPrefix("/static/", static))
 	http.Handle("/", app)
+	http.Handle("/healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
 
 	waf.SetHandler(forbidden)
 	http.ListenAndServe("127.0.0.1:3000", nil)
