@@ -198,9 +198,9 @@ func New(opts ...Options) *Teler {
 				cond.Method = request.UNDEFINED
 			}
 
-			// Defaulting method rule condition to GET if empty or undefined
+			// Defaulting method rule condition to ALL if empty or undefined
 			if cond.Method == request.UNDEFINED {
-				cond.Method = request.GET
+				cond.Method = request.ALL
 			}
 
 			// Empty pattern cannot be process
