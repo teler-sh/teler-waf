@@ -41,11 +41,7 @@ func validateYAMLRules(fl validator.FieldLevel) bool {
 
 	// Validate the yamlRule struct
 	err = validate.Struct(data)
-	if err != nil {
-		return false
-	}
-
-	return true
+	return err == nil
 }
 
 func yamlToRule(file *os.File) (Rule, error) {
@@ -55,7 +51,7 @@ func yamlToRule(file *os.File) (Rule, error) {
 	validate := validator.New()
 
 	// Register the custom validation function
-	validate.RegisterValidation("yaml", validateYAMLRules)
+	_ = validate.RegisterValidation("yaml", validateYAMLRules)
 
 	// Initialize Rule and slice of yamlRule pointer
 	var rule Rule
