@@ -1,0 +1,4 @@
+- name: Command Injection
+  rules:
+    - pattern: "(\\||;|\\n|\\r\\n|\\`|\\*\\*|&&)"
+      element: URI

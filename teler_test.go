@@ -244,7 +244,47 @@ func TestNewWithFalcoSidekickURL(t *testing.T) {
 	}
 }
 
-func TestNewCustom(t *testing.T) {
+func TestNewCustomsFromFile(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+		CustomsFromFile: "tests/rules/valid/*.yaml",
+		NoStderr:        true,
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	pathList := []string{"", "/?foo=select%20%2A%20from%20db"}
+
+	for _, path := range pathList {
+		// Create a request to send to the test server
+		req, err := http.NewRequest("GET", ts.URL, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if path != "" {
+			req.URL.Path = path
+		}
+
+		_, err = client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func TestNewCustoms(t *testing.T) {
 	// Initialize teler
 	telerMiddleware := New(Options{
 		Excludes: []threat.Threat{
@@ -593,6 +633,23 @@ func TestNewInvalidCustomRuleName(t *testing.T) {
 	telerMiddleware.Handler(handler)
 }
 
+func TestNewInvalidCustomRuleName2(t *testing.T) {
+	defer func() {
+		// Check that the teler function panics
+		if r := recover(); r != nil {
+			assert.Panics(t, func() { panic(r) })
+		}
+	}()
+
+	// Initialize teler
+	telerMiddleware := New(Options{
+		CustomsFromFile: "tests/rules/invalid/err-name.yaml",
+		NoStderr:        true,
+	})
+
+	telerMiddleware.Handler(handler)
+}
+
 func TestNewInvalidCustomRuleCondition(t *testing.T) {
 	defer func() {
 		// Check that the teler function panics
@@ -617,6 +674,23 @@ func TestNewInvalidCustomRuleCondition(t *testing.T) {
 			},
 		},
 		NoStderr: true,
+	})
+
+	telerMiddleware.Handler(handler)
+}
+
+func TestNewInvalidCustomRuleCondition2(t *testing.T) {
+	defer func() {
+		// Check that the teler function panics
+		if r := recover(); r != nil {
+			assert.Panics(t, func() { panic(r) })
+		}
+	}()
+
+	// Initialize teler
+	telerMiddleware := New(Options{
+		CustomsFromFile: "tests/rules/invalid/err-condition.yaml",
+		NoStderr:        true,
 	})
 
 	telerMiddleware.Handler(handler)
@@ -651,6 +725,23 @@ func TestNewBlankCustomRulePattern(t *testing.T) {
 	telerMiddleware.Handler(handler)
 }
 
+func TestNewBlankCustomRulePattern2(t *testing.T) {
+	defer func() {
+		// Check that the teler function panics
+		if r := recover(); r != nil {
+			assert.Panics(t, func() { panic(r) })
+		}
+	}()
+
+	// Initialize teler
+	telerMiddleware := New(Options{
+		CustomsFromFile: "tests/rules/invalid/err-pattern.yaml",
+		NoStderr:        true,
+	})
+
+	telerMiddleware.Handler(handler)
+}
+
 func TestNewInvalidCustomRulePattern(t *testing.T) {
 	defer func() {
 		// Check that the teler function panics
@@ -675,6 +766,57 @@ func TestNewInvalidCustomRulePattern(t *testing.T) {
 			},
 		},
 		NoStderr: true,
+	})
+
+	telerMiddleware.Handler(handler)
+}
+
+func TestNewInvalidCustomRulePattern2(t *testing.T) {
+	defer func() {
+		// Check that the teler function panics
+		if r := recover(); r != nil {
+			assert.Panics(t, func() { panic(r) })
+		}
+	}()
+
+	// Initialize teler
+	telerMiddleware := New(Options{
+		CustomsFromFile: "tests/rules/invalid/err-pattern-2.yaml",
+		NoStderr:        true,
+	})
+
+	telerMiddleware.Handler(handler)
+}
+
+func TestNewInvalidCustomRuleMethod2(t *testing.T) {
+	defer func() {
+		// Check that the teler function panics
+		if r := recover(); r != nil {
+			assert.Panics(t, func() { panic(r) })
+		}
+	}()
+
+	// Initialize teler
+	telerMiddleware := New(Options{
+		CustomsFromFile: "tests/rules/invalid/err-method.yaml",
+		NoStderr:        true,
+	})
+
+	telerMiddleware.Handler(handler)
+}
+
+func TestNewInvalidCustomRuleElement2(t *testing.T) {
+	defer func() {
+		// Check that the teler function panics
+		if r := recover(); r != nil {
+			assert.Panics(t, func() { panic(r) })
+		}
+	}()
+
+	// Initialize teler
+	telerMiddleware := New(Options{
+		CustomsFromFile: "tests/rules/invalid/err-element.yaml",
+		NoStderr:        true,
 	})
 
 	telerMiddleware.Handler(handler)

@@ -1,0 +1,4 @@
+- name: SQL Injection
+  rules:
+    - pattern: "(union|select|insert|update|delete|drop|alter)"
+      element: URI

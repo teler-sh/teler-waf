@@ -1,0 +1,4 @@
+- name: Element should be error
+  rules:
+    - element: FOO
+      pattern: bar

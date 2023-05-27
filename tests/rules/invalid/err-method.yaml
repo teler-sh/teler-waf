@@ -1,0 +1,4 @@
+- name: Method should be error
+  rules:
+    - method: FOO
+      pattern: bar

@@ -1,0 +1,4 @@
+- name: Condition should be error
+  condition: FOO
+  rules:
+    - pattern: bar

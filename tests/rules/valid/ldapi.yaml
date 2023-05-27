@@ -1,0 +1,3 @@
+- name: LDAP Injection
+  rules:
+    - pattern: "(and|or|not|&&|\\|\\|)"
