@@ -24,6 +24,7 @@ func main() {
 			`(?i)Referer: https?:\/\/www\.facebook\.com`,
 			`192\.168\.0\.1`,
 		},
+		// CustomsFromFile: "/path/to/custom/rules/*.yaml",
 		Customs: []teler.Rule{
 			{
 				Name:      "Log4j Attack",

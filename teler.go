@@ -17,6 +17,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
+	"path/filepath"
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
@@ -105,9 +106,6 @@ func New(opts ...Options) *Teler {
 		t.caller = path.Base(path.Dir(file))
 	}
 
-	// Set the opt field of the Teler struct to the options
-	t.opt = o
-
 	// Initialize writer for logging and add standard error (stderr)
 	// as writer if NoStderr is false
 	ws := []zapcore.WriteSyncer{}
@@ -172,6 +170,32 @@ func New(opts ...Options) *Teler {
 		t.whitelistRegexes = append(t.whitelistRegexes, regex)
 	}
 
+	if o.CustomsFromFile != "" {
+		// Find files matching the pattern specified in o.CustomsFromFile
+		rules, err := filepath.Glob(o.CustomsFromFile)
+		if err != nil {
+			t.error(zapcore.PanicLevel, fmt.Sprintf(errFindFile, o.CustomsFromFile, err.Error()))
+		}
+
+		// Iterate over the found files
+		for _, rule := range rules {
+			// Open the file
+			file, err := os.Open(rule)
+			if err != nil {
+				t.error(zapcore.PanicLevel, fmt.Sprintf(errOpenFile, rule, err.Error()))
+			}
+
+			// Convert the YAML file to a Rule
+			r, err := yamlToRule(file)
+			if err != nil {
+				t.error(zapcore.PanicLevel, fmt.Sprintf(errConvYAML, rule, err.Error()))
+			}
+
+			// Append the converted Rule to the o.Customs slice
+			o.Customs = append(o.Customs, r)
+		}
+	}
+
 	// Iterate over the Customs option and verify that each custom rule has a non-empty name and a valid condition
 	// Compile the regular expression pattern for each rule and add it to the patternRegex field of the Rule struct
 	for _, rule := range o.Customs {
@@ -223,6 +247,9 @@ func New(opts ...Options) *Teler {
 	if !o.Development {
 		t.cache = cache.New(15*time.Minute, 20*time.Minute)
 	}
+
+	// Set the opt field of the Teler struct to the options
+	t.opt = o
 
 	return t
 }

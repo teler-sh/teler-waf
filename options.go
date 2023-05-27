@@ -22,6 +22,15 @@ type Options struct {
 	// the default security checks provided by teler-waf.
 	Customs []Rule
 
+	// CustomsFromFile specifies the file path or glob pattern for loading custom
+	// security rules. These rules can be used to create custom security checks
+	// or to override the default security checks provided by teler IDS.
+	//
+	// The glob pattern supports wildcards, allowing you to specify multiple files
+	// or a directory with matching files. For example, "/path/to/custom/rules/**/*.yaml"
+	// will load all YAML files in the "rules" directory and its subdirectories.
+	CustomsFromFile string
+
 	// LogFile is the file path for the log file to store the security logs.
 	//
 	// If LogFile is specified, log messages will be written to the specified

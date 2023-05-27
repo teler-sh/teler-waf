@@ -13,4 +13,12 @@ const (
 	errBadReferer          = "bad HTTP referer"
 	errBadCrawler          = "bad crawler"
 	errDirectoryBruteforce = "directory bruteforce"
+
+	errConvYAML      = "failed to convert YAML file \"%s\" to teler rule: %s"
+	errFindFile      = "failed to find files matching pattern \"%s\": %s"
+	errOpenFile      = "error while open file \"%s\": %s"
+	errReadFile      = "error while read YAML file: %s"
+	errUnmarshalYAML = "cannot unmarshal YAML: %s"
+	errInvalidYAML   = "invalid YAML rule: %s"
+	errConvValRule   = "invalid \"%s\" %s value for \"%s\" rule"
 )

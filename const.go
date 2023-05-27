@@ -25,3 +25,9 @@ const (
 <!-- a padding to disable MSIE and Chrome friendly error page -->
 <!-- a padding to disable MSIE and Chrome friendly error page -->`
 )
+
+const (
+	defaultCondition = "or"
+	defaultMethod    = "ALL"
+	defaultElement   = "any"
+)
