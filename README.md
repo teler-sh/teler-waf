@@ -20,7 +20,7 @@ In addition to providing protection against web-based attacks, teler-waf can als
 
 ## Features
 
-Some core features of teler-waf include:
+teler-waf offers a range of powerful features designed to enhance the security of your Go web applications:
 
 - **HTTP middleware** for Go web applications.
 - Integration of **teler IDS** functionality.
@@ -31,6 +31,7 @@ Some core features of teler-waf include:
   - Bad HTTP referers, such as those that are not expected based on the application's URL structure or are known to be associated with malicious actors.
   - Bad crawlers, covers requests from known bad crawlers or scrapers, such as those that are known to cause performance issues or attempt to extract sensitive information from the application.
   - Directory bruteforce attacks, such as by trying common directory names or using dictionary attacks.
+- Providing increased flexibility for creating your own **custom rules**.
 - Configuration options to **whitelist specific types of requests** based on their URL or headers.
 - **Easy integration** with many frameworks.
 - **High configurability** to fit the specific needs of your application.
@@ -166,6 +167,45 @@ func main() {
 > To illustrate, suppose you set up a whitelist to permit requests containing a certain string. In the event that a request contains that string, but _/also/_ includes a payload such as an SQL injection or cross-site scripting ("XSS") attack, the request may not be thoroughly analyzed for common web attack threats and will be swiftly returned. See issue [#25](https://github.com/kitabisa/teler-waf/issues/25).
 
 For more examples of how to use teler-waf or integrate it with any framework, take a look at [examples/](https://github.com/kitabisa/teler-waf/tree/master/examples) directory.
+
+#### Custom Rules
+
+To integrate custom rules into the teler-waf middleware, you have two choices: `Customs` and `CustomsFromFile`. These options offer flexibility to create your own security checks or override the default checks provided by teler-waf.
+
+**`Customs` option**
+
+You can define custom rules directly using the `Customs` option, as shown in the [example](https://github.com/kitabisa/teler-waf#examples) above.
+
+In the `Customs` option, you provide an array of `teler.Rule` structures. Each `teler.Rule` represents a custom rule with a unique name and a condition that specifies how the individual conditions within the rule are evaluated (`or` or `and`). The rule consists of one or more `teler.Condition` structures, each defining a specific condition to check. Conditions can be based on the [HTTP method](https://pkg.go.dev/github.com/kitabisa/teler-waf/request#pkg-constants), [element](https://pkg.go.dev/github.com/kitabisa/teler-waf/request#Element) (headers, body, URI, or any), and a regex pattern to match against.
+
+**`CustomsFromFile` option**
+
+Alternatively, the `CustomsFromFile` option allows you to load custom rules from external files, offering even greater flexibility and manageability. These rules can be defined in YAML format, with each file containing one or more rules. Here is an example YAML structure representing a custom rule:
+
+```yaml
+- name: <name>
+  condition: <condition> # Valid values are: "or" or "and", in lowercase or uppercase.
+  rules:
+    -	method: <method> # Valid methods are: "ALL", "CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", and "TRACE". Please refer to https://pkg.go.dev/github.com/kitabisa/teler-waf/request for further details.
+    	element: <element> # Valid elements are: "headers", "body", "uri", and "any", in lowercase, uppercase, or title case (except for "uri").
+    	pattern: "<pattern>" # Regular expression pattern
+```
+
+> **Note**: Please note that `condition`, `method`, and `element` are optional parameters. The default value for `condition` is **or**, for `method` it is **ALL**, and for `element` it is **ANY**. Therefore, you can leave them blank if desired. For examples, take a look at [`tests/rules/`](https://github.com/kitabisa/teler-waf/tree/master/tests/rules/valid) directory.
+
+You can specify the `CustomsFromFile` option with the actual file path or glob pattern pointing to the location of your custom rule files. For example:
+
+```go
+// Create a new instance of the Teler middleware and
+// specify custom rules with the CustomsFromFile option.
+telerMiddleware := teler.New(teler.Options{
+    CustomsFromFile: "/path/to/custom/rules/**/*.yaml",
+})
+```
+
+With `CustomsFromFile`, you provide the file path or glob pattern where your custom rule files are located. The pattern can include wildcards to match multiple files or a directory and its subdirectories. Each file should contain one or more custom rules defined in the proper YAML format.
+
+By utilizing either the `Customs`, `CustomsFromFile`, or both option, you can seamlessly integrate your custom rules into the teler-waf middleware, enhancing its security capabilities to meet your specific requirements.
 
 #### Development
 
