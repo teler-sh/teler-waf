@@ -157,6 +157,7 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 			// If the Method field is ALL, match any request method
 			switch {
 			case cond.Method == request.ALL:
+				ok = true
 			case string(cond.Method) == r.Method:
 				ok = true
 			}
