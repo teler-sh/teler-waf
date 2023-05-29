@@ -4,6 +4,8 @@ import (
 	"strings"
 
 	"github.com/kitabisa/teler-waf/threat"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // Env represents the environment for the DSL.
@@ -39,7 +41,7 @@ func New() *Env {
 		"replaceAll":  strings.ReplaceAll,
 		"request":     env.Requests,
 		"threat":      env.Threat,
-		"title":       strings.Title,
+		"title":       cases.Title(language.Und).String,
 		"toLower":     strings.ToLower,
 		"toTitle":     strings.ToTitle,
 		"toUpper":     strings.ToUpper,
