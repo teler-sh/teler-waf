@@ -1,0 +1,3 @@
+- name: Headers Contains "curl" String
+  rules:
+    - dsl: request.Headers contains "curl"

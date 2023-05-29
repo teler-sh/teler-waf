@@ -1,0 +1,3 @@
+- name: Body Contains "foo" String
+  rules:
+    - dsl: request.Body contains "foo"

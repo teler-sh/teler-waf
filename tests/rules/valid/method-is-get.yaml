@@ -1,0 +1,3 @@
+- name: Method is GET
+  rules:
+    - dsl: request.Method == "GET"

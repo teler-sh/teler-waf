@@ -1,0 +1,3 @@
+- name: Request IP Address is Localhost
+  rules:
+    - dsl: request.IP in ["127.0.0.1", "::1", "0.0.0.0"]
