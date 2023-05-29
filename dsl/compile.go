@@ -16,7 +16,7 @@ Here are some examples of DSL expression code:
 
 Check if the incoming request headers contains "curl":
 
-	request.Headers contains "curl"`
+	request.Headers contains "curl"
 
 Check if the incoming request method is "GET":
 
@@ -117,7 +117,7 @@ the functionalities offered by the [strings] package.
   - trimSpace
   - trimSuffix
 
-For more information on operators and built-in functions,please refer to
+For more information on operators and built-in functions, please refer to
 the [operator] and [built-in functions from the expr package] documentation.
 
 [operator]: https://expr.medv.io/docs/Language-Definition#operators
