@@ -125,6 +125,8 @@ func main() {
 			`(?i)Referer: https?:\/\/www\.facebook\.com`,
 			`192\.168\.0\.1`,
 		},
+		// Specify file path or glob pattern of custom rule files.
+		CustomsFromRule: "/path/to/custom/rules/**/*.yaml",
 		// Specify custom rules for the teler-waf to follow.
 		Customs: []teler.Rule{
 			{
@@ -142,6 +144,17 @@ func main() {
 						Element: request.URI,
 						// Specify the pattern to match against the element of the request.
 						Pattern: `\$\{.*:\/\/.*\/?\w+?\}`,
+					},
+				},
+			},
+			{
+				// Give the rule a name for easy identification.
+				Name: `Headers Contains "curl" String`,
+				// Specify the conditions that must be met for the rule to trigger.
+				Rules: []teler.Condition{
+					{
+						// Specify the DSL expression that the rule applies to.
+						DSL: `request.Headers contains "curl"`,
 					},
 				},
 			},
@@ -168,17 +181,17 @@ func main() {
 
 For more examples of how to use teler-waf or integrate it with any framework, take a look at [examples/](https://github.com/kitabisa/teler-waf/tree/master/examples) directory.
 
-#### Custom Rules
+### Custom Rules
 
 To integrate custom rules into the teler-waf middleware, you have two choices: `Customs` and `CustomsFromFile`. These options offer flexibility to create your own security checks or override the default checks provided by teler-waf.
 
-**`Customs` option**
+- **`Customs` option**
 
 You can define custom rules directly using the `Customs` option, as shown in the [example](https://github.com/kitabisa/teler-waf#examples) above.
 
-In the `Customs` option, you provide an array of `teler.Rule` structures. Each `teler.Rule` represents a custom rule with a unique name and a condition that specifies how the individual conditions within the rule are evaluated (`or` or `and`). The rule consists of one or more `teler.Condition` structures, each defining a specific condition to check. Conditions can be based on the [HTTP method](https://pkg.go.dev/github.com/kitabisa/teler-waf/request#pkg-constants), [element](https://pkg.go.dev/github.com/kitabisa/teler-waf/request#Element) (headers, body, URI, or any), and a regex pattern to match against.
+In the `Customs` option, you provide an array of `teler.Rule` structures. Each `teler.Rule` represents a custom rule with a unique name and a condition that specifies how the individual conditions within the rule are evaluated (`or` or `and`). The rule consists of one or more `teler.Condition` structures, each defining a specific condition to check. Conditions can be based on the [HTTP method](https://pkg.go.dev/github.com/kitabisa/teler-waf/request#pkg-constants), [element](https://pkg.go.dev/github.com/kitabisa/teler-waf/request#Element) (headers, body, URI, or any), and a regex pattern or a [DSL expression](https://pkg.go.dev/github.com/kitabisa/teler-waf/dsl) to match against.
 
-**`CustomsFromFile` option**
+- **`CustomsFromFile` option**
 
 Alternatively, the `CustomsFromFile` option allows you to load custom rules from external files, offering even greater flexibility and manageability. These rules can be defined in YAML format, with each file containing one or more rules. Here is an example YAML structure representing a custom rule:
 
@@ -186,12 +199,13 @@ Alternatively, the `CustomsFromFile` option allows you to load custom rules from
 - name: <name>
   condition: <condition> # Valid values are: "or" or "and", in lowercase or uppercase.
   rules:
-    -	method: <method> # Valid methods are: "ALL", "CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", and "TRACE". Please refer to https://pkg.go.dev/github.com/kitabisa/teler-waf/request for further details.
-    	element: <element> # Valid elements are: "headers", "body", "uri", and "any", in lowercase, uppercase, or title case (except for "uri").
-    	pattern: "<pattern>" # Regular expression pattern
+    - method: <method> # Valid methods are: "ALL", "CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", and "TRACE". Please refer to https://pkg.go.dev/github.com/kitabisa/teler-waf/request for further details.
+      element: <element> # Valid elements are: "headers", "body", "uri", and "any", in lowercase, uppercase, or title case (except for "uri").
+      pattern: "<pattern>" # Regular expression pattern
+    - dsl: "<expression>" # DSL expression
 ```
 
-> **Note**: Please note that `condition`, `method`, and `element` are optional parameters. The default value for `condition` is **or**, for `method` it is **ALL**, and for `element` it is **ANY**. Therefore, you can leave them blank if desired. For examples, take a look at [`tests/rules/`](https://github.com/kitabisa/teler-waf/tree/master/tests/rules/valid) directory.
+> **Note**: Please note that the `condition`, `method`, and `element` are optional parameters. The default values assigned to them are as follows: `condition` is set to **or**, `method` is set to **ALL**, and `element` is set to **ANY**. Therefore, if desired, you can leave those parameters empty. The `pattern` parameter is mandatory, unless you specify a `dsl` expression. In such cases, when a `dsl` expression is provided, teler-waf will disregard any values assigned to `method` and `element`, even if they are defined. To see some examples, you can refer to the [`tests/rules/`](https://github.com/kitabisa/teler-waf/tree/master/tests/rules/valid) directory.
 
 You can specify the `CustomsFromFile` option with the actual file path or glob pattern pointing to the location of your custom rule files. For example:
 
@@ -207,7 +221,105 @@ With `CustomsFromFile`, you provide the file path or glob pattern where your cus
 
 By utilizing either the `Customs`, `CustomsFromFile`, or both option, you can seamlessly integrate your custom rules into the teler-waf middleware, enhancing its security capabilities to meet your specific requirements.
 
-#### Development
+### DSL Expression
+
+DSL (Domain Specific Language) expressions that can be used to define conditions for evaluating incoming requests in custom rules<!-- or whitelists-->. Here are some examples of DSL expression code:
+
+#### Examples of DSL expression code:
+
+Check if the incoming request headers contains "curl":
+
+```sql
+request.Headers contains "curl"
+```
+
+Check if the incoming request method is "GET":
+
+```sql
+request.Method == "GET"
+```
+
+Check if the incoming request method is "GET" or "POST"
+using regular expression [operator] matching:
+
+```sql
+request.Method matches "^(POS|GE)T$"
+```
+
+Check if the incoming request IP address is from localhost:
+
+```sql
+request.IP in ["127.0.0.1", "::1", "0.0.0.0"]
+```
+
+Check if the any element in request contains the string "foo":
+
+```console
+one(request.ALL, # contains "foo")
+```
+
+Check if the incoming request body contains "foo":
+
+```sql
+request.Body contains "foo"
+```
+
+Check whether the current threat category being analyzed is bad crawler or directory bruteforce:
+
+```sql
+threat in [BadCrawler, DirectoryBruteforce]
+```
+
+#### Available variables
+
+- **Threat category**
+
+All constant identifiers of the [threat.Threat] type are valid variables.
+
+- **`request`**
+
+	* `request` represents the incoming request fields (URI, Headers, Body, etc.) and its values.
+	* `request.URI` represents the incoming request URI (path, queries, parameters, and a fragments).
+	* `request.Headers` represents the incoming request headers in multiple lines.
+	* `request.Body` represents the incoming request body.
+	* `request.Method` represents the incoming request method.
+	* `request.IP` represents the client IP address of the incoming request.
+	* `request.ALL` represents all the string values from the request fields above in slice.
+
+- **`threat`**
+
+	* `threat` represents the threat category being analyzed (type of `threat.Threat`).
+
+**Available functions**
+
+The functions available in this package include both [built-in functions from the expr package](https://expr.medv.io/docs/Language-Definition#built-in-functions) and those specifically defined by DSL package. The following is a list of the functions provided by, which utilize the functionalities offered by the built-in `strings` Go package.
+
+* `clone`
+* `containsAny`
+* `equalFold`
+* `hasPrefix`
+* `hasSuffix`
+* `join`
+* `repeat`
+* `replace`
+* `replaceAll`
+* `request`
+* `threat`
+* `title`
+* `toLower`
+* `toTitle`
+* `toUpper`
+* `toValidUTF8`
+* `trim`
+* `trimLeft`
+* `trimPrefix`
+* `trimRight`
+* `trimSpace`
+* `trimSuffix`
+
+For more information on operators and built-in functions, please refer to the [Expr](https://expr.medv.io/docs/Getting-Started) documentation.
+
+### Development
 
 By default, teler-waf caches all incoming requests for 15 minutes & clear them every 20 minutes to improve the performance. However, if you're still customizing the settings to match the requirements of your application, you can disable caching during development by setting the development mode option to `true`. This will prevent incoming requests from being cached and can be helpful for debugging purposes.
 
@@ -219,7 +331,7 @@ telerMiddleware := teler.New(teler.Options{
 })
 ```
 
-#### Logs
+### Logs
 
 Here is an example of what the log lines would look like if teler-waf detects a threat on a request:
 
@@ -235,7 +347,7 @@ For example, if a request to a website returns an HTTP error status code, such a
 
 Teler request IDs are used by teler-waf to track requests made to its web application and can be useful for debugging and analyzing traffic patterns on a website.
 
-#### Falco Sidekick
+### Falco Sidekick
 
 [Falco Sidekick](https://github.com/falcosecurity/falcosidekick) is a tool that receives events from Falco, an open-source cloud-native runtime security project, and sends them to different output channels. It allows you to forward security alerts to various third-party systems such as Slack, Elasticsearch, Loki, Grafana, Datadog and [more](https://github.com/falcosecurity/falcosidekick#outputs). This enables security teams to efficiently monitor and respond to security threats and events in real-time.
 
@@ -255,7 +367,7 @@ Once you have set up this integration, any threats detected by teler-waf will be
 
 Overall, Falco Sidekick is a versatile tool that can help you automate your security response process and improve your overall security posture. By leveraging its capabilities, you can ensure that your cloud-native applications are secure and protected against potential threats.
 
-#### Datasets
+### Datasets
 
 The teler-waf package utilizes a dataset of threats to identify and analyze each incoming request for potential security threats. This dataset is updated daily, which means that you will always have the latest resource. The dataset is initially stored in the user-level cache directory _(on Unix systems, it returns `$XDG_CACHE_HOME/teler-waf` as specified by [XDG Base Directory Specification
 ](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html) if non-empty, else `$HOME/.cache/teler-waf`. On Darwin, it returns `$HOME/Library/Caches/teler-waf`. On Windows, it returns `%LocalAppData%/teler-waf`. On Plan 9, it returns `$home/lib/cache/teler-waf`)_ on your first launch. Subsequent launch will utilize the cached dataset, rather than downloading it again.
