@@ -62,6 +62,9 @@ The types of threats that are checked for are:
 func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.Threat, error) {
 	var err error
 
+	// Initialize DSL requests environment
+	t.setDSLRequestEnv(r)
+
 	// Check the request against custom rules
 	if err = t.checkCustomRules(r); err != nil {
 		return threat.Custom, err
@@ -98,6 +101,9 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 			err = t.checkDirectoryBruteforce(r) // Check for directory bruteforce attacks
 		}
 
+		// Set DSL threat environment
+		t.env.Threat = k
+
 		// If a threat is detected, return the threat type and an error
 		if err != nil {
 			return k, err
@@ -108,10 +114,8 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 	return threat.Undefined, nil
 }
 
-// checkCustomRules checks the given http.Request against a set of custom rules defined in the Teler struct.
-// If any of the custom rules are violated, the function returns an error with the name of the violated rule as the message.
-// If no custom rules are violated, the function returns nil.
-func (t *Teler) checkCustomRules(r *http.Request) error {
+// setDSLRequestEnv will set DSL environment based on the incoming request information.
+func (t *Teler) setDSLRequestEnv(r *http.Request) {
 	// Converts map of headers to RAW string
 	headers := headersToRawString(r.Header)
 
@@ -138,6 +142,25 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 	// Decode the URL-encoded and unescape HTML entities of body
 	body = stringDeUnescape(body)
 
+	// Set DSL requests environment
+	t.env.Requests = map[string]interface{}{
+		"URI":     uri,
+		"Headers": headers,
+		"Body":    body,
+		"Method":  r.Method,
+		"IP":      getClientIP(r),
+	}
+}
+
+// checkCustomRules checks the given http.Request against a set of custom rules defined in the Teler struct.
+// If any of the custom rules are violated, the function returns an error with the name of the violated rule as the message.
+// If no custom rules are violated, the function returns nil.
+func (t *Teler) checkCustomRules(r *http.Request) error {
+	// Declare headers, URI, and body of a request.
+	headers := t.env.Requests["Headers"].(string)
+	uri := t.env.Requests["URI"].(string)
+	body := t.env.Requests["Body"].(string)
+
 	// Check if the request is in cache
 	key := headers + uri + body
 	if err, ok := t.getCache(key); ok {
@@ -152,6 +175,21 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 		// Iterate over the Rules field of the current custom rule, which is a slice of rule conditions
 		for _, cond := range rule.Rules {
 			ok := false
+
+			// Check if DSL expression is not empty, then evaluate it
+			if cond.DSL != "" {
+				dslEval, err := t.env.Run(cond.dslProgram)
+				if err != nil {
+					continue
+				}
+
+				ok = dslEval.(bool)
+			}
+
+			if ok {
+				t.setCache(key, rule.Name)
+				return errors.New(rule.Name)
+			}
 
 			// Check if the Method field of the current rule condition matches the request method
 			// If the Method field is ALL, match any request method
@@ -223,26 +261,8 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 	// request URI of the URL then remove all special characters
 	uri := removeSpecialChars(stringDeUnescape(r.URL.RequestURI()))
 
-	// Declare byte slice for request body.
-	var body string
-
-	// Initialize buffer to hold request body.
-	buf := &bytes.Buffer{}
-
-	// Use io.Copy to copy the request body to the buffer.
-	_, err := io.Copy(buf, r.Body)
-	if err == nil {
-		// If the read not fails, replace the request body
-		// with a new io.ReadCloser that reads from the buffer.
-		r.Body = io.NopCloser(buf)
-
-		// Convert the buffer to a string.
-		body = buf.String()
-	}
-
-	// Decode the URL-encoded and unescape HTML entities in the
-	// body of request then remove all special characters
-	body = removeSpecialChars(stringDeUnescape(body))
+	// Declare body of request then remove all special characters
+	body := removeSpecialChars(t.env.Requests["Body"].(string))
 
 	// Check if the request is in cache
 	key := uri + body
@@ -407,16 +427,12 @@ func (t *Teler) checkBadReferrer(r *http.Request) error {
 	// Parse the request referer URL
 	ref, err := url.Parse(r.Referer())
 	if err != nil {
-		// If there is an error parsing the URL, return nil
-		// TODO: What should we do so as not to stop the threat analysis chain from analyzeRequest?
 		return nil
 	}
 
 	// Extract the effective top-level domain plus one from the hostname of the referer URL
 	eTLD1, err := publicsuffix.EffectiveTLDPlusOne(ref.Hostname())
 	if err != nil {
-		// If there is an error extracting the effective top-level domain plus one, return nil
-		// TODO: What should we do so as not to stop the threat analysis chain from analyzeRequest?
 		return nil
 	}
 

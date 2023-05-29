@@ -13,7 +13,8 @@ import (
 type yamlCondition struct {
 	Method  string `yaml:"method,omitempty"`
 	Element string `yaml:"element,omitempty"`
-	Pattern string `yaml:"pattern" validate:"required"`
+	Pattern string `yaml:"pattern,omitempty"`
+	DSL     string `yaml:"dsl,omitempty"`
 }
 
 type yamlRule struct {
@@ -84,10 +85,23 @@ func yamlToRule(file *os.File) (Rule, error) {
 
 		// Convert each sub-rule to the Rule struct
 		for i, c := range r.Rules {
+			// If DSL expression is not empty, then skip
+			if c.DSL != "" {
+				rule.Rules[i].DSL = c.DSL
+				continue
+			}
+
+			// Check if DSL expression or regular expression pattern is empty
+			if c.DSL == "" && c.Pattern == "" {
+				return rule, fmt.Errorf(errInvalidYAML, "DSL or pattern cannot be empty")
+			}
+
+			// If method is empty, set to default value
 			if c.Method == "" {
 				c.Method = defaultMethod
 			}
 
+			// If element is empty, set to default value
 			if c.Element == "" {
 				c.Element = defaultElement
 			}

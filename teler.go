@@ -19,6 +19,7 @@ import (
 	"net/url"
 	"path/filepath"
 
+	"github.com/kitabisa/teler-waf/dsl"
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
 	"github.com/klauspost/compress/zstd"
@@ -81,6 +82,9 @@ type Teler struct {
 
 	// caller is the name of the package that called the Teler middleware.
 	caller string
+
+	// env is environment for DSL.
+	env *dsl.Env
 }
 
 // New constructs a new Teler instance with the supplied options.
@@ -160,6 +164,9 @@ func New(opts ...Options) *Teler {
 		t.threat.excludes[ex] = true
 	}
 
+	// Initialize DSL environments
+	t.env = dsl.New()
+
 	// For each entry in the Whitelists option, compile a regular expression and
 	// add it to the whitelistRegexes slice of the Teler struct
 	for _, wl := range o.Whitelists {
@@ -216,6 +223,24 @@ func New(opts ...Options) *Teler {
 
 		// Iterate over the rules in the custom rules
 		for i, cond := range rule.Rules {
+			// If DSL expression is not empty, then compile as a program.
+			if cond.DSL != "" {
+				program, err := t.env.Compile(cond.DSL)
+				if err != nil {
+					t.error(zapcore.PanicLevel, fmt.Sprintf(errCompileDSLExpr, rule.Name, err.Error()))
+					continue
+				}
+
+				// Stores compiled DSL program
+				rule.Rules[i].dslProgram = program
+				continue
+			}
+
+			// Check if the DSL expression or pattern is empty string
+			if cond.DSL == "" && cond.Pattern == "" {
+				t.error(zapcore.PanicLevel, fmt.Sprintf(errPattern, rule.Name, "DSL or pattern cannot be empty"))
+			}
+
 			// Check if the method rule condition is valid, and
 			// set to UNDEFINED if it isn't.
 			if !isValidMethod(cond.Method) {
@@ -229,13 +254,13 @@ func New(opts ...Options) *Teler {
 
 			// Empty pattern cannot be process
 			if cond.Pattern == "" {
-				t.error(zapcore.PanicLevel, fmt.Sprintf(errPattern, rule.Name, "pattern can't be blank"))
+				t.error(zapcore.PanicLevel, fmt.Sprintf(errPattern, rule.Name, "pattern cannot be empty"))
 			}
 
 			// Compile the regular expression pattern
 			regex, err := regexp.Compile(cond.Pattern)
 			if err != nil {
-				t.error(zapcore.PanicLevel, fmt.Sprintf(errPattern, rule.Name, "pattern can't be blank"))
+				t.error(zapcore.PanicLevel, fmt.Sprintf(errPattern, rule.Name, err.Error()))
 			}
 
 			rule.Rules[i].patternRegex = regex
@@ -276,28 +301,11 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 }
 
 func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string) {
-	// Declare byte slice for request body.
-	var body []byte
-
-	// Initialize buffer to hold request body.
-	buf := &bytes.Buffer{}
-
-	// Use io.Copy to copy the request body to the buffer.
-	_, err := io.Copy(buf, r.Body)
-	if err == nil {
-		// If the read not fails, replace the request body
-		// with a new io.ReadCloser that reads from the buffer.
-		r.Body = io.NopCloser(buf)
-
-		// Convert the buffer to a string.
-		body = buf.Bytes()
-	} else {
-		t.error(zapcore.ErrorLevel, err.Error())
-	}
-
+	// Declare request body, threat category, URL path, and remote IP address.
+	body := t.env.Requests["Body"].(string)
 	cat := k.String()
 	path := r.URL.String()
-	ipAddr := getClientIP(r)
+	ipAddr := t.env.Requests["IP"].(string)
 
 	// Log the detected threat, request details and the error message.
 	t.log.With(
@@ -308,7 +316,7 @@ func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string
 		zap.String("path", path),
 		zap.String("ip_addr", ipAddr),
 		zap.Any("headers", r.Header),
-		zap.ByteString("body", body),
+		zap.String("body", body),
 	).Warn(msg)
 
 	if t.opt.FalcoSidekickURL == "" {
