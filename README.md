@@ -239,7 +239,7 @@ Check if the incoming request method is "GET":
 request.Method == "GET"
 ```
 
-Check if the incoming request method is "GET" or "POST" using regular expression [operator] matching:
+Check if the incoming request method is "GET" or "POST" using regular expression, `matches` operator:
 
 ```sql
 request.Method matches "^(POS|GE)T$"
