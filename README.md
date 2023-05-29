@@ -223,7 +223,7 @@ By utilizing either the `Customs`, `CustomsFromFile`, or both option, you can se
 
 ### DSL Expression
 
-DSL (Domain Specific Language) expressions that can be used to define conditions for evaluating incoming requests in custom rules<!-- or whitelists-->. Here are some examples of DSL expression code:
+DSL (Domain-Specific Language) expressions provide a powerful means of defining conditions that are used to evaluate incoming requests within the context of custom rules<!-- or whitelists-->. With DSL expressions, you can create sophisticated and targeted conditions based on different attributes of the incoming requests. Here are some illustrative examples of DSL expression code:
 
 #### Examples of DSL expression code:
 
@@ -239,7 +239,7 @@ Check if the incoming request method is "GET":
 request.Method == "GET"
 ```
 
-Check if the incoming request method is "GET" or "POST" using regular expression [operator] matching:
+Check if the incoming request method is "GET" or "POST" using regular expression, `matches` operator:
 
 ```sql
 request.Method matches "^(POS|GE)T$"
@@ -269,54 +269,61 @@ Check whether the current threat category being analyzed is bad crawler or direc
 threat in [BadCrawler, DirectoryBruteforce]
 ```
 
+Those examples provide a glimpse into the expressive capabilities of DSL expressions, allowing you to define intricate conditions based on various request attributes. By leveraging these expressions, you can effectively define the criteria for evaluating incoming requests and tailor your custom rules<!-- or whitelists--> accordingly, enabling fine-grained control over your application's behavior.
+
 #### Available variables
+
+When working with DSL expressions, you have access to various variables that provide valuable information about the incoming requests and the threat category being analyzed. Here is a detailed description of the available variables:
 
 - **Threat category**
 
-All constant identifiers of the `threat.Threat` type are valid variables.
+All constant identifiers of the `threat.Threat` type can be used as valid variables. These identifiers represent different threat categories that are relevant to your analysis.
 
 - **`request`**
 
-	* `request` represents the incoming request fields (URI, Headers, Body, etc.) and its values.
-	* `request.URI` represents the incoming request URI (path, queries, parameters, and a fragments).
-	* `request.Headers` represents the incoming request headers in multiple lines.
-	* `request.Body` represents the incoming request body.
-	* `request.Method` represents the incoming request method.
-	* `request.IP` represents the client IP address of the incoming request.
-	* `request.ALL` represents all the string values from the request fields above in slice.
+	The `request` variable represents the incoming request and provides access to its fields and corresponding values. The following sub-variables are available within the `request` variable:
+
+  - `request.URI`: Represents the URI of the incoming request, including the path, queries, parameters, and fragments.
+  - `request.Headers`: Represents the headers of the incoming request, presented in multiple lines.
+  - `request.Body`: Represents the body of the incoming request.
+  - `request.Method`: Represents the method of the incoming request.
+  - `request.IP`: Represents the client IP address associated with the incoming request.
+  - `request.ALL`: Represents all the string values from the request fields mentioned above in a slice.
 
 - **`threat`**
 
-	* `threat` represents the threat category being analyzed (type of `threat.Threat`).
+	The `threat` variable represents the threat category being analyzed. It is of the `threat.Threat` type and allows you to evaluate and make decisions based on the specific threat category associated with the request.
 
-**Available functions**
+By utilizing those variables within your DSL expressions, you can effectively access and manipulate the attributes of the incoming requests and assess the relevant threat categories. This enables you to create custom rule conditions<!-- and whitelists--> that tailored to your specific use case.
 
-The functions available in this package include both [built-in functions from the expr package](https://expr.medv.io/docs/Language-Definition#built-in-functions) and those specifically defined by DSL package. The following is a list of the functions provided by, which utilize the functionalities offered by the built-in `strings` Go package.
+#### Available functions
 
-* `clone`
-* `containsAny`
-* `equalFold`
-* `hasPrefix`
-* `hasSuffix`
-* `join`
-* `repeat`
-* `replace`
-* `replaceAll`
-* `request`
-* `threat`
-* `title`
-* `toLower`
-* `toTitle`
-* `toUpper`
-* `toValidUTF8`
-* `trim`
-* `trimLeft`
-* `trimPrefix`
-* `trimRight`
-* `trimSpace`
-* `trimSuffix`
+Also, you have access to a variety of functions. These functions encompass both the [built-in functions](https://expr.medv.io/docs/Language-Definition#built-in-functions) provided by the expr package and those specifically defined within the DSL package. The functions utilize the functionalities offered by the built-in `strings` Go package. Here is a detailed list of the functions available:
 
-For more information on operators and built-in functions, please refer to the [Expr](https://expr.medv.io/docs/Getting-Started) documentation.
+- `clone`: Create a copy of a string.
+- `containsAny`: Check if a string contains any of the specified substrings.
+- `equalFold`: Compare two strings in a case-insensitive manner.
+- `hasPrefix`: Check if a string has a specified prefix.
+- `hasSuffix`: Check if a string has a specified suffix.
+- `join`: Concatenate multiple strings using a specified separator.
+- `repeat`: Repeat a string a specified number of times.
+- `replace`: Replace occurrences of a substring within a string.
+- `replaceAll`: Replace all occurrences of a substring within a string.
+- `request`: Access request-specific information within the DSL expression.
+- `threat`: Access information related to the threat category being analyzed.
+- `title`: Convert a string to title case.
+- `toLower`: Convert a string to lowercase.
+- `toTitle`: Convert a string to title case.
+- `toUpper`: Convert a string to uppercase.
+- `toValidUTF8`: Convert a string to a valid UTF-8 encoded string.
+- `trim`: Remove leading and trailing whitespace from a string.
+- `trimLeft`: Remove leading whitespace from a string.
+- `trimPrefix`: Remove a specified prefix from a string.
+- `trimRight`: Remove trailing whitespace from a string.
+- `trimSpace`: Remove leading and trailing whitespace and collapse consecutive whitespace within a string.
+- `trimSuffix`: Remove a specified suffix from a string.
+
+For more comprehensive details on operators and built-in functions, please refer to the [Expr documentation](https://expr.medv.io/docs/Getting-Started). It provides a comprehensive guide to utilizing operators and exploring the available built-in functions in your DSL expressions.
 
 ### Development
 
