@@ -239,8 +239,7 @@ Check if the incoming request method is "GET":
 request.Method == "GET"
 ```
 
-Check if the incoming request method is "GET" or "POST"
-using regular expression [operator] matching:
+Check if the incoming request method is "GET" or "POST" using regular expression [operator] matching:
 
 ```sql
 request.Method matches "^(POS|GE)T$"
@@ -274,7 +273,7 @@ threat in [BadCrawler, DirectoryBruteforce]
 
 - **Threat category**
 
-All constant identifiers of the [threat.Threat] type are valid variables.
+All constant identifiers of the `threat.Threat` type are valid variables.
 
 - **`request`**
 
