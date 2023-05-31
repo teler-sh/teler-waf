@@ -19,6 +19,7 @@ import (
 	"net/url"
 	"path/filepath"
 
+	"github.com/antonmedv/expr/vm"
 	"github.com/kitabisa/teler-waf/dsl"
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
@@ -72,9 +73,9 @@ type Teler struct {
 	// handler is the http.Handler that the Teler middleware wraps.
 	handler http.Handler
 
-	// whitelistRegexes is a slice of regular expression pointers
+	// wlPrograms is a slice of compiled DSL expression as a program pointers
 	// that are used to check whether a request should be whitelisted.
-	whitelistRegexes []*regexp.Regexp
+	wlPrograms []*vm.Program
 
 	// cache is an in-memory cache used by Teler middleware to
 	// store data for a short period of time.
@@ -167,14 +168,15 @@ func New(opts ...Options) *Teler {
 	// Initialize DSL environments
 	t.env = dsl.New()
 
-	// For each entry in the Whitelists option, compile a regular expression and
-	// add it to the whitelistRegexes slice of the Teler struct
+	// For each entry in the Whitelists option, compile a DSL expression and
+	// add it to the wlPrograms slice of the Teler struct
 	for _, wl := range o.Whitelists {
-		regex, err := regexp.Compile(wl)
+		program, err := t.env.Compile(wl)
 		if err != nil {
-			t.error(zapcore.PanicLevel, fmt.Sprintf(errWhitelist, wl, err))
+			t.error(zapcore.PanicLevel, fmt.Sprintf(errCompileDSLExpr, wl, err.Error()))
+			continue
 		}
-		t.whitelistRegexes = append(t.whitelistRegexes, regex)
+		t.wlPrograms = append(t.wlPrograms, program)
 	}
 
 	if o.CustomsFromFile != "" {
@@ -227,7 +229,7 @@ func New(opts ...Options) *Teler {
 			if cond.DSL != "" {
 				program, err := t.env.Compile(cond.DSL)
 				if err != nil {
-					t.error(zapcore.PanicLevel, fmt.Sprintf(errCompileDSLExpr, rule.Name, err.Error()))
+					t.error(zapcore.PanicLevel, fmt.Sprintf(errCompileDSLExpr, cond.DSL, err.Error()))
 					continue
 				}
 

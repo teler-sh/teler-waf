@@ -145,7 +145,7 @@ func TestNewWithDevelopment(t *testing.T) {
 func TestNewWithWhitelist(t *testing.T) {
 	// Initialize teler
 	telerMiddleware := New(Options{
-		Whitelists: []string{"Go-http-client"},
+		Whitelists: []string{`request.Headers contains "Go-http-client"`},
 		NoStderr:   true,
 	})
 	wrappedHandler := telerMiddleware.Handler(handler)
@@ -597,7 +597,7 @@ func TestNewInvalidWhitelist(t *testing.T) {
 
 	// Initialize teler
 	telerMiddleware := New(Options{
-		Whitelists: []string{`foo(?!bar)`},
+		Whitelists: []string{`XYZ matches "foo(?!bar)"`},
 		NoStderr:   true,
 	})
 
@@ -1360,10 +1360,10 @@ func ExampleNew_custom() {
 			threat.BadCrawler,
 		},
 		Whitelists: []string{
-			`(curl|Go-http-client|okhttp)/*`,
-			`^/wp-login\.php`,
-			`(?i)Referer: https?:\/\/www\.facebook\.com`,
-			`192\.168\.0\.1`,
+			`request.Headers matches "(curl|Go-http-client|okhttp)/*" && threat == BadCrawler`,
+			`request.URI startsWith "/wp-login.php"`,
+			`request.IP in ["127.0.0.1", "::1", "0.0.0.0"]`,
+			`request.Headers contains "authorization" && request.Method == "POST"`,
 		},
 		Customs: []Rule{
 			{

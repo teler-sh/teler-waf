@@ -118,12 +118,13 @@ func main() {
 			threat.BadCrawler,
 		},
 		// Specify whitelisted URIs (path & query parameters), headers,
-		// or IP addresses that will always be allowed by the teler-waf.
+		// or IP addresses that will always be allowed by the teler-waf
+		// with DSL expressions.
 		Whitelists: []string{
-			`(curl|Go-http-client|okhttp)/*`,
-			`^/wp-login\.php`,
-			`(?i)Referer: https?:\/\/www\.facebook\.com`,
-			`192\.168\.0\.1`,
+			`request.Headers matches "(curl|Go-http-client|okhttp)/*" && threat == BadCrawler`,
+			`request.URI startsWith "/wp-login.php"`,
+			`request.IP in ["127.0.0.1", "::1", "0.0.0.0"]`,
+			`request.Headers contains "authorization" && request.Method == "POST"`
 		},
 		// Specify file path or glob pattern of custom rule files.
 		CustomsFromRule: "/path/to/custom/rules/**/*.yaml",
@@ -175,10 +176,6 @@ func main() {
 }
 ```
 
-> **Warning**: When using a whitelist, any request that matches it - regardless of the type of threat it poses, it will be returned without further analysis.
->
-> To illustrate, suppose you set up a whitelist to permit requests containing a certain string. In the event that a request contains that string, but _/also/_ includes a payload such as an SQL injection or cross-site scripting ("XSS") attack, the request may not be thoroughly analyzed for common web attack threats and will be swiftly returned. See issue [#25](https://github.com/kitabisa/teler-waf/issues/25).
-
 For more examples of how to use teler-waf or integrate it with any framework, take a look at [examples/](https://github.com/kitabisa/teler-waf/tree/master/examples) directory.
 
 ### Custom Rules
@@ -223,7 +220,7 @@ By utilizing either the `Customs`, `CustomsFromFile`, or both option, you can se
 
 ### DSL Expression
 
-DSL (Domain-Specific Language) expressions provide a powerful means of defining conditions that are used to evaluate incoming requests within the context of custom rules<!-- or whitelists-->. With DSL expressions, you can create sophisticated and targeted conditions based on different attributes of the incoming requests. Here are some illustrative examples of DSL expression code:
+DSL (Domain-Specific Language) expressions provide a powerful means of defining conditions that are used to evaluate incoming requests within the context of custom rules or whitelists. With DSL expressions, you can create sophisticated and targeted conditions based on different attributes of the incoming requests. Here are some illustrative examples of DSL expression code:
 
 #### Examples of DSL expression code:
 
@@ -269,7 +266,7 @@ Check whether the current threat category being analyzed is bad crawler or direc
 threat in [BadCrawler, DirectoryBruteforce]
 ```
 
-Those examples provide a glimpse into the expressive capabilities of DSL expressions, allowing you to define intricate conditions based on various request attributes. By leveraging these expressions, you can effectively define the criteria for evaluating incoming requests and tailor your custom rules<!-- or whitelists--> accordingly, enabling fine-grained control over your application's behavior.
+Those examples provide a glimpse into the expressive capabilities of DSL expressions, allowing you to define intricate conditions based on various request attributes. By leveraging these expressions, you can effectively define the criteria for evaluating incoming requests and tailor your custom rules or whitelists accordingly, enabling fine-grained control over your application's behavior.
 
 #### Available variables
 
@@ -425,22 +422,22 @@ goos: linux
 goarch: amd64
 pkg: github.com/kitabisa/teler-waf
 cpu: 11th Gen Intel(R) Core(TM) i9-11900H @ 2.50GHz
-BenchmarkTelerDefaultOptions-4               	   42649	     24923 ns/op	    6206 B/op	      97 allocs/op
-BenchmarkTelerCommonWebAttackOnly-4          	   48589	     23069 ns/op	    5560 B/op	      89 allocs/op
-BenchmarkTelerCVEOnly-4                      	   48103	     23909 ns/op	    5587 B/op	      90 allocs/op
-BenchmarkTelerBadIPAddressOnly-4             	   47871	     22846 ns/op	    5470 B/op	      87 allocs/op
-BenchmarkTelerBadReferrerOnly-4              	   47558	     23917 ns/op	    5649 B/op	      89 allocs/op
-BenchmarkTelerBadCrawlerOnly-4               	   42138	     24010 ns/op	    5694 B/op	      86 allocs/op
-BenchmarkTelerDirectoryBruteforceOnly-4      	   45274	     23523 ns/op	    5657 B/op	      86 allocs/op
-BenchmarkTelerCustomRule-4                   	   48193	     22821 ns/op	    5434 B/op	      86 allocs/op
-BenchmarkTelerWithoutCommonWebAttack-4       	   44524	     24822 ns/op	    6054 B/op	      94 allocs/op
-BenchmarkTelerWithoutCVE-4                   	   46023	     25732 ns/op	    6018 B/op	      93 allocs/op
-BenchmarkTelerWithoutBadIPAddress-4          	   39205	     25927 ns/op	    6220 B/op	      96 allocs/op
-BenchmarkTelerWithoutBadReferrer-4           	   45228	     24806 ns/op	    5967 B/op	      94 allocs/op
-BenchmarkTelerWithoutBadCrawler-4            	   45806	     26114 ns/op	    5980 B/op	      97 allocs/op
-BenchmarkTelerWithoutDirectoryBruteforce-4   	   44432	     25636 ns/op	    6185 B/op	      97 allocs/op
+BenchmarkTelerDefaultOptions-4               	   26430	     48152 ns/op	    5876 B/op	      85 allocs/op
+BenchmarkTelerCommonWebAttackOnly-4          	   28585	     42491 ns/op	    5195 B/op	      76 allocs/op
+BenchmarkTelerCVEOnly-4                      	   29739	     44255 ns/op	    5268 B/op	      79 allocs/op
+BenchmarkTelerBadIPAddressOnly-4             	   26694	     40580 ns/op	    5187 B/op	      76 allocs/op
+BenchmarkTelerBadReferrerOnly-4              	   28233	     43695 ns/op	    5342 B/op	      78 allocs/op
+BenchmarkTelerBadCrawlerOnly-4               	   27824	     41289 ns/op	    5399 B/op	      76 allocs/op
+BenchmarkTelerDirectoryBruteforceOnly-4      	   26893	     43224 ns/op	    5411 B/op	      76 allocs/op
+BenchmarkTelerCustomRule-4                   	   29439	     39438 ns/op	    5119 B/op	      75 allocs/op
+BenchmarkTelerWithoutCommonWebAttack-4       	   27351	     41788 ns/op	    5796 B/op	      84 allocs/op
+BenchmarkTelerWithoutCVE-4                   	   28428	     44292 ns/op	    5697 B/op	      81 allocs/op
+BenchmarkTelerWithoutBadIPAddress-4          	   23587	     42611 ns/op	    5889 B/op	      85 allocs/op
+BenchmarkTelerWithoutBadReferrer-4           	   29854	     42203 ns/op	    5623 B/op	      82 allocs/op
+BenchmarkTelerWithoutBadCrawler-4            	   24682	     42622 ns/op	    5642 B/op	      84 allocs/op
+BenchmarkTelerWithoutDirectoryBruteforce-4   	   24499	     47001 ns/op	    5905 B/op	      85 allocs/op
 PASS
-ok  	github.com/kitabisa/teler-waf	25.759s
+ok  	github.com/kitabisa/teler-waf	29.380s
 ```
 
 > **Note**: Benchmarking results may vary and may not be consistent. Those results were obtained when there were **>1.5k** CVE templates and the [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.

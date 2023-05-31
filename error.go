@@ -8,7 +8,7 @@ const (
 
 	errInvalidRuleName = "error while compile custom rule: missing rule name"
 	errInvalidRuleCond = "invalid logical operator for \"%s\" rule condition, valid values are \"and\" or \"or\", given: \"%s\""
-	errCompileDSLExpr  = "cannot compile DSL expression for \"%s\" rule: %s"
+	errCompileDSLExpr  = "cannot compile DSL expression for \"%s\": %s"
 
 	errBadIPAddress        = "bad IP address"
 	errBadReferer          = "bad HTTP referer"

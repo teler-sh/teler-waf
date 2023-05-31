@@ -78,6 +78,9 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 			continue
 		}
 
+		// Set DSL threat environment
+		t.env.Threat = k
+
 		// Check for the threat type specified by the key in the excludes map
 		switch k {
 		case threat.CommonWebAttack:
@@ -93,9 +96,6 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 		case threat.DirectoryBruteforce:
 			err = t.checkDirectoryBruteforce(r) // Check for directory bruteforce attacks
 		}
-
-		// Set DSL threat environment
-		t.env.Threat = k
 
 		// If a threat is detected, return the threat type and an error
 		if err != nil {
@@ -221,6 +221,14 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 		return err
 	}
 
+	// Check if the requestis in whitelists
+	// and return it immediately
+	for _, wl := range t.wlPrograms {
+		if t.isDSLProgramTrue(wl) {
+			return nil
+		}
+	}
+
 	// Iterate over the filters in the CommonWebAttack data stored in the t.threat.cwa.Filters field
 	for _, filter := range t.threat.cwa.Filters {
 		// Initialize a variable to track whether a match is found
@@ -272,6 +280,14 @@ func (t *Teler) checkCVE(r *http.Request) error {
 	key := fmt.Sprintf("%v", requestParams)
 	if err, ok := t.getCache(key); ok {
 		return err
+	}
+
+	// Check if the requestis in whitelists
+	// and return it immediately
+	for _, wl := range t.wlPrograms {
+		if t.isDSLProgramTrue(wl) {
+			return nil
+		}
 	}
 
 	// Iterate over the templates in the data set.
@@ -354,6 +370,14 @@ func (t *Teler) checkBadIPAddress(r *http.Request) error {
 		return err
 	}
 
+	// Check if the requestis in whitelists
+	// and return it immediately
+	for _, wl := range t.wlPrograms {
+		if t.isDSLProgramTrue(wl) {
+			return nil
+		}
+	}
+
 	// Check if the client IP address is in BadIPAddress index
 	if t.inThreatIndex(threat.BadIPAddress, clientIP) {
 		// Cache the client's IP address and return an error
@@ -392,6 +416,14 @@ func (t *Teler) checkBadReferrer(r *http.Request) error {
 		return err
 	}
 
+	// Check if the requestis in whitelists
+	// and return it immediately
+	for _, wl := range t.wlPrograms {
+		if t.isDSLProgramTrue(wl) {
+			return nil
+		}
+	}
+
 	// Check if the root domain of request referer header is in the BadReferrer index
 	if t.inThreatIndex(threat.BadReferrer, eTLD1) {
 		// If the domain is found in the index, cache the referrer
@@ -426,6 +458,14 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 	// Check if the referrer request is in cache
 	if err, ok := t.getCache(ua); ok {
 		return err
+	}
+
+	// Check if the requestis in whitelists
+	// and return it immediately
+	for _, wl := range t.wlPrograms {
+		if t.isDSLProgramTrue(wl) {
+			return nil
+		}
 	}
 
 	// Iterate over BadCrawler compiled patterns and do the check
@@ -483,6 +523,14 @@ func (t *Teler) checkDirectoryBruteforce(r *http.Request) error {
 	// Check if the request path is in cache
 	if err, ok := t.getCache(path); ok {
 		return err
+	}
+
+	// Check if the requestis in whitelists
+	// and return it immediately
+	for _, wl := range t.wlPrograms {
+		if t.isDSLProgramTrue(wl) {
+			return nil
+		}
 	}
 
 	// Create a regex pattern that matches the entire request path

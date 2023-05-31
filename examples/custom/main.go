@@ -19,10 +19,10 @@ func main() {
 			threat.BadCrawler,
 		},
 		Whitelists: []string{
-			`(curl|Go-http-client|okhttp)/*`,
-			`^/wp-login\.php`,
-			`(?i)Referer: https?:\/\/www\.facebook\.com`,
-			`192\.168\.0\.1`,
+			`request.Headers matches "(curl|Go-http-client|okhttp)/*" && threat == BadCrawler`,
+			`request.URI startsWith "/wp-login.php"`,
+			`request.IP in ["127.0.0.1", "::1", "0.0.0.0"]`,
+			`request.Headers contains "authorization" && request.Method == "POST"`,
 		},
 		CustomsFromFile: "/path/to/custom/rules/*.yaml",
 		Customs: []teler.Rule{

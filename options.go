@@ -9,11 +9,8 @@ type Options struct {
 	// These threat types are defined in the threat.Threat type.
 	Excludes []threat.Threat
 
-	// Whitelists is a list of regular expressions that match request elements
+	// Whitelists is a list of DSL expressions that match request elements
 	// that should be excluded from the security checks.
-	//
-	// The request elements that can be matched are request URI (path and query parameters),
-	// HTTP headers, or client IP address.
 	Whitelists []string
 
 	// Customs is a list of custom security rules to apply to incoming requests.
