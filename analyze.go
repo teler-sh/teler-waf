@@ -407,6 +407,11 @@ func (t *Teler) checkBadReferrer(r *http.Request) error {
 		return nil
 	}
 
+	// Return early if hostname of the HTTP referrer is empty
+	if ref.Hostname() == "" {
+		return nil
+	}
+
 	// Extract the effective top-level domain plus one from the hostname of the referer URL
 	eTLD1, err := publicsuffix.EffectiveTLDPlusOne(ref.Hostname())
 	if err != nil {
