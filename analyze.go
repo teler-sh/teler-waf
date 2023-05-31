@@ -13,6 +13,7 @@ import (
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
 	"github.com/scorpionknifes/go-pcre"
+	"go.uber.org/zap/zapcore"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -402,17 +403,20 @@ func (t *Teler) checkBadReferrer(r *http.Request) error {
 	// Parse the request referer URL
 	ref, err := url.Parse(r.Referer())
 	if err != nil {
+		t.error(zapcore.ErrorLevel, err.Error())
 		return nil
 	}
 
 	// Extract the effective top-level domain plus one from the hostname of the referer URL
 	eTLD1, err := publicsuffix.EffectiveTLDPlusOne(ref.Hostname())
 	if err != nil {
+		t.error(zapcore.ErrorLevel, err.Error())
 		return nil
 	}
 
 	// Check if the referrer request is in cache
 	if err, ok := t.getCache(eTLD1); ok {
+		t.error(zapcore.ErrorLevel, err.Error())
 		return err
 	}
 
@@ -542,7 +546,8 @@ func (t *Teler) checkDirectoryBruteforce(r *http.Request) error {
 	// Check if the pattern matches the data using regexp.MatchString
 	match, err := regexp.MatchString(pattern, data)
 	if err != nil {
-		// Return nil if there was an error during the regex matching process
+		// Logs and return nil if there was an error during the regex matching process
+		t.error(zapcore.ErrorLevel, err.Error())
 		return nil
 	}
 
