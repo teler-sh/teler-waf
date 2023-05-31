@@ -1,9 +1,11 @@
 package teler
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"html"
+	"io"
 	"strings"
 
 	"net/http"
@@ -26,20 +28,42 @@ func (t *Teler) inThreatIndex(kind threat.Threat, substr string) bool {
 	return false
 }
 
-// inWhitelist checks if the given substring is in whitelist patterns
-func (t *Teler) inWhitelist(r *http.Request) bool {
-	uri := toURLDecode(r.URL.RequestURI())
+// setDSLRequestEnv will set DSL environment based on the incoming request information.
+func (t *Teler) setDSLRequestEnv(r *http.Request) {
+	// Converts map of headers to RAW string
 	headers := headersToRawString(r.Header)
-	clientIP := getClientIP(r)
 
-	// Check the request URI, headers, and client IP address against the whitelist
-	for _, pattern := range t.whitelistRegexes {
-		if pattern.MatchString(uri) || pattern.MatchString(headers) || pattern.MatchString(clientIP) {
-			return true
-		}
+	// Decode the URL-encoded and unescape HTML entities request URI of the URL
+	uri := stringDeUnescape(r.URL.RequestURI())
+
+	// Declare byte slice for request body.
+	var body string
+
+	// Initialize buffer to hold request body.
+	buf := &bytes.Buffer{}
+
+	// Use io.Copy to copy the request body to the buffer.
+	_, err := io.Copy(buf, r.Body)
+	if err == nil {
+		// If the read not fails, replace the request body
+		// with a new io.ReadCloser that reads from the buffer.
+		r.Body = io.NopCloser(buf)
+
+		// Convert the buffer to a string.
+		body = buf.String()
 	}
 
-	return false
+	// Decode the URL-encoded and unescape HTML entities of body
+	body = stringDeUnescape(body)
+
+	// Set DSL requests environment
+	t.env.Requests = map[string]interface{}{
+		"URI":     uri,
+		"Headers": headers,
+		"Body":    body,
+		"Method":  r.Method,
+		"IP":      getClientIP(r),
+	}
 }
 
 // headersToRawString converts a map of http.Header to

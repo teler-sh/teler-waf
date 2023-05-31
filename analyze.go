@@ -1,10 +1,8 @@
 package teler
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"io"
 	"regexp"
 	"strings"
 
@@ -70,11 +68,6 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 		return threat.Custom, err
 	}
 
-	// Check the request against the whitelists
-	if t.inWhitelist(r) {
-		return threat.Undefined, nil
-	}
-
 	// Retrieve the threat struct from the Teler struct
 	th := t.threat
 
@@ -112,44 +105,6 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 
 	// If no threats are detected, return Undefined and a nil error
 	return threat.Undefined, nil
-}
-
-// setDSLRequestEnv will set DSL environment based on the incoming request information.
-func (t *Teler) setDSLRequestEnv(r *http.Request) {
-	// Converts map of headers to RAW string
-	headers := headersToRawString(r.Header)
-
-	// Decode the URL-encoded and unescape HTML entities request URI of the URL
-	uri := stringDeUnescape(r.URL.RequestURI())
-
-	// Declare byte slice for request body.
-	var body string
-
-	// Initialize buffer to hold request body.
-	buf := &bytes.Buffer{}
-
-	// Use io.Copy to copy the request body to the buffer.
-	_, err := io.Copy(buf, r.Body)
-	if err == nil {
-		// If the read not fails, replace the request body
-		// with a new io.ReadCloser that reads from the buffer.
-		r.Body = io.NopCloser(buf)
-
-		// Convert the buffer to a string.
-		body = buf.String()
-	}
-
-	// Decode the URL-encoded and unescape HTML entities of body
-	body = stringDeUnescape(body)
-
-	// Set DSL requests environment
-	t.env.Requests = map[string]interface{}{
-		"URI":     uri,
-		"Headers": headers,
-		"Body":    body,
-		"Method":  r.Method,
-		"IP":      getClientIP(r),
-	}
 }
 
 // checkCustomRules checks the given http.Request against a set of custom rules defined in the Teler struct.
