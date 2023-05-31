@@ -10,6 +10,7 @@ import (
 
 	"net/http"
 
+	"github.com/antonmedv/expr/vm"
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
 	"github.com/patrickmn/go-cache"
@@ -227,6 +228,17 @@ func (t *Teler) setCache(key string, msg string) {
 	t.cache.Set(key, err, cache.DefaultExpiration)
 }
 
+// isDSLProgramTrue checks if the given compiled DSL expression (program) is true.
+func (t *Teler) isDSLProgramTrue(program *vm.Program) bool {
+	dslEval, err := t.env.Run(program)
+	if err != nil {
+		return false
+	}
+
+	return dslEval.(bool)
+}
+
+// setCache sets the error message to logs.
 func (t *Teler) error(level zapcore.Level, msg string) {
 	log := t.log.WithOptions(zap.WithCaller(true), zap.AddCallerSkip(1))
 

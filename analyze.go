@@ -131,16 +131,12 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 		for _, cond := range rule.Rules {
 			ok := false
 
-			// Check if DSL expression is not empty, then evaluate it
+			// Check if DSL expression is not empty, then evaluate the program
 			if cond.DSL != "" {
-				dslEval, err := t.env.Run(cond.dslProgram)
-				if err != nil {
-					continue
-				}
-
-				ok = dslEval.(bool)
+				ok = t.isDSLProgramTrue(cond.dslProgram)
 			}
 
+			// Returns early if the DSL expression above is match.
 			if ok {
 				t.setCache(key, rule.Name)
 				return errors.New(rule.Name)
