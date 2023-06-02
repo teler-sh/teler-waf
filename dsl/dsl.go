@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/kitabisa/teler-waf/threat"
+	"github.com/projectdiscovery/mapcidr"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -30,6 +31,7 @@ func New() *Env {
 
 	// Initialize funcs to a map of function names and their corresponding functions.
 	env.funcs = map[string]any{
+		"cidr":        mapcidr.IPAddresses,
 		"clone":       strings.Clone,
 		"containsAny": strings.ContainsAny,
 		"equalFold":   strings.EqualFold,
