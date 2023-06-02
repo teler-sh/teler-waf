@@ -297,6 +297,7 @@ By utilizing those variables within your DSL expressions, you can effectively ac
 
 Also, you have access to a variety of functions. These functions encompass both the [built-in functions](https://expr.medv.io/docs/Language-Definition#built-in-functions) provided by the expr package and those specifically defined within the DSL package. The functions utilize the functionalities offered by the built-in `strings` Go package. Here is a detailed list of the functions available:
 
+- `cidr`: Get all IP addresses in range with given CIDR.
 - `clone`: Create a copy of a string.
 - `containsAny`: Check if a string contains any of the specified substrings.
 - `equalFold`: Compare two strings in a case-insensitive manner.
