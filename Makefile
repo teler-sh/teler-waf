@@ -8,7 +8,7 @@ semgrep: ## Run semgrep
 	semgrep --config auto
 
 lint: ## Run golangci-lint
-	golangci-lint run .
+	golangci-lint run ./...
 
 vet: ## Run vetting checks
 	go vet ./...
@@ -23,7 +23,7 @@ test: vet
 test-all: semgrep lint test report ## Runs the tests, vetting, and golangci-lint, and semgrep
 
 ci: vet ## Runs the tests and vetting checks (specific for CI)
-	go test -cover -race -count=1 .
+	go test -cover -race -count=1 ./...
 
 ## Runs the tests and benchmarking
 bench:
@@ -31,6 +31,6 @@ bench:
 
 coverage: FILE := /tmp/teler-coverage.out # Define coverage file
 coverage: ## Runs the tests and check & view the test coverage
-	go test -coverprofile=$(FILE) .
+	go test -coverprofile=$(FILE) ./...
 	go tool cover -func=$(FILE)
 	rm -f $(FILE)
