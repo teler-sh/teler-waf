@@ -18,7 +18,7 @@ report: ## Run goreportcard
 
 ## Runs the tests and vetting
 test: vet
-	go test -v -cover -race -count=1 .
+	go test -v -cover -race -count=1 ./...
 
 test-all: semgrep lint test report ## Runs the tests, vetting, and golangci-lint, and semgrep
 
