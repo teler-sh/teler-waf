@@ -3,6 +3,7 @@ package dsl
 import (
 	"strings"
 
+	"github.com/antonmedv/expr"
 	"github.com/kitabisa/teler-waf/threat"
 	"github.com/projectdiscovery/mapcidr"
 	"golang.org/x/text/cases"
@@ -19,6 +20,12 @@ type Env struct {
 
 	// funcs is a map that associates function names with their respective functions.
 	funcs map[string]any
+
+	// vars is a map that associates variable names with their respective values.
+	vars map[string]any
+
+	// opts is a slice of Expr config options
+	opts []expr.Option
 }
 
 // Env represents the environment for the DSL.
@@ -28,6 +35,17 @@ func New() *Env {
 
 	// Initialize Threat to Undefined
 	env.Threat = threat.Undefined
+
+	// Initialize vars to a map of variable names and their corresponding values.
+	env.vars = map[string]any{
+		"request": env.Requests,
+		"threat":  env.Threat,
+	}
+
+	// Assign each threat category to the funcs map.
+	for _, t := range threat.List() {
+		env.vars[t.String()] = t
+	}
 
 	// Initialize funcs to a map of function names and their corresponding functions.
 	env.funcs = map[string]any{
@@ -41,8 +59,6 @@ func New() *Env {
 		"repeat":      strings.Repeat,
 		"replace":     strings.Replace,
 		"replaceAll":  strings.ReplaceAll,
-		"request":     env.Requests,
-		"threat":      env.Threat,
 		"title":       cases.Title(language.Und).String,
 		"toLower":     strings.ToLower,
 		"toTitle":     strings.ToTitle,
@@ -56,9 +72,11 @@ func New() *Env {
 		"trimSuffix":  strings.TrimSuffix,
 	}
 
-	// Assign each threat category to the funcs map.
-	for _, t := range threat.List() {
-		env.funcs[t.String()] = t
+	// Define the options for compilation.
+	env.opts = []expr.Option{
+		expr.Env(env.vars),             // Use the environment's variables.
+		expr.Env(env.funcs),            // Use the environment's functions.
+		expr.AllowUndefinedVariables(), // Allow the use of undefined variables.
 	}
 
 	// Return the initialized Env instance.

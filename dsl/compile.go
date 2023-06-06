@@ -94,6 +94,7 @@ specifically defined for this package. The following
 is a list of the functions provided by, which utilize
 the functionalities offered by the [strings] package.
 
+  - cidr
   - clone
   - containsAny
   - equalFold
@@ -124,14 +125,8 @@ the [operator] and [built-in functions from the expr package] documentation.
 [built-in functions from the expr package]: https://expr.medv.io/docs/Language-Definition#built-in-functions
 */
 func (e *Env) Compile(code string) (*vm.Program, error) {
-	// Define the options for compilation.
-	options := []expr.Option{
-		expr.Env(e.funcs),              // Use the environment's functions.
-		expr.AllowUndefinedVariables(), // Allow the use of undefined variables.
-	}
-
 	// Compile the code into a program using the defined options.
-	program, err := expr.Compile(code, options...)
+	program, err := expr.Compile(code, e.opts...)
 	if err != nil {
 		return nil, err
 	}

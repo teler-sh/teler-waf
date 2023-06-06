@@ -9,6 +9,7 @@ require (
 	github.com/klauspost/compress v1.16.5
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/projectdiscovery/mapcidr v1.1.2
+	github.com/samber/lo v1.38.1
 	github.com/scorpionknifes/go-pcre v0.0.0-20210805092536-77486363b797
 	github.com/stretchr/testify v1.8.2
 	github.com/twharmon/gouid v0.5.2
@@ -51,6 +52,7 @@ require (
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.7.0 // indirect
+	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0 // indirect
 	golang.org/x/oauth2 v0.8.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	google.golang.org/api v0.9.0 // indirect
