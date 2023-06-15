@@ -1,3 +1,16 @@
+/*
+Package teler provides implementations of teler IDS middleware.
+
+teler IDS is a web application firewall that protects against a
+variety of web-based attacks. The middleware implementations in
+this package can be used to protect Go-based web applications
+from these attacks.
+
+To use the middleware implementations in this package, simply
+import the package and then use the appropriate middleware
+function to create a new middleware instance. The middleware
+instance can then be used to wrap an existing HTTP handler.
+*/
 package teler
 
 import (

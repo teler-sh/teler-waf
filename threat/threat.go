@@ -1,3 +1,4 @@
+// Package threat implements functionality for handling threat data and analyzing requests for threats.
 package threat
 
 /*
