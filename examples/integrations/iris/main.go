@@ -24,7 +24,7 @@ func main() {
 	// })
 
 	app.Get("/home", func(ctx iris.Context) {
-		ctx.Writef("hello world, %+v")
+		ctx.Writef("hello world, %+v", ctx)
 	})
 
 	app.Listen(":8080")
