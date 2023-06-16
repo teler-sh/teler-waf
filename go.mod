@@ -6,7 +6,7 @@ require (
 	github.com/antonmedv/expr v1.12.5
 	github.com/go-playground/validator/v10 v10.14.0
 	github.com/hashicorp/go-getter v1.6.2
-	github.com/klauspost/compress v1.16.5
+	github.com/klauspost/compress v1.16.6
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/projectdiscovery/mapcidr v1.1.2
 	github.com/samber/lo v1.38.1
