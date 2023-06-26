@@ -14,25 +14,25 @@ type Condition struct {
 	// It is of type request.Method, which is a type alias for string.
 	//
 	// It will be ignored if DSL is not empty.
-	Method request.Method
+	Method request.Method `json:"method" yaml:"method"`
 
 	// Element is the request element to match.
 	// These element are defined in the request.Element type.
 	//
 	// It will be ignored if DSL is not empty.
-	Element request.Element
+	Element request.Element `json:"element" yaml:"element"`
 
 	// Pattern is the regular expression to match against the element.
 	//
 	// It will be ignored if DSL is not empty.
-	Pattern string
+	Pattern string `json:"pattern" yaml:"pattern"`
 
 	// patternRegex saves the compiled regular expressions of the
 	// Pattern for subsequent use.
 	patternRegex *regexp.Regexp
 
 	// DSL is the DSL expression to match against the incoming requests.
-	DSL string
+	DSL string `json:"dsl" yaml:"dsl"`
 
 	// dslProgram saves the compiled DSL expressions of the code
 	// for subsequent use.

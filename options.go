@@ -7,17 +7,17 @@ type Options struct {
 	// Excludes is a list of threat types to exclude from the security checks.
 	//
 	// These threat types are defined in the threat.Threat type.
-	Excludes []threat.Threat
+	Excludes []threat.Threat `json:"excludes" yaml:"excludes"`
 
 	// Whitelists is a list of DSL expressions that match request elements
 	// that should be excluded from the security checks.
-	Whitelists []string
+	Whitelists []string `json:"whitelists" yaml:"whitelists"`
 
 	// Customs is a list of custom security rules to apply to incoming requests.
 	//
 	// These rules can be used to create custom security checks or to override
 	// the default security checks provided by teler-waf.
-	Customs []Rule
+	Customs []Rule `json:"customs" yaml:"customs"`
 
 	// CustomsFromFile specifies the file path or glob pattern for loading custom
 	// security rules. These rules can be used to create custom security checks
@@ -26,13 +26,13 @@ type Options struct {
 	// The glob pattern supports wildcards, allowing you to specify multiple files
 	// or a directory with matching files. For example, "/path/to/custom/rules/**/*.yaml"
 	// will load all YAML files in the "rules" directory and its subdirectories.
-	CustomsFromFile string
+	CustomsFromFile string `json:"customs_from_file" yaml:"customs_from_file"`
 
 	// LogFile is the file path for the log file to store the security logs.
 	//
 	// If LogFile is specified, log messages will be written to the specified
 	// file in addition to stderr (if NoStderr is false).
-	LogFile string
+	LogFile string `json:"log_file" yaml:"log_file"`
 
 	// TODO:
 	// LogRotate specifies whether to rotate the log file when it reaches a new day.
@@ -44,34 +44,34 @@ type Options struct {
 	// When set to true, log messages will not be printed to stderr. If set to false,
 	// log messages will be printed to stderr. By default, log messages are printed
 	// to stderr (false).
-	NoStderr bool
+	NoStderr bool `json:"no_stderr" yaml:"no_stderr"`
 
 	// NoUpdateCheck is a boolean flag indicating whether or not to disable automatic threat
 	// dataset updates.
 	//
 	// When set to true, automatic updates will be disabled. If set to false, automatic
 	// updates will be enabled. By default, automatic updates are enabled (false).
-	NoUpdateCheck bool
+	NoUpdateCheck bool `json:"no_update_check" yaml:"no_update_check"`
 
 	// Development is a boolean flag that determines whether the request is cached or not.
 	//
 	// By default, development mode is disabled (false) or requests will cached.
-	Development bool
+	Development bool `json:"development" yaml:"development"`
 
 	// InMemory is a boolean flag that specifies whether or not to load the threat dataset
 	// into memory on initialization.
 	//
 	// When set to true, the threat dataset will be loaded into memory, which can be useful
 	// when running your service or application on a distroless or runtime image, where file
-	// access may be limited or slow.  If InMemory is set to false, the threat dataset will
+	// access may be limited or slow. If InMemory is set to false, the threat dataset will
 	// be downloaded and stored under the user-level cache directory on the first startup.
 	// Subsequent startups will use the cached dataset.
-	InMemory bool
+	InMemory bool `json:"in_memory" yaml:"in_memory"`
 
 	// FalcoSidekickURL is the URL of the FalcoSidekick endpoint to which teler-waf's events
 	// will be forwarded.
 	//
 	// This field should be set to the URL of your FalcoSidekick instance, including the
 	// protocol & port (e.g. "http://localhost:2801").
-	FalcoSidekickURL string
+	FalcoSidekickURL string `json:"falcosidekick_url" yaml:"falcosidekick_url"`
 }
