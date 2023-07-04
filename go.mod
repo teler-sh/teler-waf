@@ -16,7 +16,7 @@ require (
 	github.com/valyala/fastjson v1.6.3
 	gitlab.com/golang-commonmark/mdurl v0.0.0-20191124015652-932350d1cb84
 	go.uber.org/zap v1.24.0
-	golang.org/x/net v0.10.0
+	golang.org/x/net v0.11.0
 	golang.org/x/text v0.10.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -51,10 +51,10 @@ require (
 	go.opencensus.io v0.22.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.7.0 // indirect
+	golang.org/x/crypto v0.10.0 // indirect
 	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0 // indirect
 	golang.org/x/oauth2 v0.8.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
 	google.golang.org/api v0.9.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55 // indirect
