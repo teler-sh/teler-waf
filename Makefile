@@ -29,8 +29,10 @@ ci: vet ## Runs the tests and vetting checks (specific for CI)
 bench:
 	go test -bench . -cpu=4
 
-coverage: FILE := /tmp/teler-coverage.out # Define coverage file
-coverage: ## Runs the tests and check & view the test coverage
-	go test -coverprofile=$(FILE) ./...
+cover: FILE := /tmp/teler-coverage.out # Define coverage file
+cover: ## Runs the tests and check & view the test coverage
+	go test -race -coverprofile=$(FILE) -covermode=atomic $(TARGET)
 	go tool cover -func=$(FILE)
-	rm -f $(FILE)
+
+cover-all: TARGET := ./...
+cover-all: cover
