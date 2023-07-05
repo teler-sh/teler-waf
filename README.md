@@ -2,6 +2,7 @@
 
 [![Kitabisa Security](https://img.shields.io/badge/kitabisa-security%20project-blue)](#)
 [![GoDoc](https://pkg.go.dev/static/frontend/badge/badge.svg)](http://pkg.go.dev/github.com/kitabisa/teler-waf)
+[![codecov](https://codecov.io/gh/kitabisa/teler-waf/branch/master/graph/badge.svg?token=RTIZW58NWK)](https://codecov.io/gh/kitabisa/teler-waf)
 [![tests](https://github.com/kitabisa/teler-waf/actions/workflows/test.yaml/badge.svg)](https://github.com/kitabisa/teler-waf/actions/workflows/test.yaml)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 
@@ -274,7 +275,7 @@ When working with DSL expressions, you have access to various variables that pro
 
 - **Threat category**
 
-All constant identifiers of the `threat.Threat` type can be used as valid variables. These identifiers represent different threat categories that are relevant to your analysis.
+	All constant identifiers of the `threat.Threat` type can be used as valid variables. These identifiers represent different threat categories that are relevant to your analysis.
 
 - **`request`**
 
