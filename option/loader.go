@@ -9,8 +9,6 @@ Options struct for further processing.
 package option
 
 import (
-	"os"
-
 	"encoding/json"
 
 	"github.com/kitabisa/teler-waf"
@@ -39,7 +37,7 @@ func LoadFromJSONString(raw string) (teler.Options, error) {
 // configuration into the [teler.Options] struct.
 func LoadFromJSONFile(path string) (teler.Options, error) {
 	// Read the JSON file
-	jsonFile, err := os.ReadFile(path)
+	jsonFile, err := readFile(path)
 	if err != nil {
 		return opt, err
 	}
@@ -75,7 +73,7 @@ func LoadFromYAMLString(raw string) (teler.Options, error) {
 // configuration into the [teler.Options] struct.
 func LoadFromYAMLFile(path string) (teler.Options, error) {
 	// Read the YAML file
-	yamlFile, err := os.ReadFile(path)
+	yamlFile, err := readFile(path)
 	if err != nil {
 		return opt, err
 	}
