@@ -364,7 +364,7 @@ func (t *Teler) checkCVE(r *http.Request) error {
 // Otherwise, it returns nil.
 func (t *Teler) checkBadIPAddress(r *http.Request) error {
 	// Get the client's IP address
-	clientIP := getClientIP(r)
+	clientIP := t.env.Requests["IP"].(string)
 
 	// Check if the client's IP address is in the cache
 	if err, ok := t.getCache(clientIP); ok {
