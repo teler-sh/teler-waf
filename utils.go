@@ -11,6 +11,7 @@ import (
 	"net/http"
 
 	"github.com/antonmedv/expr/vm"
+	"github.com/dwisiswant0/clientip"
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
 	"github.com/patrickmn/go-cache"
@@ -63,7 +64,7 @@ func (t *Teler) setDSLRequestEnv(r *http.Request) {
 		"Headers": headers,
 		"Body":    body,
 		"Method":  r.Method,
-		"IP":      getClientIP(r),
+		"IP":      clientip.FromRequest(r).String(),
 	}
 }
 
@@ -143,28 +144,6 @@ func normalizeRawStringReader(raw string) *strings.Reader {
 	builder.WriteString("\r\n\r\n")
 
 	return strings.NewReader(builder.String())
-}
-
-// getClientIP to get client IP address from request
-func getClientIP(r *http.Request) string {
-	// Get the client's IP address from the X-Real-Ip header field
-	clientIP := r.Header.Get("X-Real-Ip")
-
-	// If the X-Real-Ip header field is not present, try the X-Forwarded-For header field
-	if clientIP == "" {
-		clientIP = r.Header.Get("X-Forwarded-For")
-	}
-
-	// If the X-Forwarded-For header field is present, else use the RemoteAddr field
-	if clientIP != "" {
-		clientIP = strings.TrimSpace(strings.Split(clientIP, ",")[0])
-	} else {
-		clientIP = r.RemoteAddr
-		clientIP = strings.Split(clientIP, ":")[0]
-	}
-
-	// Returning client IP address
-	return clientIP
 }
 
 // setReqIdHeader to set teler request ID header response
