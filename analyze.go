@@ -421,7 +421,6 @@ func (t *Teler) checkBadReferrer(r *http.Request) error {
 
 	// Check if the referrer request is in cache
 	if err, ok := t.getCache(eTLD1); ok {
-		t.error(zapcore.ErrorLevel, err.Error())
 		return err
 	}
 
