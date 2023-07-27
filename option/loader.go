@@ -8,23 +8,13 @@ Options struct for further processing.
 */
 package option
 
-import (
-	"encoding/json"
-
-	"github.com/kitabisa/teler-waf"
-	"gopkg.in/yaml.v3"
-)
+import "github.com/kitabisa/teler-waf"
 
 // LoadFromJSONBytes to unmarshal the teler-waf JSON
 // bytes configuration into the [teler.Options] struct.
 func LoadFromJSONBytes(raw []byte) (teler.Options, error) {
 	// Unmarshal the JSON into the Options struct
-	err := json.Unmarshal(raw, &opt)
-	if err != nil {
-		return opt, err
-	}
-
-	return opt, nil
+	return unmarshalJSONBytes(raw)
 }
 
 // LoadFromJSONString to unmarshal the teler-waf JSON
@@ -43,24 +33,14 @@ func LoadFromJSONFile(path string) (teler.Options, error) {
 	}
 
 	// Unmarshal the JSON into the Options struct
-	err = json.Unmarshal(jsonFile, &opt)
-	if err != nil {
-		return opt, err
-	}
-
-	return opt, nil
+	return unmarshalJSONBytes(jsonFile)
 }
 
 // LoadFromYAMLFile to unmarshal the teler-waf YAML
 // bytes configuration into the [teler.Options] struct.
 func LoadFromYAMLBytes(raw []byte) (teler.Options, error) {
 	// Unmarshal the YAML into the Options struct
-	err := yaml.Unmarshal(raw, &opt)
-	if err != nil {
-		return opt, err
-	}
-
-	return opt, nil
+	return unmarshalYAMLBytes(raw)
 }
 
 // LoadFromYAMLFile to unmarshal the teler-waf YAML
@@ -79,10 +59,5 @@ func LoadFromYAMLFile(path string) (teler.Options, error) {
 	}
 
 	// Unmarshal the YAML into the Options struct
-	err = yaml.Unmarshal(yamlFile, &opt)
-	if err != nil {
-		return opt, err
-	}
-
-	return opt, nil
+	return unmarshalYAMLBytes(yamlFile)
 }
