@@ -3,7 +3,7 @@ module github.com/kitabisa/teler-waf
 go 1.19
 
 require (
-	github.com/antonmedv/expr v1.12.5
+	github.com/antonmedv/expr v1.12.7
 	github.com/dwisiswant0/clientip v0.3.0
 	github.com/go-playground/validator/v10 v10.14.0
 	github.com/hashicorp/go-getter v1.7.2
