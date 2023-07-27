@@ -1,2 +1,3 @@
-examples/
 *_test.go
+.github/workflows/
+examples/
