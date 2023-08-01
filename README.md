@@ -41,6 +41,10 @@ Overall, teler-waf provides a comprehensive security solution for Go-based web a
 
 ## Install
 
+**Dependencies**:
+
+* **gcc** (GNU Compiler Collection) should be installed & configured to compile teler-waf.
+
 To install teler-waf in your Go application, run the following command to download and install the teler-waf package:
 
 ```console
