@@ -9,22 +9,23 @@ import (
 
 // Run executes the provided expr.Program in the DSL environment.
 func (e *Env) Run(program *vm.Program) (any, error) {
+	// Lock
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
 	// If the Threat field in the environment is defined, assign it to the "threat" function in the environment.
 	if e.Threat != threat.Undefined {
 		e.vars["threat"] = e.Threat
 	}
 
-	// Initialize the "ALL" field in the Requests map as an empty string slice.
-	e.Requests["ALL"] = []string{}
-
-	// Iterate over the values in the Requests map.
-	for _, rVal := range e.Requests {
-		// Check if the value is a string and not empty.
-		if val, ok := rVal.(string); ok && val != "" {
-			// Append the value to the "ALL" field in the Requests map.
-			e.Requests["ALL"] = append(e.Requests["ALL"].([]string), val)
+	// Combine all requests
+	e.Requests["ALL"] = lo.MapToSlice(e.Requests, func(k string, v any) string {
+		if s, ok := v.(string); ok && s != "" {
+			return s
 		}
-	}
+
+		return ""
+	})
 
 	// Assign the Requests map to the "request" variable in the environment.
 	e.vars["request"] = e.Requests

@@ -15,6 +15,7 @@ package dsl
 
 import (
 	"strings"
+	"sync"
 
 	"github.com/antonmedv/expr"
 	"github.com/kitabisa/teler-waf/threat"
@@ -39,15 +40,14 @@ type Env struct {
 
 	// opts is a slice of Expr config options
 	opts []expr.Option
+
+	mu sync.Mutex
 }
 
 // Env represents the environment for the DSL.
 func New() *Env {
 	// Create a new Env instance.
 	env := &Env{}
-
-	// Initialize Threat to Undefined
-	env.Threat = threat.Undefined
 
 	// Initialize vars to a map of variable names and their corresponding values.
 	env.vars = map[string]any{
