@@ -317,10 +317,10 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 
 func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string) {
 	// Declare request body, threat category, URL path, and remote IP address.
-	body := t.env.Requests["Body"].(string)
+	body := t.env.GetRequestValue("Body")
 	cat := k.String()
 	path := r.URL.String()
-	ipAddr := t.env.Requests["IP"].(string)
+	ipAddr := t.env.GetRequestValue("IP")
 
 	// Log the detected threat, request details and the error message.
 	t.log.With(

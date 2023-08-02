@@ -113,9 +113,9 @@ func (t *Teler) analyzeRequest(w http.ResponseWriter, r *http.Request) (threat.T
 // If no custom rules are violated, the function returns nil.
 func (t *Teler) checkCustomRules(r *http.Request) error {
 	// Declare headers, URI, and body of a request.
-	headers := t.env.Requests["Headers"].(string)
-	uri := t.env.Requests["URI"].(string)
-	body := t.env.Requests["Body"].(string)
+	headers := t.env.GetRequestValue("Headers")
+	uri := t.env.GetRequestValue("URI")
+	body := t.env.GetRequestValue("Body")
 
 	// Check if the request is in cache
 	key := headers + uri + body
@@ -214,7 +214,7 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 	uri := removeSpecialChars(stringDeUnescape(r.URL.RequestURI()))
 
 	// Declare body of request then remove all special characters
-	body := removeSpecialChars(t.env.Requests["Body"].(string))
+	body := removeSpecialChars(t.env.GetRequestValue("Body"))
 
 	// Check if the request is in cache
 	key := uri + body
@@ -364,7 +364,7 @@ func (t *Teler) checkCVE(r *http.Request) error {
 // Otherwise, it returns nil.
 func (t *Teler) checkBadIPAddress(r *http.Request) error {
 	// Get the client's IP address
-	clientIP := t.env.Requests["IP"].(string)
+	clientIP := t.env.GetRequestValue("IP")
 
 	// Check if the client's IP address is in the cache
 	if err, ok := t.getCache(clientIP); ok {
