@@ -15,9 +15,9 @@ package dsl
 
 import (
 	"strings"
-	"sync"
 
 	"github.com/antonmedv/expr"
+	"github.com/daniel-hutao/spinlock"
 	"github.com/kitabisa/teler-waf/threat"
 	"github.com/projectdiscovery/mapcidr"
 	"golang.org/x/text/cases"
@@ -41,7 +41,9 @@ type Env struct {
 	// opts is a slice of Expr config options
 	opts []expr.Option
 
-	mu sync.Mutex
+	// sl (SpinLock) is a is a simple spin lock implementation with
+	// exponential backoff and adaptive spinning.
+	sl spinlock.SpinLock
 }
 
 // Env represents the environment for the DSL.

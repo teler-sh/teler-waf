@@ -10,8 +10,8 @@ import (
 // Run executes the provided expr.Program in the DSL environment.
 func (e *Env) Run(program *vm.Program) (any, error) {
 	// Lock
-	e.mu.Lock()
-	defer e.mu.Unlock()
+	e.sl.Lock()
+	defer e.sl.Unlock()
 
 	// If the Threat field in the environment is defined, assign it to the "threat" function in the environment.
 	if e.Threat != threat.Undefined {
