@@ -17,7 +17,7 @@ require (
 	github.com/twharmon/gouid v0.5.2
 	github.com/valyala/fastjson v1.6.3
 	gitlab.com/golang-commonmark/mdurl v0.0.0-20191124015652-932350d1cb84
-	go.uber.org/zap v1.24.0
+	go.uber.org/zap v1.25.0
 	golang.org/x/net v0.12.0
 	golang.org/x/text v0.11.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -58,7 +58,6 @@ require (
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
 	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0 // indirect
