@@ -587,6 +587,84 @@ func TestNewDirectoryBruteforceOnly(t *testing.T) {
 	}
 }
 
+func TestNewWithResponseStatus(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Response: Response{
+			Status: 501,
+		},
+		NoStderr: true,
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNewWithResponseHTML(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Response: Response{
+			HTML: "Your request has been denied for security reasons. Ref: {{ID}}.",
+		},
+		NoStderr: true,
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNewWithResponseHTMLFile(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{
+		Response: Response{
+			HTMLFile: "examples/403.html",
+		},
+		NoStderr: true,
+	})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestNewInvalidWhitelist(t *testing.T) {
 	defer func() {
 		// Check that the teler function panics

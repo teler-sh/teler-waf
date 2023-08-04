@@ -28,6 +28,10 @@ type Options struct {
 	// will load all YAML files in the "rules" directory and its subdirectories.
 	CustomsFromFile string `json:"customs_from_file" yaml:"customs_from_file"`
 
+	// Response is the configuration for custom error response pages when a request
+	// is blocked or rejected.
+	Response Response `json:"response" yaml:"response"`
+
 	// LogFile is the file path for the log file to store the security logs.
 	//
 	// If LogFile is specified, log messages will be written to the specified

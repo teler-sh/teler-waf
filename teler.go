@@ -114,7 +114,7 @@ func New(opts ...Options) *Teler {
 
 	// Create a new Teler struct and initialize its handler and threat fields
 	t := &Teler{
-		handler: http.HandlerFunc(defaultHandler),
+		handler: http.HandlerFunc(rejectHandler),
 		threat:  &Threat{},
 	}
 
@@ -288,6 +288,30 @@ func New(opts ...Options) *Teler {
 		t.cache = cache.New(15*time.Minute, 20*time.Minute)
 	}
 
+	// If custom response status is set, overwrite default response status.
+	if o.Response.Status != 0 {
+		respStatus = o.Response.Status
+	}
+
+	// If HTMLFile option is not empty, read the contents of the
+	// specified file into customResponseHTML variable. This file is used
+	// as a custom HTML response page for rendering in request rejection.
+	if o.Response.HTMLFile != "" {
+		f, err := os.ReadFile(o.Response.HTMLFile)
+		if err != nil {
+			t.error(zapcore.PanicLevel, err.Error())
+		}
+
+		customHTMLResponse = string(f)
+	}
+
+	// If customHTMLResponse is still empty (no custom HTML response was provided),
+	// and HTML option is not empty, set the customResponseHTML variable
+	// to the value of HTML option.
+	if customHTMLResponse == "" && o.Response.HTML != "" {
+		customHTMLResponse = o.Response.HTML
+	}
+
 	// Set the opt field of the Teler struct to the options
 	t.opt = o
 
@@ -307,6 +331,9 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 
 	// Get the error message & convert to string as a message
 	msg := err.Error()
+
+	// Set custom headers
+	setCustomHeaders(w, msg, k)
 
 	// Send the logs
 	t.sendLogs(r, k, id, msg)

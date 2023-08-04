@@ -1,21 +1,38 @@
 package teler
 
 import (
-	"fmt"
-
 	"net/http"
+
+	"github.com/valyala/fasttemplate"
 )
 
-// defaultHandler is default rejection handler
-func defaultHandler(w http.ResponseWriter, r *http.Request) {
+// rejectHandler is default rejection handler
+func rejectHandler(w http.ResponseWriter, r *http.Request) {
 	// Set Content-Type to text/html
 	w.Header().Set("Content-Type", "text/html")
 
-	// Set the status code to 403
-	w.WriteHeader(http.StatusForbidden)
+	// Set the status code
+	w.WriteHeader(respStatus)
 
-	// Write a response from forbidden template
-	fmt.Fprintf(w, forbiddenTpl, w.Header().Get(xTelerReqId)) // nosemgrep: go.lang.security.audit.xss.no-fprintf-to-responsewriter.no-fprintf-to-responsewriter
+	// Set template interfaces
+	data := map[string]any{
+		// NOTE(dwisiswant0): Should we include *http.Request?
+		"ID":      w.Header().Get(xTelerReqId),
+		"message": w.Header().Get(xTelerMsg),
+		"threat":  w.Header().Get(xTelerThreat),
+	}
+
+	// Use custom response HTML page template if non-empty
+	if customHTMLResponse != "" {
+		respTemplate = customHTMLResponse
+	}
+
+	// Parse response template
+	tpl := fasttemplate.New(respTemplate, "{{", "}}")
+
+	// Write a response from the template
+	// TODO(dwisiswant0): Add error handling here.
+	_, _ = tpl.Execute(w, data)
 }
 
 // SetHandler sets the handler to call when the teler rejects a request.
