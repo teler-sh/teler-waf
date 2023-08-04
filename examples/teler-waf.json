@@ -108,6 +108,11 @@
     }
   ],
   "customs_from_file": "",
+  "response": {
+    "status": 403,
+    "html": "Your request has been denied for security reasons. Ref: {{ID}}.",
+    "html_file": ""
+  },
   "log_file": "/tmp/teler.log",
   "no_stderr": false,
   "no_update_check": false,

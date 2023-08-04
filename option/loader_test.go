@@ -9,7 +9,129 @@ import (
 )
 
 var (
-	jsonConfig = []byte(`{"excludes":[4,5],"whitelists":["request.Headers matches \"(curl|Go-http-client|okhttp)/*\" \u0026\u0026 threat == BadCrawler","request.URI startsWith \"/wp-login.php\"","request.IP in [\"127.0.0.1\", \"::1\", \"0.0.0.0\"]","request.Headers contains \"authorization\" \u0026\u0026 request.Method == \"POST\""],"customs":[{"name":"Log4j Attack","condition":"or","rules":[{"method":"GET","element":0,"pattern":"\\$\\{.*:\\/\\/.*\\/?\\w+?\\}","dsl":""}]},{"name":"Body Contains \"foo\" String","condition":"or","rules":[{"method":"","element":0,"pattern":"","dsl":"request.Body contains \"foo\""}]},{"name":"Headers Contains \"curl\" String","condition":"or","rules":[{"method":"","element":0,"pattern":"","dsl":"request.Headers contains \"curl\""}]},{"name":"Request IP Address is Localhost","condition":"or","rules":[{"method":"","element":0,"pattern":"","dsl":"request.IP in [\"127.0.0.1\", \"::1\", \"0.0.0.0\"]"}]},{"name":"LDAP Injection","condition":"or","rules":[{"method":"ALL","element":3,"pattern":"(and|or|not|\u0026\u0026|\\|\\|)","dsl":""}]},{"name":"Method is GET","condition":"or","rules":[{"method":"","element":0,"pattern":"","dsl":"request.Method == \"GET\""}]},{"name":"Request Contains \"foo\" String","condition":"or","rules":[{"method":"","element":0,"pattern":"","dsl":"one(request.ALL, # contains \"foo\")"}]},{"name":"SQL Injection","condition":"or","rules":[{"method":"ALL","element":0,"pattern":"(union|select|insert|update|delete|drop|alter)","dsl":""}]}],"customs_from_file":"","log_file":"/tmp/teler.log","no_stderr":false,"no_update_check":false,"development":false,"in_memory":false,"falcosidekick_url":""}`)
+	jsonConfig = []byte(`{
+  "excludes": [
+    4,
+    5
+  ],
+  "whitelists": [
+    "request.Headers matches \"(curl|Go-http-client|okhttp)/*\" && threat == BadCrawler",
+    "request.URI startsWith \"/wp-login.php\"",
+    "request.IP in [\"127.0.0.1\", \"::1\", \"0.0.0.0\"]",
+    "request.Headers contains \"authorization\" && request.Method == \"POST\""
+  ],
+  "customs": [
+    {
+      "name": "Log4j Attack",
+      "condition": "or",
+      "rules": [
+        {
+          "method": "GET",
+          "element": 0,
+          "pattern": "\\$\\{.*:\\/\\/.*\\/?\\w+?\\}",
+          "dsl": ""
+        }
+      ]
+    },
+    {
+      "name": "Body Contains \"foo\" String",
+      "condition": "or",
+      "rules": [
+        {
+          "method": "",
+          "element": 0,
+          "pattern": "",
+          "dsl": "request.Body contains \"foo\""
+        }
+      ]
+    },
+    {
+      "name": "Headers Contains \"curl\" String",
+      "condition": "or",
+      "rules": [
+        {
+          "method": "",
+          "element": 0,
+          "pattern": "",
+          "dsl": "request.Headers contains \"curl\""
+        }
+      ]
+    },
+    {
+      "name": "Request IP Address is Localhost",
+      "condition": "or",
+      "rules": [
+        {
+          "method": "",
+          "element": 0,
+          "pattern": "",
+          "dsl": "request.IP in [\"127.0.0.1\", \"::1\", \"0.0.0.0\"]"
+        }
+      ]
+    },
+    {
+      "name": "LDAP Injection",
+      "condition": "or",
+      "rules": [
+        {
+          "method": "ALL",
+          "element": 3,
+          "pattern": "(and|or|not|&&|\\|\\|)",
+          "dsl": ""
+        }
+      ]
+    },
+    {
+      "name": "Method is GET",
+      "condition": "or",
+      "rules": [
+        {
+          "method": "",
+          "element": 0,
+          "pattern": "",
+          "dsl": "request.Method == \"GET\""
+        }
+      ]
+    },
+    {
+      "name": "Request Contains \"foo\" String",
+      "condition": "or",
+      "rules": [
+        {
+          "method": "",
+          "element": 0,
+          "pattern": "",
+          "dsl": "one(request.ALL, # contains \"foo\")"
+        }
+      ]
+    },
+    {
+      "name": "SQL Injection",
+      "condition": "or",
+      "rules": [
+        {
+          "method": "ALL",
+          "element": 0,
+          "pattern": "(union|select|insert|update|delete|drop|alter)",
+          "dsl": ""
+        }
+      ]
+    }
+  ],
+  "customs_from_file": "",
+  "response": {
+    "status": 403,
+    "html": "Your request has been denied for security reasons. Ref: {{ID}}.",
+    "html_file": ""
+  },
+  "log_file": "/tmp/teler.log",
+  "no_stderr": false,
+  "no_update_check": false,
+  "development": false,
+  "in_memory": false,
+  "falcosidekick_url": ""
+}`)
+
 	yamlConfig = []byte(`excludes:
     - 4
     - 5
@@ -76,6 +198,10 @@ customs:
           pattern: (union|select|insert|update|delete|drop|alter)
           dsl: ""
 customs_from_file: ""
+response:
+  status: 403
+  html: "Your request has been denied for security reasons. Ref: {{ID}}."
+  html_file: ""
 log_file: /tmp/teler.log
 no_stderr: false
 no_update_check: false

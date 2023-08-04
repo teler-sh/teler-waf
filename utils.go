@@ -146,6 +146,13 @@ func normalizeRawStringReader(raw string) *strings.Reader {
 	return strings.NewReader(builder.String())
 }
 
+// setCustomHeader such as message and threat category to the header response
+func setCustomHeaders(w http.ResponseWriter, msg string, cat threat.Threat) {
+	// Set the "X-Teler-Msg" and "X-Teler-Threat" header in the response
+	w.Header().Set(xTelerMsg, msg)
+	w.Header().Set(xTelerThreat, cat.String())
+}
+
 // setReqIdHeader to set teler request ID header response
 func setReqIdHeader(w http.ResponseWriter) string {
 	// Generate a unique ID using the gouid package.
