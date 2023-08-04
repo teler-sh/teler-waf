@@ -356,6 +356,35 @@ For example, if a request to a website returns an HTTP error status code, such a
 
 Teler request IDs are used by teler-waf to track requests made to its web application and can be useful for debugging and analyzing traffic patterns on a website.
 
+### Custom Response
+
+By default, teler-waf employs the [`DefaultHTMLResponse`](https://pkg.go.dev/github.com/kitabisa/teler-waf#DefaultHTMLResponse) as the standard response when a request is rejected or blocked. However, teler-waf offers a high degree of customization, empowering you to tailor the response to your specific requirements. The customization can be achieved using the `Status`, `HTML`, or `HTMLFile` options, all of which are part of the [`Response`](https://pkg.go.dev/github.com/kitabisa/teler-waf#Response) interface.
+
+Here's how you can make use of these options in your code:
+
+```go
+// Create a new instance of the Teler middleware
+telerMiddleware := teler.New(teler.Options{
+	// Customize the response for rejected requests
+	Response: teler.Response{
+		Status: 403,
+		HTML: "Your request has been denied for security reasons. Ref ID: {{ID}}.",
+		// Alternatively, you can use HTMLFile to point to a custom HTML file
+		HTMLFile: "/path/to/custom-403.html",
+	},
+})
+```
+
+With this level of customization, you can construct personalized and informative responses to be shown when teler-waf blocks or rejects a request. The `HTML` option permits you to directly specify the desired HTML content as a string, whereas the `HTMLFile` option enables you to reference an external file containing the custom HTML response.
+
+Moreover, to enhance the user experience, you can leverage placeholders in your HTML content to generate dynamic elements. During runtime, these placeholders will be substituted with actual values, resulting in more contextually relevant responses. The available and supported placeholders include:
+
+* `{{ID}}`: Request IDs, allowing for unique identification of each rejected request.
+* `{{message}}`: Rejected messages conveying the reason for request blocking.
+* `{{threat}}`: Threat categories, providing insights into the detected security threat.
+
+By incorporating these placeholders, you can create detailed and comprehensive responses that effectively communicate the rationale behind request rejections or blocks.
+
 ### Falco Sidekick
 
 [Falco Sidekick](https://github.com/falcosecurity/falcosidekick) is a tool that receives events from Falco, an open-source cloud-native runtime security project, and sends them to different output channels. It allows you to forward security alerts to various third-party systems such as Slack, Elasticsearch, Loki, Grafana, Datadog and [more](https://github.com/falcosecurity/falcosidekick#outputs). This enables security teams to efficiently monitor and respond to security threats and events in real-time.
