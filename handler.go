@@ -32,7 +32,7 @@ func rejectHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Write a response from the template
 	// TODO(dwisiswant0): Add error handling here.
-	tpl.Execute(w, data)
+	_, _ = tpl.Execute(w, data)
 }
 
 // SetHandler sets the handler to call when the teler rejects a request.
