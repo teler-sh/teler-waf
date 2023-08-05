@@ -18,5 +18,5 @@ type Response struct {
 	// response page. The contents of this file will be used as the custom response
 	// page when a request is blocked or rejected. Beware that we DO NOT escape the
 	// HTML content.
-	HTMLFile string `json:"html_file" yaml:"html_response_file"`
+	HTMLFile string `json:"html_file" yaml:"html_file"`
 }
