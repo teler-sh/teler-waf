@@ -593,8 +593,8 @@ func (t *Teler) processResource(k threat.Threat) error {
 			// kind is the type of template to check (either "path" or "raw").
 			var kind string
 
-			// Iterate over the requests in the template.
-			for _, req := range tpl.GetArray("requests") {
+			// Iterate over the HTTP requests in the template.
+			for _, req := range tpl.GetArray("http") {
 				// Determine CVE ID of current requests.
 				id := string(tpl.GetStringBytes("id"))
 
