@@ -158,12 +158,6 @@ func New(opts ...Options) *Teler {
 		_ = t.log.Sync()
 	}()
 
-	// Retrieve the data for each threat category
-	err = t.getResources()
-	if err != nil {
-		t.error(zapcore.PanicLevel, fmt.Sprintf(errResources, err))
-	}
-
 	// Initialize the excludes field of the Threat struct to a new map and
 	// set the boolean flag for each threat category specified in the Excludes option to true
 	t.threat.excludes = map[threat.Threat]bool{
@@ -314,6 +308,12 @@ func New(opts ...Options) *Teler {
 
 	// Set the opt field of the Teler struct to the options
 	t.opt = o
+
+	// Retrieve the data for each threat category
+	err = t.getResources()
+	if err != nil {
+		t.error(zapcore.PanicLevel, fmt.Sprintf(errResources, err))
+	}
 
 	return t
 }
