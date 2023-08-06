@@ -19,6 +19,13 @@ type Condition struct {
 	// Element is the request element to match.
 	// These element are defined in the request.Element type.
 	//
+	// When you specify the definition using JSON or YAML, the value
+	// is an `int` that corresponds to the following representations:
+	// - `0` represents [request.URI]
+	// - `1` represents [request.Headers]
+	// - `2` represents [request.Body]
+	// - `3` represents [request.Any]
+	//
 	// It will be ignored if DSL is not empty.
 	Element request.Element `json:"element" yaml:"element"`
 
