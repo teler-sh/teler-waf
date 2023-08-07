@@ -45,6 +45,7 @@ func (t *Teler) setDSLRequestEnv(r *http.Request) {
 	buf := &bytes.Buffer{}
 
 	// Use io.Copy to copy the request body to the buffer.
+	// TODO(dwisiswant0): check the body if nil
 	_, err := io.Copy(buf, r.Body)
 	if err == nil {
 		// If the read not fails, replace the request body
