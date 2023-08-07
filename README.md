@@ -207,7 +207,8 @@ Alternatively, the `CustomsFromFile` option allows you to load custom rules from
     - dsl: "<expression>" # DSL expression
 ```
 
-> **Note**: Please note that the `condition`, `method`, and `element` are optional parameters. The default values assigned to them are as follows: `condition` is set to **or**, `method` is set to **ALL**, and `element` is set to **ANY**. Therefore, if desired, you can leave those parameters empty. The `pattern` parameter is mandatory, unless you specify a `dsl` expression. In such cases, when a `dsl` expression is provided, teler-waf will disregard any values assigned to `method` and `element`, even if they are defined. To see some examples, you can refer to the [`tests/rules/`](https://github.com/kitabisa/teler-waf/tree/master/tests/rules/valid) directory.
+> **Note**
+> Please note that the `condition`, `method`, and `element` are optional parameters. The default values assigned to them are as follows: `condition` is set to **or**, `method` is set to **ALL**, and `element` is set to **ANY**. Therefore, if desired, you can leave those parameters empty. The `pattern` parameter is mandatory, unless you specify a `dsl` expression. In such cases, when a `dsl` expression is provided, teler-waf will disregard any values assigned to `method` and `element`, even if they are defined. To see some examples, you can refer to the [`tests/rules/`](https://github.com/kitabisa/teler-waf/tree/master/tests/rules/valid) directory.
 
 You can specify the `CustomsFromFile` option with the actual file path or glob pattern pointing to the location of your custom rule files. For example:
 
@@ -410,7 +411,8 @@ Overall, Falco Sidekick is a versatile tool that can help you automate your secu
 The teler-waf package utilizes a dataset of threats to identify and analyze each incoming request for potential security threats. This dataset is updated daily, which means that you will always have the latest resource. The dataset is initially stored in the user-level cache directory _(on Unix systems, it returns `$XDG_CACHE_HOME/teler-waf` as specified by [XDG Base Directory Specification
 ](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html) if non-empty, else `$HOME/.cache/teler-waf`. On Darwin, it returns `$HOME/Library/Caches/teler-waf`. On Windows, it returns `%LocalAppData%/teler-waf`. On Plan 9, it returns `$home/lib/cache/teler-waf`)_ on your first launch. Subsequent launch will utilize the cached dataset, rather than downloading it again.
 
-> **Note**: The threat datasets are obtained from the [kitabisa/teler-resources](https://github.com/kitabisa/teler-resources) repository.
+> **Note**
+> The threat datasets are obtained from the [kitabisa/teler-resources](https://github.com/kitabisa/teler-resources) repository.
 
 However, there may be situations where you want to disable automatic updates to the threat dataset. For example, you may have a slow or limited internet connection, or you may be using a machine with restricted file access. In these cases, you can set an option called **NoUpdateCheck** to `true`, which will prevent the teler-waf from automatically updating the dataset.
 
@@ -431,7 +433,9 @@ telerMiddleware := teler.New(teler.Options{
 	InMemory: true,
 })
 ```
-> **Warning**: This may also consume more system resources, so it's worth considering the trade-offs before making this decision.
+
+> **Warning**
+> This may also consume more system resources, so it's worth considering the trade-offs before making this decision.
 
 ## Resources
 
@@ -475,7 +479,8 @@ PASS
 ok  	github.com/kitabisa/teler-waf	27.263s
 ```
 
-> **Note**: Benchmarking results may vary and may not be consistent. Those results were obtained when there were **>1.5k** CVE templates and the [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.
+> **Note**
+> Benchmarking results may vary and may not be consistent. Those results were obtained when there were **>1.5k** CVE templates and the [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.
 
 - **Configuration complexity**: Configuring teler-waf to suit the specific needs of your application can be complex, and may require a certain level of expertise in web security. This can make it difficult for those who are not familiar with application firewalls and IDS systems to properly set up and use teler-waf.
 - **Limited protection**: teler-waf is not a perfect security solution, and it may not be able to protect against all possible types of attacks. As with any security system, it is important to regularly monitor and maintain teler-waf to ensure that it is providing the desired level of protection.
