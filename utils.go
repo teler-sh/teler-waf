@@ -41,23 +41,28 @@ func (t *Teler) setDSLRequestEnv(r *http.Request) {
 	// Declare byte slice for request body.
 	var body string
 
-	// Initialize buffer to hold request body.
-	buf := &bytes.Buffer{}
+	// Check if the request has a body
+	if r.Body != nil {
+		// Initialize buffer to hold request body.
+		buf := &bytes.Buffer{}
 
-	// Use io.Copy to copy the request body to the buffer.
-	// TODO(dwisiswant0): check the body if nil
-	_, err := io.Copy(buf, r.Body)
-	if err == nil {
-		// If the read not fails, replace the request body
-		// with a new io.ReadCloser that reads from the buffer.
-		r.Body = io.NopCloser(buf)
+		// NOTE(dwisiswant0): I think we should limit the r.Body
+		// reader (w/ io.LimitedReader) before copying it.
 
-		// Convert the buffer to a string.
-		body = buf.String()
+		// Use io.Copy to copy the request body to the buffer.
+		_, err := io.Copy(buf, r.Body)
+		if err == nil {
+			// If the read not fails, replace the request body
+			// with a new io.ReadCloser that reads from the buffer.
+			r.Body = io.NopCloser(buf)
+
+			// Convert the buffer to a string.
+			body = buf.String()
+		}
+
+		// Decode the URL-encoded and unescape HTML entities of body
+		body = stringDeUnescape(body)
 	}
-
-	// Decode the URL-encoded and unescape HTML entities of body
-	body = stringDeUnescape(body)
 
 	// Set DSL requests environment
 	t.env.Requests = map[string]interface{}{
