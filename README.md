@@ -53,6 +53,9 @@ go get github.com/kitabisa/teler-waf
 
 ## Usage
 
+> **Warning**
+> **Deprecation notice**: Threat exclusions (`Excludes`) will be deprecated in the upcoming release (**v2**). See [#73](https://github.com/kitabisa/teler-waf/discussions/73) & [#64](https://github.com/kitabisa/teler-waf/issues/64).
+
 Here is an example of how to use teler-waf in a Go application:
 
 1. Import the teler-waf package in your Go code:
