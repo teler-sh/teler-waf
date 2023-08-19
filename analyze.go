@@ -8,7 +8,6 @@ import (
 
 	"net/http"
 	"net/url"
-	"path/filepath"
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
@@ -506,21 +505,11 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 }
 
 // checkDirectoryBruteforce checks the request for a directory bruteforce attack.
-// It extracts the file extension from the request path, creates a regex pattern
-// that matches the entire request path, and replaces any instances of .%EXT% in
-// the directory bruteforce data with the file extension. It then checks if the
-// pattern matches the data using regexp.MatchString. If a match is found, it
-// returns an error indicating a directory bruteforce attack has been detected.
-// If no match is found or there was an error during the regex matching process,
-// it returns nil.
+// It checks if the pattern matches the data using regexp.MatchString. If a match
+// is found, it returns an error indicating a directory bruteforce attack has been
+// detected. If no match is found or there was an error during the regex matching
+// process, it returns nil.
 func (t *Teler) checkDirectoryBruteforce(r *http.Request) error {
-	// Extract the file extension from the request path and if
-	// file extension is empty string, do not process the check
-	ext := filepath.Ext(r.URL.Path)
-	if ext == "" {
-		return nil
-	}
-
 	// Trim the leading slash from the request path, and if path
 	// is empty string after the trim, do not process the check
 	path := strings.TrimLeft(r.URL.Path, "/")
@@ -544,11 +533,8 @@ func (t *Teler) checkDirectoryBruteforce(r *http.Request) error {
 	// Create a regex pattern that matches the entire request path
 	pattern := fmt.Sprintf("(?m)^%s$", regexp.QuoteMeta(path))
 
-	// Replace any instances of .%EXT% in the directory bruteforce data with the file extension
-	data := strings.ReplaceAll(t.threat.data[threat.DirectoryBruteforce], ".%EXT%", ext)
-
 	// Check if the pattern matches the data using regexp.MatchString
-	match, err := regexp.MatchString(pattern, data)
+	match, err := regexp.MatchString(pattern, t.threat.data[threat.DirectoryBruteforce])
 	if err != nil {
 		// Logs and return nil if there was an error during the regex matching process
 		t.error(zapcore.ErrorLevel, err.Error())
