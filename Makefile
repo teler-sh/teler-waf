@@ -36,3 +36,6 @@ cover: ## Runs the tests and check & view the test coverage
 
 cover-all: TARGET := ./...
 cover-all: cover
+
+license-verify:
+	go-license --config .github/license.yaml --verify *.go **/*.go
