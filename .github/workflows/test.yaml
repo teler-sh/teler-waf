@@ -63,3 +63,13 @@ jobs:
         env:
            SEMGREP_RULES: auto
 
+  license-verify:
+    runs-on: ubuntu-latest
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+      - run: go install -v github.com/palantir/go-license@latest
+      - run: make license-verify
