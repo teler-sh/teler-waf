@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"net/http"
+	"net/url"
 
 	"github.com/antonmedv/expr/vm"
 	"github.com/dwisiswant0/clientip"
@@ -24,6 +25,7 @@ import (
 	"gitlab.com/golang-commonmark/mdurl"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"golang.org/x/net/publicsuffix"
 )
 
 // inThreatIndex checks if the given substring is in specific threat datasets
@@ -247,4 +249,26 @@ func (t *Teler) error(level zapcore.Level, msg string) {
 		// case zapcore.FatalLevel:
 		// 	log.Fatal(msg)
 	}
+}
+
+// isValidReferrer checks if a given referrer URL is a valid domain.
+// It returns a boolean indicating validity, the extracted hostname,
+// and an error if parsing or processing fails.
+func isValidReferrer(ref string) (bool, string, error) {
+	u, err := url.Parse(ref)
+	if err != nil {
+		return false, "", err
+	}
+
+	host := u.Hostname()
+	if host == "" {
+		return false, host, nil
+	}
+
+	eTLD, icann := publicsuffix.PublicSuffix(host)
+	if icann || strings.IndexByte(eTLD, '.') >= 0 {
+		return true, host, nil
+	}
+
+	return false, host, nil
 }
