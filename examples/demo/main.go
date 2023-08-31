@@ -1,6 +1,9 @@
 package main
 
 import (
+	"net"
+	"os"
+
 	"net/http"
 	"path/filepath"
 
@@ -31,6 +34,15 @@ var forbidden = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	ouch.Execute(w, data)
 })
 
+var port string = "3000"
+
+func init() {
+	portEnv := os.Getenv("PORT")
+	if portEnv != "" {
+		port = portEnv
+	}
+}
+
 func main() {
 	waf := teler.New()
 	app := waf.Handler(http.HandlerFunc(myHandler))
@@ -42,5 +54,10 @@ func main() {
 	}))
 
 	waf.SetHandler(forbidden)
-	http.ListenAndServe("127.0.0.1:3000", nil)
+
+	go func() {
+		println("Listening on " + port)
+	}()
+
+	http.ListenAndServe(net.JoinHostPort("0.0.0.0", port), nil)
 }
