@@ -456,7 +456,7 @@ If you have information about a security issue, or vulnerability in this teler-w
 
 Here are some limitations of using teler-waf:
 
-- **Performance overhead**: teler-waf may introduce some performance overhead, as the teler-waf will need to process each incoming request. If you have a high volume of traffic, this can potentially slow down the overall performance of your application significantly, _especially_ if you enable the CVEs threat detection. See benchmark below:
+- **Performance overhead**: teler-waf may introduce some performance overhead, as the teler-waf will need to process each incoming request. If you have a high volume of traffic, this can potentially slow down the overall performance of your application significantly. See benchmark below:
 
 ```console
 $ go test -bench . -cpu=4
@@ -464,26 +464,26 @@ goos: linux
 goarch: amd64
 pkg: github.com/kitabisa/teler-waf
 cpu: 11th Gen Intel(R) Core(TM) i9-11900H @ 2.50GHz
-BenchmarkTelerDefaultOptions-4               	   45321	     27209 ns/op	    6551 B/op	      94 allocs/op
-BenchmarkTelerCommonWebAttackOnly-4          	   46386	     28901 ns/op	    5977 B/op	      88 allocs/op
-BenchmarkTelerCVEOnly-4                      	   45390	     25799 ns/op	    6079 B/op	      91 allocs/op
-BenchmarkTelerBadIPAddressOnly-4             	   47254	     25432 ns/op	    5895 B/op	      87 allocs/op
-BenchmarkTelerBadReferrerOnly-4              	   45770	     24935 ns/op	    6069 B/op	      88 allocs/op
-BenchmarkTelerBadCrawlerOnly-4               	   48438	     26574 ns/op	    6130 B/op	      88 allocs/op
-BenchmarkTelerDirectoryBruteforceOnly-4      	   47526	     26879 ns/op	    6148 B/op	      88 allocs/op
-BenchmarkTelerCustomRule-4                   	   46345	     25061 ns/op	    5913 B/op	      87 allocs/op
-BenchmarkTelerWithoutCommonWebAttack-4       	   44164	     27069 ns/op	    6511 B/op	      93 allocs/op
-BenchmarkTelerWithoutCVE-4                   	   44623	     28342 ns/op	    6418 B/op	      90 allocs/op
-BenchmarkTelerWithoutBadIPAddress-4          	   43972	     28268 ns/op	    6580 B/op	      94 allocs/op
-BenchmarkTelerWithoutBadReferrer-4           	   42141	     29519 ns/op	    6480 B/op	      93 allocs/op
-BenchmarkTelerWithoutBadCrawler-4            	   43354	     27508 ns/op	    6334 B/op	      93 allocs/op
-BenchmarkTelerWithoutDirectoryBruteforce-4   	   42147	     27914 ns/op	    6624 B/op	      94 allocs/op
+BenchmarkTelerDefaultOptions-4               	   42855	     27243 ns/op	    7146 B/op	     109 allocs/op
+BenchmarkTelerCommonWebAttackOnly-4          	   46420	     24683 ns/op	    6518 B/op	     104 allocs/op
+BenchmarkTelerCVEOnly-4                      	   44841	     26542 ns/op	    6633 B/op	     107 allocs/op
+BenchmarkTelerBadIPAddressOnly-4             	   45889	     25102 ns/op	    6464 B/op	     103 allocs/op
+BenchmarkTelerBadReferrerOnly-4              	   46453	     24911 ns/op	    6596 B/op	     104 allocs/op
+BenchmarkTelerBadCrawlerOnly-4               	   47034	     24889 ns/op	    6698 B/op	     103 allocs/op
+BenchmarkTelerDirectoryBruteforceOnly-4      	   46032	     26094 ns/op	    6719 B/op	     103 allocs/op
+BenchmarkTelerCustomRule-4                   	   44950	     26025 ns/op	    6484 B/op	     103 allocs/op
+BenchmarkTelerWithoutCommonWebAttack-4       	   39697	     26318 ns/op	    7164 B/op	     108 allocs/op
+BenchmarkTelerWithoutCVE-4                   	   45127	     26366 ns/op	    6947 B/op	     105 allocs/op
+BenchmarkTelerWithoutBadIPAddress-4          	   43221	     28073 ns/op	    7137 B/op	     109 allocs/op
+BenchmarkTelerWithoutBadReferrer-4           	   44617	     30152 ns/op	    6961 B/op	     108 allocs/op
+BenchmarkTelerWithoutBadCrawler-4            	   41383	     27563 ns/op	    6925 B/op	     109 allocs/op
+BenchmarkTelerWithoutDirectoryBruteforce-4   	   41612	     26949 ns/op	    7177 B/op	     109 allocs/op
 PASS
-ok  	github.com/kitabisa/teler-waf	38.223s
+ok  	github.com/kitabisa/teler-waf	37.395s
 ```
 
 > **Note**
-> Benchmarking results may vary and may not be consistent. Those results were obtained when there were **>1.5k** CVE templates and the [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.
+> Benchmarking results may vary and may not be consistent. The [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.
 
 - **Configuration complexity**: Configuring teler-waf to suit the specific needs of your application can be complex, and may require a certain level of expertise in web security. This can make it difficult for those who are not familiar with application firewalls and IDS systems to properly set up and use teler-waf.
 - **Limited protection**: teler-waf is not a perfect security solution, and it may not be able to protect against all possible types of attacks. As with any security system, it is important to regularly monitor and maintain teler-waf to ensure that it is providing the desired level of protection.
