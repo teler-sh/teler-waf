@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"net/http"
-	"net/url"
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
@@ -399,25 +398,25 @@ func (t *Teler) checkBadIPAddress(r *http.Request) error {
 }
 
 // checkBadReferrer checks if the request referer header is from a known bad referer.
-// It does this by parsing the referer URL, extracting the hostname, and then finding the effective top-level domain plus one.
-// The resulting domain is then checked against the BadReferrer index in the threat struct.
-// If the domain is found in the index, an error indicating a bad HTTP referer is returned.
-// Otherwise, nil is returned.
+// It does this by parsing and validate the referer URL, and then finding the effective
+// top-level domain plus one. The resulting domain is then checked against the BadReferrer
+// index in the threat struct. If the domain is found in the index, an error indicating a
+// bad HTTP referer is returned. Otherwise, nil is returned.
 func (t *Teler) checkBadReferrer(r *http.Request) error {
 	// Parse the request referer URL
-	ref, err := url.Parse(r.Referer())
+	valid, ref, err := isValidReferrer(r.Referer())
 	if err != nil {
 		t.error(zapcore.ErrorLevel, err.Error())
 		return nil
 	}
 
-	// Return early if hostname of the HTTP referrer is empty
-	if ref.Hostname() == "" {
+	// Return early if TLD hostname is invalid
+	if !valid {
 		return nil
 	}
 
 	// Extract the effective top-level domain plus one from the hostname of the referer URL
-	eTLD1, err := publicsuffix.EffectiveTLDPlusOne(ref.Hostname())
+	eTLD1, err := publicsuffix.EffectiveTLDPlusOne(ref)
 	if err != nil {
 		t.error(zapcore.ErrorLevel, err.Error())
 		return nil
