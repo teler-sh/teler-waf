@@ -500,8 +500,8 @@ For any [inquiries](https://github.com/kitabisa/teler-waf/discussions/categories
 
 ## License
 
-This package is developed and maintained by members of Kitabisa Security team, and this is not an officially supported Kitabisa product. This package is made available under a dual license: you can opt for either the [Apache License 2.0](/LICENSE-ASL2) or the [Elastic License 2.0 (ELv2)](/LICENSE-ELv2) (for the main package, **teler**).
+This package is developed and maintained by members of Kitabisa Security team, and this is not an officially supported Kitabisa product. This package is made available under a dual license: the [Apache License 2.0](/LICENSE-APACHE) and the [Elastic License 2.0 (ELv2)](/LICENSE-ELASTIC) (for the main package, **teler**).
 
-You can use it freely inside your organization to protect your applications. However, you cannot use the main package to create a cloud, hosted, or managed service, or for any commercial purposes, as you would need a commercial license for that – though this option is not currently available. If you are interested in obtaining this commercial license for uses not authorized by [ELv2](/LICENSE-ELv2), please reach out to **@dwisiswant0**.
+You can use it freely inside your organization to protect your applications. However, you cannot use the main package to create a cloud, hosted, or managed service, or for any commercial purposes, as you would need a commercial license for that – though this option is not currently available. If you are interested in obtaining this commercial license for uses not authorized by [ELv2](/LICENSE-ELASTIC), please reach out to **@dwisiswant0**.
 
 Kitabisa teler-waf and any contributions are copyright © by Dwi Siswanto 2022-2023.
