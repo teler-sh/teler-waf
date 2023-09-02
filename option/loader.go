@@ -31,6 +31,8 @@ func LoadFromJSONString(raw string) (teler.Options, error) {
 // LoadFromJSONFile to unmarshal the teler-waf JSON
 // configuration into the [teler.Options] struct.
 func LoadFromJSONFile(path string) (teler.Options, error) {
+	var opt teler.Options
+
 	// Read the JSON file
 	jsonFile, err := readFile(path)
 	if err != nil {
@@ -57,6 +59,8 @@ func LoadFromYAMLString(raw string) (teler.Options, error) {
 // LoadFromYAMLFile to unmarshal the teler-waf YAML
 // configuration into the [teler.Options] struct.
 func LoadFromYAMLFile(path string) (teler.Options, error) {
+	var opt teler.Options
+
 	// Read the YAML file
 	yamlFile, err := readFile(path)
 	if err != nil {

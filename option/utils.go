@@ -29,12 +29,16 @@ func readFile(path string) ([]byte, error) {
 }
 
 func unmarshalJSONBytes(raw []byte) (teler.Options, error) {
+	var opt teler.Options
+
 	// Unmarshal the JSON into the Options struct
 	err := json.Unmarshal(raw, &opt)
 	return opt, err
 }
 
 func unmarshalYAMLBytes(raw []byte) (teler.Options, error) {
+	var opt teler.Options
+
 	// Unmarshal the JSON into the Options struct
 	err := yaml.Unmarshal(raw, &opt)
 	return opt, err
