@@ -6,7 +6,9 @@
 package teler
 
 import (
+	"bufio"
 	"os"
+	"strings"
 	"testing"
 
 	"net/http"
@@ -28,6 +30,13 @@ var (
 	homeDir  string
 	cacheDir = filepath.Join(".cache", "teler-waf")
 )
+
+var mockRawReq = `POST / HTTP/1.1
+Host: teler.host
+User-Agent: X
+Content-Length: 9
+
+some=body`
 
 func init() {
 	homeDir, _ = os.UserHomeDir()
@@ -905,39 +914,31 @@ func TestNewInvalidCustomRuleElement2(t *testing.T) {
 	telerMiddleware.Handler(handler)
 }
 
-func BenchmarkTelerDefaultOptions(b *testing.B) {
+func BenchmarkAnalyzeDefaultOptions(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{NoStderr: true})
-	wrappedHandler := telerMiddleware.Handler(handler)
+	waf := New()
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
-	// Set the custom User-Agent so that the operation does
-	// not stop at the BadCrawler check
-	req.Header.Set("User-Agent", "X")
+	w := httptest.NewRecorder()
 
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
 }
 
-func BenchmarkTelerCommonWebAttackOnly(b *testing.B) {
+func BenchmarkAnalyzeCommonWebAttackOnly(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{
+	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.CVE,
 			threat.BadIPAddress,
@@ -945,34 +946,29 @@ func BenchmarkTelerCommonWebAttackOnly(b *testing.B) {
 			threat.BadCrawler,
 			threat.DirectoryBruteforce,
 		},
-		NoStderr: true,
 	})
-	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
+	w := httptest.NewRecorder()
+
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
 }
 
-func BenchmarkTelerCVEOnly(b *testing.B) {
+func BenchmarkAnalyzeCVEOnly(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{
+	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.CommonWebAttack,
 			threat.BadIPAddress,
@@ -980,34 +976,29 @@ func BenchmarkTelerCVEOnly(b *testing.B) {
 			threat.BadCrawler,
 			threat.DirectoryBruteforce,
 		},
-		NoStderr: true,
 	})
-	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
+	w := httptest.NewRecorder()
+
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
 }
 
-func BenchmarkTelerBadIPAddressOnly(b *testing.B) {
+func BenchmarkAnalyzeBadIPAddressOnly(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{
+	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.CommonWebAttack,
 			threat.CVE,
@@ -1015,34 +1006,29 @@ func BenchmarkTelerBadIPAddressOnly(b *testing.B) {
 			threat.BadCrawler,
 			threat.DirectoryBruteforce,
 		},
-		NoStderr: true,
 	})
-	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
+	w := httptest.NewRecorder()
+
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
 }
 
-func BenchmarkTelerBadReferrerOnly(b *testing.B) {
+func BenchmarkAnalyzeBadReferrerOnly(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{
+	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.CommonWebAttack,
 			threat.CVE,
@@ -1050,34 +1036,29 @@ func BenchmarkTelerBadReferrerOnly(b *testing.B) {
 			threat.BadCrawler,
 			threat.DirectoryBruteforce,
 		},
-		NoStderr: true,
 	})
-	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
+	w := httptest.NewRecorder()
+
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
 }
 
-func BenchmarkTelerBadCrawlerOnly(b *testing.B) {
+func BenchmarkAnalyzeBadCrawlerOnly(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{
+	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.CommonWebAttack,
 			threat.CVE,
@@ -1085,37 +1066,29 @@ func BenchmarkTelerBadCrawlerOnly(b *testing.B) {
 			threat.BadReferrer,
 			threat.DirectoryBruteforce,
 		},
-		NoStderr: true,
 	})
-	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
-	// Set the user agent to "X"
-	req.Header.Set("User-Agent", "X")
+	w := httptest.NewRecorder()
 
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
 }
 
-func BenchmarkTelerDirectoryBruteforceOnly(b *testing.B) {
+func BenchmarkAnalyzeDirectoryBruteforceOnly(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{
+	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.CommonWebAttack,
 			threat.CVE,
@@ -1123,37 +1096,29 @@ func BenchmarkTelerDirectoryBruteforceOnly(b *testing.B) {
 			threat.BadReferrer,
 			threat.BadCrawler,
 		},
-		NoStderr: true,
 	})
-	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
-	// Set the user agent to "X"
-	req.Header.Set("User-Agent", "X")
+	w := httptest.NewRecorder()
 
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
 }
 
-func BenchmarkTelerCustomRule(b *testing.B) {
+func BenchmarkAnalyzeCustomRule(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{
+	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.CommonWebAttack,
 			threat.CVE,
@@ -1175,226 +1140,176 @@ func BenchmarkTelerCustomRule(b *testing.B) {
 				},
 			},
 		},
-		NoStderr: true,
 	})
-	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
+	w := httptest.NewRecorder()
+
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
 }
 
-func BenchmarkTelerWithoutCommonWebAttack(b *testing.B) {
+func BenchmarkAnalyzeWithoutCommonWebAttack(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{
+	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.CommonWebAttack,
 		},
-		NoStderr: true,
 	})
-	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
-	// Set the user agent to "X"
-	req.Header.Set("User-Agent", "X")
+	w := httptest.NewRecorder()
 
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
 }
 
-func BenchmarkTelerWithoutCVE(b *testing.B) {
+func BenchmarkAnalyzeWithoutCVE(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{
+	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.CVE,
 		},
-		NoStderr: true,
 	})
-	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
-	// Set the user agent to "X"
-	req.Header.Set("User-Agent", "X")
+	w := httptest.NewRecorder()
 
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
 }
 
-func BenchmarkTelerWithoutBadIPAddress(b *testing.B) {
+func BenchmarkAnalyzeWithoutBadIPAddress(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{
+	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.BadIPAddress,
 		},
-		NoStderr: true,
 	})
-	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
-	// Set the user agent to "X"
-	req.Header.Set("User-Agent", "X")
+	w := httptest.NewRecorder()
 
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
 }
 
-func BenchmarkTelerWithoutBadReferrer(b *testing.B) {
+func BenchmarkAnalyzeWithoutBadReferrer(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{
+	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.BadReferrer,
 		},
-		NoStderr: true,
 	})
-	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
-	// Set the user agent to "X"
-	req.Header.Set("User-Agent", "X")
+	w := httptest.NewRecorder()
 
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
 }
 
-func BenchmarkTelerWithoutBadCrawler(b *testing.B) {
+func BenchmarkAnalyzeWithoutBadCrawler(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{
+	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.BadCrawler,
 		},
-		NoStderr: true,
 	})
-	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
+	w := httptest.NewRecorder()
+
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
 }
 
-func BenchmarkTelerWithoutDirectoryBruteforce(b *testing.B) {
+func BenchmarkAnalyzeWithoutDirectoryBruteforce(b *testing.B) {
 	// Initialize teler
-	telerMiddleware := New(Options{
+	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.DirectoryBruteforce,
 		},
-		NoStderr: true,
 	})
-	wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
-
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
 	if err != nil {
 		b.Fatal(err)
 	}
 
-	// Set the user agent to "X"
-	req.Header.Set("User-Agent", "X")
+	w := httptest.NewRecorder()
 
 	// Run the benchmark
 	b.ReportAllocs()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Send the request to the test server and discard the response
-		_, err := client.Do(req)
+		err := waf.Analyze(w, r)
 		if err != nil {
 			b.Fatal(err)
 		}
