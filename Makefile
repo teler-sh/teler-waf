@@ -42,3 +42,6 @@ licensing:
 
 license-verify: ARGS := --verify
 license-verify: licensing
+
+pprof:
+	go test -bench "^BenchmarkAnalyze.*Only" -cpu=4 -cpuprofile=cpu.out -memprofile=mem.out
