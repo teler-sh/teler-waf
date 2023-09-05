@@ -32,7 +32,8 @@ var (
 )
 
 var mockRawReq = `POST / HTTP/1.1
-Host: teler.host
+Host: example.com
+Referrer: https://example.com/some/page
 User-Agent: X
 Content-Length: 9
 
@@ -936,7 +937,7 @@ func BenchmarkAnalyzeDefaultOptions(b *testing.B) {
 	}
 }
 
-func BenchmarkAnalyzeCommonWebAttackOnly(b *testing.B) {
+func BenchmarkAnalyzeCommonWebAttack(b *testing.B) {
 	// Initialize teler
 	waf := New(Options{
 		Excludes: []threat.Threat{
@@ -964,9 +965,25 @@ func BenchmarkAnalyzeCommonWebAttackOnly(b *testing.B) {
 			b.Fatal(err)
 		}
 	}
+
+	// Run the benchmark
+	// for _, req := range []int{1, 1000, 10000, 100000} {
+	// 	b.Run(fmt.Sprintf("%d-requests", req), func(b *testing.B) {
+	// 		b.ReportAllocs()
+	// 		b.ResetTimer()
+	// 		for i := 0; i < b.N; i++ {
+	// 			for j := 0; j < req; j++ {
+	// 				err := waf.Analyze(w, r)
+	// 				if err != nil {
+	// 					b.Fatal(err)
+	// 				}
+	// 			}
+	// 		}
+	// 	})
+	// }
 }
 
-func BenchmarkAnalyzeCVEOnly(b *testing.B) {
+func BenchmarkAnalyzeCVE(b *testing.B) {
 	// Initialize teler
 	waf := New(Options{
 		Excludes: []threat.Threat{
@@ -996,7 +1013,7 @@ func BenchmarkAnalyzeCVEOnly(b *testing.B) {
 	}
 }
 
-func BenchmarkAnalyzeBadIPAddressOnly(b *testing.B) {
+func BenchmarkAnalyzeBadIPAddress(b *testing.B) {
 	// Initialize teler
 	waf := New(Options{
 		Excludes: []threat.Threat{
@@ -1026,7 +1043,7 @@ func BenchmarkAnalyzeBadIPAddressOnly(b *testing.B) {
 	}
 }
 
-func BenchmarkAnalyzeBadReferrerOnly(b *testing.B) {
+func BenchmarkAnalyzeBadReferrer(b *testing.B) {
 	// Initialize teler
 	waf := New(Options{
 		Excludes: []threat.Threat{
@@ -1056,7 +1073,7 @@ func BenchmarkAnalyzeBadReferrerOnly(b *testing.B) {
 	}
 }
 
-func BenchmarkAnalyzeBadCrawlerOnly(b *testing.B) {
+func BenchmarkAnalyzeBadCrawler(b *testing.B) {
 	// Initialize teler
 	waf := New(Options{
 		Excludes: []threat.Threat{
@@ -1086,7 +1103,7 @@ func BenchmarkAnalyzeBadCrawlerOnly(b *testing.B) {
 	}
 }
 
-func BenchmarkAnalyzeDirectoryBruteforceOnly(b *testing.B) {
+func BenchmarkAnalyzeDirectoryBruteforce(b *testing.B) {
 	// Initialize teler
 	waf := New(Options{
 		Excludes: []threat.Threat{
