@@ -22,7 +22,6 @@ import (
 	"github.com/kitabisa/teler-waf/threat"
 	"github.com/patrickmn/go-cache"
 	"github.com/twharmon/gouid"
-	"gitlab.com/golang-commonmark/mdurl"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/net/publicsuffix"
@@ -105,7 +104,7 @@ func headersToRawString(headers http.Header) string {
 	for key, values := range headers {
 		for _, value := range values {
 			h.WriteString(
-				fmt.Sprintf("%s: %s\n", toURLDecode(key), toURLDecode(value)),
+				fmt.Sprintf("%s: %s\n", urldecode(key), urldecode(value)),
 			)
 		}
 	}
@@ -120,15 +119,53 @@ func unescapeHTML(s string) string {
 	return html.UnescapeString(s)
 }
 
-// toURLDecode decode URL-decoded characters string using mdurl
-func toURLDecode(s string) string {
-	return mdurl.Decode(s)
+// urldecode decodes a URL-encoded string by replacing
+// percent-encoded characters with their corresponding ASCII
+// characters, handling '+' as a space character.
+func urldecode(s string) string {
+	var out strings.Builder
+
+	i := 0
+	for i < len(s) {
+		if s[i] == '%' && i+2 < len(s) && isHexDigit(s[i+1]) && isHexDigit(s[i+2]) {
+			decoded := (hexValue(s[i+1]) << 4) | hexValue(s[i+2])
+			out.WriteByte(decoded)
+			i += 3
+		} else if s[i] == '+' {
+			out.WriteByte(' ')
+			i++
+		} else {
+			out.WriteByte(s[i])
+			i++
+		}
+	}
+
+	return out.String()
+}
+
+// isHexDigit checks if a byte `c` represents a hex digit (0-9, a-f, A-F).
+func isHexDigit(c byte) bool {
+	return ('0' <= c && c <= '9') || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F')
+}
+
+// hexValue returns the decimal value of a hex digit `c`.
+func hexValue(c byte) byte {
+	switch {
+	case '0' <= c && c <= '9':
+		return c - '0'
+	case 'a' <= c && c <= 'f':
+		return c - 'a' + 10
+	case 'A' <= c && c <= 'F':
+		return c - 'A' + 10
+	default:
+		return 0
+	}
 }
 
 // stringDeUnescape to decode URL-decoded characters, and
 // unescapes any HTML entities
 func stringDeUnescape(s string) string {
-	s = toURLDecode(s)
+	s = urldecode(s)
 	return unescapeHTML(s)
 }
 
