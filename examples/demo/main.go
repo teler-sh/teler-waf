@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"net/http"
-	"path/filepath"
 
 	"github.com/kitabisa/teler-waf"
 	"gitlab.com/golang-commonmark/mdurl"
@@ -15,10 +14,6 @@ type Data struct {
 	Query string
 	Body  string
 	ReqId string
-}
-
-func concat(path string) string {
-	return filepath.Join("examples", "demo", path)
 }
 
 func myHandler(w http.ResponseWriter, r *http.Request) {

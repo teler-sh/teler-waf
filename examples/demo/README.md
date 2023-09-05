@@ -1,9 +1,9 @@
 ## demo
 
-Run from root project directory
+Run from this directory
 
 ```bash
-$ go run examples/demo/*.go
+$ go run .
 ```
 
 To build
