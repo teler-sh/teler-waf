@@ -451,6 +451,8 @@ github.com/kitabisa/teler-waf v1.1.1 h1:LM9kgikWYcmajOwD0lKnp2MaJBQ54DzIf34XfLWp
 github.com/kitabisa/teler-waf v1.1.1/go.mod h1:dAOoSQvY7izXVEH4RntvXWzYeZ5mjWuqTrQDJqhUJEI=
 github.com/kitabisa/teler-waf v1.1.4 h1:CGXX8PIABU6Ts/hmg5iUy2Y5vK/cvx5UWCJm6eeivKg=
 github.com/kitabisa/teler-waf v1.1.4/go.mod h1:ddgOq6VrR3zRSaDKjrId3h9lnTPRQSNW3QLiws2RnRE=
+github.com/kitabisa/teler-waf v1.1.6 h1:c9dTqKhkWzDshWaeU/syAg/ErOr3Nq9uZzVbXIs3IVs=
+github.com/kitabisa/teler-waf v1.1.6/go.mod h1:QVyhPUFwI5sFC1YM2OS7/90izNw9nVGHSacvyYrq9rI=
 github.com/klauspost/compress v1.11.2/go.mod h1:aoV0uJVorq1K+umq18yTdKaF57EivdYsUV+/s2qKfXs=
 github.com/klauspost/compress v1.15.11/go.mod h1:QPwzmACJjUTFsnSHH934V6woptycfrDDJnH7hvFVbGM=
 github.com/klauspost/compress v1.16.5 h1:IFV2oUNUzZaz+XyusxpLzpzS8Pt5rh0Z16For/djlyI=

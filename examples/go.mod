@@ -8,7 +8,7 @@ require (
 	github.com/go-chi/chi v1.5.4
 	github.com/gorilla/mux v1.8.0
 	github.com/kataras/iris/v12 v12.2.0
-	github.com/kitabisa/teler-waf v1.1.4
+	github.com/kitabisa/teler-waf v1.1.6
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/urfave/negroni v1.0.0
 	github.com/zenazn/goji v1.0.1
