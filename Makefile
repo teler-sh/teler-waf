@@ -27,7 +27,7 @@ ci: vet ## Runs the tests and vetting checks (specific for CI)
 
 ## Runs the tests and benchmarking
 bench:
-	go test -bench . -cpu=4
+	go test -bench . -cpu=4 $(ARGS)
 
 cover: FILE := /tmp/teler-coverage.out # Define coverage file
 cover: ## Runs the tests and check & view the test coverage
@@ -43,5 +43,5 @@ licensing:
 license-verify: ARGS := --verify
 license-verify: licensing
 
-pprof:
-	go test -bench "^BenchmarkAnalyze.*Only" -cpu=4 -cpuprofile=cpu.out -memprofile=mem.out
+pprof: ARGS := -cpuprofile=cpu.out -memprofile=mem.out
+pprof: bench
