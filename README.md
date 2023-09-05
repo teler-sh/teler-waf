@@ -464,22 +464,22 @@ goos: linux
 goarch: amd64
 pkg: github.com/kitabisa/teler-waf
 cpu: 11th Gen Intel(R) Core(TM) i9-11900H @ 2.50GHz
-BenchmarkAnalyzeDefaultOptions-4               	  323337	      3585 ns/op	    2157 B/op	      67 allocs/op
-BenchmarkAnalyzeCommonWebAttack-4              	  359884	      2780 ns/op	    1866 B/op	      62 allocs/op
-BenchmarkAnalyzeCVE-4                          	  404466	      2937 ns/op	    1992 B/op	      64 allocs/op
-BenchmarkAnalyzeBadIPAddress-4                 	  427602	      2913 ns/op	    1841 B/op	      60 allocs/op
-BenchmarkAnalyzeBadReferrer-4                  	  425072	      2766 ns/op	    1985 B/op	      61 allocs/op
-BenchmarkAnalyzeBadCrawler-4                   	  399862	      2717 ns/op	    1841 B/op	      60 allocs/op
-BenchmarkAnalyzeDirectoryBruteforce-4          	  455979	      2906 ns/op	    1841 B/op	      60 allocs/op
-BenchmarkAnalyzeCustomRule-4                   	  434714	      3088 ns/op	    1842 B/op	      60 allocs/op
-BenchmarkAnalyzeWithoutCommonWebAttack-4       	  357285	      3341 ns/op	    2136 B/op	      65 allocs/op
-BenchmarkAnalyzeWithoutCVE-4                   	  384652	      3010 ns/op	    2010 B/op	      63 allocs/op
-BenchmarkAnalyzeWithoutBadIPAddress-4          	  339180	      3341 ns/op	    2157 B/op	      67 allocs/op
-BenchmarkAnalyzeWithoutBadReferrer-4           	  349602	      3387 ns/op	    2013 B/op	      66 allocs/op
-BenchmarkAnalyzeWithoutBadCrawler-4            	  351152	      3939 ns/op	    2157 B/op	      67 allocs/op
-BenchmarkAnalyzeWithoutDirectoryBruteforce-4   	  324411	      3355 ns/op	    2157 B/op	      67 allocs/op
+BenchmarkAnalyzeDefaultOptions-4               	  341294	      3467 ns/op	    2058 B/op	      64 allocs/op
+BenchmarkAnalyzeCommonWebAttack-4              	  388926	      2948 ns/op	    1866 B/op	      62 allocs/op
+BenchmarkAnalyzeCVE-4                          	  328108	      3171 ns/op	    1889 B/op	      61 allocs/op
+BenchmarkAnalyzeBadIPAddress-4                 	  350745	      3000 ns/op	    1841 B/op	      60 allocs/op
+BenchmarkAnalyzeBadReferrer-4                  	  395875	      2891 ns/op	    1985 B/op	      61 allocs/op
+BenchmarkAnalyzeBadCrawler-4                   	  420774	      3090 ns/op	    1841 B/op	      60 allocs/op
+BenchmarkAnalyzeDirectoryBruteforce-4          	  351806	      2935 ns/op	    1842 B/op	      60 allocs/op
+BenchmarkAnalyzeCustomRule-4                   	  439845	      2572 ns/op	    1842 B/op	      60 allocs/op
+BenchmarkAnalyzeWithoutCommonWebAttack-4       	  374844	      3449 ns/op	    2034 B/op	      62 allocs/op
+BenchmarkAnalyzeWithoutCVE-4                   	  332559	      3360 ns/op	    2010 B/op	      63 allocs/op
+BenchmarkAnalyzeWithoutBadIPAddress-4          	  293532	      3423 ns/op	    2058 B/op	      64 allocs/op
+BenchmarkAnalyzeWithoutBadReferrer-4           	  374071	      3261 ns/op	    1914 B/op	      63 allocs/op
+BenchmarkAnalyzeWithoutBadCrawler-4            	  348081	      3525 ns/op	    2058 B/op	      64 allocs/op
+BenchmarkAnalyzeWithoutDirectoryBruteforce-4   	  302540	      3544 ns/op	    2058 B/op	      64 allocs/op
 PASS
-ok  	github.com/kitabisa/teler-waf	34.201s
+ok  	github.com/kitabisa/teler-waf	27.988s
 ```
 
 > **Note**
