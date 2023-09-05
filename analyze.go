@@ -397,8 +397,15 @@ func (t *Teler) checkBadIPAddress(r *http.Request) error {
 		}
 	}
 
-	// Check if the client IP address is in BadIPAddress index
-	if t.inThreatIndex(threat.BadIPAddress, clientIP) {
+	// Check if the client IP address is in BadIPAddress threat data
+	match, err := t.inThreatRegexp(threat.BadIPAddress, clientIP)
+	if err != nil {
+		// Logs and return nil if there was an error during the regex matching process
+		t.error(zapcore.ErrorLevel, err.Error())
+		return nil
+	}
+
+	if match {
 		// Cache the client's IP address and return an error
 		// indicating a bad IP address has been detected
 		t.setCache(clientIP, errBadIPAddress)
@@ -524,7 +531,7 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 }
 
 // checkDirectoryBruteforce checks the request for a directory bruteforce attack.
-// It checks if the pattern matches the data using regexp.MatchString. If a match
+// It checks if the pattern matches the data using inThreatRegexp. If a match
 // is found, it returns an error indicating a directory bruteforce attack has been
 // detected. If no match is found or there was an error during the regex matching
 // process, it returns nil.
@@ -549,14 +556,8 @@ func (t *Teler) checkDirectoryBruteforce(r *http.Request) error {
 		}
 	}
 
-	// Create a regex pattern that matches the entire request path
-	var pattern strings.Builder
-	pattern.WriteString("(?m)^")
-	pattern.WriteString(regexp.QuoteMeta(path))
-	pattern.WriteString("$")
-
-	// Check if the pattern matches the data using regexp.MatchString
-	match, err := regexp.MatchString(pattern.String(), t.threat.data[threat.DirectoryBruteforce])
+	// Check if the pattern matches the data using inThreatRegexp
+	match, err := t.inThreatRegexp(threat.DirectoryBruteforce, path)
 	if err != nil {
 		// Logs and return nil if there was an error during the regex matching process
 		t.error(zapcore.ErrorLevel, err.Error())
