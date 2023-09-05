@@ -8,7 +8,6 @@ package teler
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"html"
 	"io"
 	"strings"
@@ -103,9 +102,9 @@ func headersToRawString(headers http.Header) string {
 	// Iterate over the request headers and append each key-value pair to the builder
 	for key, values := range headers {
 		for _, value := range values {
-			h.WriteString(
-				fmt.Sprintf("%s: %s\n", urldecode(key), urldecode(value)),
-			)
+			h.WriteString(urldecode(key))
+			h.WriteString(": ")
+			h.WriteString(urldecode(value))
 		}
 	}
 
