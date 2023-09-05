@@ -22,14 +22,14 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Test
         run: make ci
 
   codecov:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 2
       - uses: actions/setup-go@v4
@@ -46,7 +46,7 @@ jobs:
   golangci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
@@ -58,7 +58,7 @@ jobs:
       image: returntocorp/semgrep
     if: (github.actor != 'dependabot[bot]')
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: semgrep ci
         env:
            SEMGREP_RULES: auto
@@ -66,7 +66,7 @@ jobs:
   license-verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 2
       - uses: actions/setup-go@v4
@@ -80,7 +80,7 @@ jobs:
     env:
       out: benchmark.out
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-go@v4
         with:
           go-version: 'stable'
