@@ -7,7 +7,6 @@ package teler
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
 	"strings"
 
@@ -274,15 +273,29 @@ func (t *Teler) checkCVE(r *http.Request) error {
 	// kind is the type of template to check (either "path" or "raw").
 	var kind string
 
-	// requestParams is a map that stores the query parameters of the request URI and
-	// iterate over the query parameters of the request URI and add them to the map.
+	// Initialize key cache
+	var key strings.Builder
+
+	// Initialize query map
+	qMap := r.URL.Query()
+
+	// Initialize a map to store the query parameters
 	requestParams := make(map[string]string)
-	for q, v := range r.URL.Query() {
+
+	i := 0
+	for q, v := range qMap {
 		requestParams[q] = v[0]
+
+		key.WriteString(q)
+		key.WriteString(":")
+		key.WriteString(v[0])
+
+		if i < len(qMap)-1 {
+			key.WriteString("|")
+		}
 	}
 
-	key := fmt.Sprintf("%v", requestParams)
-	if err, ok := t.getCache(key); ok {
+	if err, ok := t.getCache(key.String()); ok {
 		return err
 	}
 
@@ -313,6 +326,8 @@ func (t *Teler) checkCVE(r *http.Request) error {
 			if kind == "path" && string(request.GetStringBytes("method")) != r.Method {
 				continue
 			}
+
+			// TODO(dwisiswant0): Add HTTP raw request CVEs here
 
 			// Iterate over the CVE URLs
 			for _, cve := range cveURL[cveID] {
@@ -348,7 +363,7 @@ func (t *Teler) checkCVE(r *http.Request) error {
 				// If all the query parameters in the CVE URI are present in the request URI,
 				// cache the request and return an error of CVE ID.
 				if allParamsMatch {
-					t.setCache(key, cveID)
+					t.setCache(key.String(), cveID)
 					return errors.New(cveID)
 				}
 			}
@@ -356,7 +371,7 @@ func (t *Teler) checkCVE(r *http.Request) error {
 	}
 
 	// Cache the request
-	t.setCache(key, "")
+	t.setCache(key.String(), "")
 
 	// Return nil if the request doesn't match any known threat.
 	return nil
@@ -382,8 +397,15 @@ func (t *Teler) checkBadIPAddress(r *http.Request) error {
 		}
 	}
 
-	// Check if the client IP address is in BadIPAddress index
-	if t.inThreatIndex(threat.BadIPAddress, clientIP) {
+	// Check if the client IP address is in BadIPAddress threat data
+	match, err := t.inThreatRegexp(threat.BadIPAddress, clientIP)
+	if err != nil {
+		// Logs and return nil if there was an error during the regex matching process
+		t.error(zapcore.ErrorLevel, err.Error())
+		return nil
+	}
+
+	if match {
 		// Cache the client's IP address and return an error
 		// indicating a bad IP address has been detected
 		t.setCache(clientIP, errBadIPAddress)
@@ -509,7 +531,7 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 }
 
 // checkDirectoryBruteforce checks the request for a directory bruteforce attack.
-// It checks if the pattern matches the data using regexp.MatchString. If a match
+// It checks if the pattern matches the data using inThreatRegexp. If a match
 // is found, it returns an error indicating a directory bruteforce attack has been
 // detected. If no match is found or there was an error during the regex matching
 // process, it returns nil.
@@ -534,11 +556,8 @@ func (t *Teler) checkDirectoryBruteforce(r *http.Request) error {
 		}
 	}
 
-	// Create a regex pattern that matches the entire request path
-	pattern := fmt.Sprintf("(?m)^%s$", regexp.QuoteMeta(path))
-
-	// Check if the pattern matches the data using regexp.MatchString
-	match, err := regexp.MatchString(pattern, t.threat.data[threat.DirectoryBruteforce])
+	// Check if the pattern matches the data using inThreatRegexp
+	match, err := t.inThreatRegexp(threat.DirectoryBruteforce, path)
 	if err != nil {
 		// Logs and return nil if there was an error during the regex matching process
 		t.error(zapcore.ErrorLevel, err.Error())

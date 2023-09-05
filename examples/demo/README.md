@@ -9,7 +9,7 @@ $ go run .
 To build
 
 ```bash
-go build -ldflags '-s -w' -o demo examples/demo/*.go
+make build
 ```
 
 Live site: https://waf.teler.app
