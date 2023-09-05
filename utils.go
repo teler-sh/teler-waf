@@ -10,6 +10,7 @@ import (
 	"errors"
 	"html"
 	"io"
+	"regexp"
 	"strings"
 
 	"net/http"
@@ -33,6 +34,16 @@ func (t *Teler) inThreatIndex(kind threat.Threat, substr string) bool {
 	}
 
 	return false
+}
+
+// inThreatRegexp checks if the given pattern 'p' is match against threat datasets
+func (t *Teler) inThreatRegexp(kind threat.Threat, p string) (bool, error) {
+	var pattern strings.Builder
+	pattern.WriteString("(?m)^")
+	pattern.WriteString(regexp.QuoteMeta(p))
+	pattern.WriteString("$")
+
+	return regexp.MatchString(pattern.String(), t.threat.data[kind])
 }
 
 // setDSLRequestEnv will set DSL environment based on the incoming request information.
