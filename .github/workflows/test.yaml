@@ -74,3 +74,26 @@ jobs:
           go-version: 'stable'
       - run: go install -v github.com/palantir/go-license@latest
       - run: make license-verify
+
+  regression:
+    runs-on: ubuntu-latest
+    env:
+      out: benchmark.out
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+      - run: make bench | tee ${{ env.out }}
+      - uses: actions/cache@v3
+        with:
+          path: ./cache
+          key: ${{ runner.os }}-benchmark
+      - uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'go'
+          output-file-path: ${{ env.out }}
+          external-data-json-path: ./cache/benchmark-data.json
+          fail-on-alert: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          comment-on-alert: true
