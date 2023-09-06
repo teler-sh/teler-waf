@@ -915,7 +915,289 @@ func TestNewInvalidCustomRuleElement2(t *testing.T) {
 	telerMiddleware.Handler(handler)
 }
 
-func BenchmarkAnalyzeDefaultOptions(b *testing.B) {
+func BenchmarkInitializeDefault(b *testing.B) {
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New()
+	}
+}
+
+func BenchmarkInitializeCommonWebAttack(b *testing.B) {
+	opt := Options{
+		Excludes: []threat.Threat{
+			// threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New(opt)
+	}
+}
+
+func BenchmarkInitializeCVE(b *testing.B) {
+	opt := Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			// threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New(opt)
+	}
+}
+
+func BenchmarkInitializeBadIPAddress(b *testing.B) {
+	opt := Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			// threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New(opt)
+	}
+}
+
+func BenchmarkInitializeBadReferrer(b *testing.B) {
+	opt := Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			// threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New(opt)
+	}
+}
+
+func BenchmarkInitializeBadCrawler(b *testing.B) {
+	opt := Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			// threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New(opt)
+	}
+}
+
+func BenchmarkInitializeDirectoryBruteforce(b *testing.B) {
+	opt := Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			// threat.DirectoryBruteforce,
+		},
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New(opt)
+	}
+}
+
+func BenchmarkInitializeWithoutCommonWebAttack(b *testing.B) {
+	opt := Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			// threat.CVE,
+			// threat.BadIPAddress,
+			// threat.BadReferrer,
+			// threat.BadCrawler,
+			// threat.DirectoryBruteforce,
+		},
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New(opt)
+	}
+}
+
+func BenchmarkInitializeWithoutCVE(b *testing.B) {
+	opt := Options{
+		Excludes: []threat.Threat{
+			// threat.CommonWebAttack,
+			threat.CVE,
+			// threat.BadIPAddress,
+			// threat.BadReferrer,
+			// threat.BadCrawler,
+			// threat.DirectoryBruteforce,
+		},
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New(opt)
+	}
+}
+
+func BenchmarkInitializeWithoutBadIPAddress(b *testing.B) {
+	opt := Options{
+		Excludes: []threat.Threat{
+			// threat.CommonWebAttack,
+			// threat.CVE,
+			threat.BadIPAddress,
+			// threat.BadReferrer,
+			// threat.BadCrawler,
+			// threat.DirectoryBruteforce,
+		},
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New(opt)
+	}
+}
+
+func BenchmarkInitializeWithoutBadReferrer(b *testing.B) {
+	opt := Options{
+		Excludes: []threat.Threat{
+			// threat.CommonWebAttack,
+			// threat.CVE,
+			// threat.BadIPAddress,
+			threat.BadReferrer,
+			// threat.BadCrawler,
+			// threat.DirectoryBruteforce,
+		},
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New(opt)
+	}
+}
+
+func BenchmarkInitializeWithoutBadCrawler(b *testing.B) {
+	opt := Options{
+		Excludes: []threat.Threat{
+			// threat.CommonWebAttack,
+			// threat.CVE,
+			// threat.BadIPAddress,
+			// threat.BadReferrer,
+			threat.BadCrawler,
+			// threat.DirectoryBruteforce,
+		},
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New(opt)
+	}
+}
+
+func BenchmarkInitializeWithoutDirectoryBruteforce(b *testing.B) {
+	opt := Options{
+		Excludes: []threat.Threat{
+			// threat.CommonWebAttack,
+			// threat.CVE,
+			// threat.BadIPAddress,
+			// threat.BadReferrer,
+			// threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New(opt)
+	}
+}
+
+func BenchmarkInitializeCustomRules(b *testing.B) {
+	opt := Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+		Customs: []Rule{
+			{
+				Name:      "Log4j Attack",
+				Condition: "or",
+				Rules: []Condition{
+					{
+						Method:  request.GET,
+						Element: request.URI,
+						Pattern: `\$\{.*:\/\/.*\/?\w+?\}`,
+					},
+				},
+			},
+		},
+	}
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = New(opt)
+	}
+}
+
+func BenchmarkAnalyzeDefault(b *testing.B) {
 	// Initialize teler
 	waf := New()
 
