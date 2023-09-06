@@ -1,0 +1,39 @@
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "**.go"
+      - "go.mod"
+  pull_request:
+    branches:
+      - "**"
+
+name: regression
+jobs:
+  regression:
+    strategy:
+      matrix:
+        phase: [initialize, analyze]
+    runs-on: ubuntu-latest
+    env:
+      out: benchmark.out
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+      - run: go mod download
+      - run: make bench-${{ matrix.phase }} | tee ${{ env.out }}
+      - uses: actions/cache@v3
+        with:
+          path: ./cache
+          key: ${{ runner.os }}-benchmark-${{ matrix.phase }}
+      - uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'go'
+          output-file-path: ${{ env.out }}
+          external-data-json-path: ./cache/benchmark-data-${{ matrix.phase }}.json
+          fail-on-alert: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          comment-on-alert: true
