@@ -459,27 +459,27 @@ Here are some limitations of using teler-waf:
 - **Performance overhead**: teler-waf may introduce some performance overhead, as the teler-waf will need to process each incoming request. If you have a high volume of traffic, this can potentially slow down the overall performance of your application significantly. See benchmark below:
 
 ```console
-$ go test -bench "^BenchmarkAnalyze" -cpu=4
+$ go test -bench "^BenchmarkAnalyze" -cpu=4 
 goos: linux
 goarch: amd64
 pkg: github.com/kitabisa/teler-waf
 cpu: 11th Gen Intel(R) Core(TM) i9-11900H @ 2.50GHz
-BenchmarkAnalyzeDefaultOptions-4               	  350988	      3245 ns/op	    2058 B/op	      64 allocs/op
-BenchmarkAnalyzeCommonWebAttack-4              	  405874	      2862 ns/op	    1866 B/op	      62 allocs/op
-BenchmarkAnalyzeCVE-4                          	  411904	      2857 ns/op	    1890 B/op	      61 allocs/op
-BenchmarkAnalyzeBadIPAddress-4                 	  401280	      2793 ns/op	    1841 B/op	      60 allocs/op
-BenchmarkAnalyzeBadReferrer-4                  	  405507	      2738 ns/op	    1986 B/op	      61 allocs/op
-BenchmarkAnalyzeBadCrawler-4                   	  328051	      3076 ns/op	    1842 B/op	      60 allocs/op
-BenchmarkAnalyzeDirectoryBruteforce-4          	  349975	      3102 ns/op	    1842 B/op	      60 allocs/op
-BenchmarkAnalyzeCustomRule-4                   	  430172	      2827 ns/op	    1841 B/op	      60 allocs/op
-BenchmarkAnalyzeWithoutCommonWebAttack-4       	  407124	      3107 ns/op	    2034 B/op	      62 allocs/op
-BenchmarkAnalyzeWithoutCVE-4                   	  394893	      3056 ns/op	    2010 B/op	      63 allocs/op
-BenchmarkAnalyzeWithoutBadIPAddress-4          	  346045	      3225 ns/op	    2058 B/op	      64 allocs/op
-BenchmarkAnalyzeWithoutBadReferrer-4           	  353804	      3382 ns/op	    1914 B/op	      63 allocs/op
-BenchmarkAnalyzeWithoutBadCrawler-4            	  345411	      3244 ns/op	    2058 B/op	      64 allocs/op
-BenchmarkAnalyzeWithoutDirectoryBruteforce-4   	  367921	      3299 ns/op	    2058 B/op	      64 allocs/op
+BenchmarkAnalyzeDefault-4                      	  266018	      4018 ns/op	    2682 B/op	      74 allocs/op
+BenchmarkAnalyzeCommonWebAttack-4              	  374410	      3126 ns/op	    2090 B/op	      68 allocs/op
+BenchmarkAnalyzeCVE-4                          	  351668	      3296 ns/op	    2402 B/op	      68 allocs/op
+BenchmarkAnalyzeBadIPAddress-4                 	  416152	      2967 ns/op	    1954 B/op	      63 allocs/op
+BenchmarkAnalyzeBadReferrer-4                  	  410858	      3033 ns/op	    2098 B/op	      64 allocs/op
+BenchmarkAnalyzeBadCrawler-4                   	  346707	      2964 ns/op	    1953 B/op	      63 allocs/op
+BenchmarkAnalyzeDirectoryBruteforce-4          	  377634	      3062 ns/op	    1953 B/op	      63 allocs/op
+BenchmarkAnalyzeCustomRule-4                   	  432568	      2594 ns/op	    1954 B/op	      63 allocs/op
+BenchmarkAnalyzeWithoutCommonWebAttack-4       	  354930	      3460 ns/op	    2546 B/op	      69 allocs/op
+BenchmarkAnalyzeWithoutCVE-4                   	  304500	      3491 ns/op	    2234 B/op	      69 allocs/op
+BenchmarkAnalyzeWithoutBadIPAddress-4          	  288517	      3924 ns/op	    2682 B/op	      74 allocs/op
+BenchmarkAnalyzeWithoutBadReferrer-4           	  298168	      3667 ns/op	    2538 B/op	      73 allocs/op
+BenchmarkAnalyzeWithoutBadCrawler-4            	  276108	      4023 ns/op	    2682 B/op	      74 allocs/op
+BenchmarkAnalyzeWithoutDirectoryBruteforce-4   	  276699	      3627 ns/op	    2682 B/op	      74 allocs/op
 PASS
-ok  	github.com/kitabisa/teler-waf	31.604s
+ok  	github.com/kitabisa/teler-waf	32.093s
 ```
 
 > **Note**
