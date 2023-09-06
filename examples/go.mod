@@ -8,7 +8,7 @@ require (
 	github.com/go-chi/chi v1.5.4
 	github.com/gorilla/mux v1.8.0
 	github.com/kataras/iris/v12 v12.2.0
-	github.com/kitabisa/teler-waf v1.1.6
+	github.com/kitabisa/teler-waf v1.1.7
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/urfave/negroni v1.0.0
 	github.com/zenazn/goji v1.0.1
@@ -105,7 +105,6 @@ require (
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/yosssi/ace v0.0.5 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.25.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
