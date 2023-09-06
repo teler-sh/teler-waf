@@ -1,20 +1,13 @@
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - "**.go"
-      - "go.mod"
-  pull_request:
-    branches:
-      - "**"
+  workflow_call:
+    inputs:
+      phase:
+        required: true
+        type: string
 
 name: regression
 jobs:
   regression:
-    strategy:
-      matrix:
-        phase: [initialize, analyze]
     runs-on: ubuntu-latest
     env:
       out: benchmark.out
@@ -24,16 +17,16 @@ jobs:
         with:
           go-version: 'stable'
       - run: go mod download
-      - run: make bench-${{ matrix.phase }} | tee ${{ env.out }}
+      - run: make bench-${{ inputs.phase }} | tee ${{ env.out }}
       - uses: actions/cache@v3
         with:
           path: ./cache
-          key: ${{ runner.os }}-benchmark-${{ matrix.phase }}
+          key: ${{ runner.os }}-benchmark-${{ inputs.phase }}
       - uses: benchmark-action/github-action-benchmark@v1
         with:
           tool: 'go'
           output-file-path: ${{ env.out }}
-          external-data-json-path: ./cache/benchmark-data-${{ matrix.phase }}.json
+          external-data-json-path: ./cache/benchmark-data-${{ inputs.phase }}.json
           fail-on-alert: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           comment-on-alert: true
