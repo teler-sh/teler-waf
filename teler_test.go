@@ -31,7 +31,7 @@ var (
 	cacheDir = filepath.Join(".cache", "teler-waf")
 )
 
-var mockRawReq = `POST / HTTP/1.1
+var mockRawReq = `POST /path?query=value#fragments HTTP/1.1
 Host: example.com
 Referrer: https://example.com/some/page
 User-Agent: X
