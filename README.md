@@ -459,7 +459,7 @@ Here are some limitations of using teler-waf:
 - **Performance overhead**: teler-waf may introduce some performance overhead, as the teler-waf will need to process each incoming request. If you have a high volume of traffic, this can potentially slow down the overall performance of your application significantly. See benchmark below:
 
 ```console
-$ go test -bench . -cpu=4 
+$ go test -bench "^BenchmarkAnalyze" -cpu=4
 goos: linux
 goarch: amd64
 pkg: github.com/kitabisa/teler-waf
