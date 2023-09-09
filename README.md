@@ -188,6 +188,9 @@ For more examples of how to use teler-waf or integrate it with any framework, ta
 
 ### Custom Rules
 
+> **Note**
+> :bulb: **ProTip**: If you want to explore configurations, delve into crafting custom rules and composing DSL expressions, you can practice and gain hands-on experience by using this [teler WAF playground](https://play.teler.sh/). Here, you can also simulate requests customized to fulfill the specific needs of your application.
+
 To integrate custom rules into the teler-waf middleware, you have two choices: `Customs` and `CustomsFromFile`. These options offer flexibility to create your own security checks or override the default checks provided by teler-waf.
 
 - **`Customs` option**
