@@ -2,6 +2,7 @@ on:
   workflow_run:
     workflows: [tests]
     types: [requested]
+  workflow_dispatch:
 
 name: regression
 jobs:
