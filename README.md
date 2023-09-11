@@ -3,7 +3,7 @@
 [![Kitabisa Security](https://img.shields.io/badge/kitabisa-security%20project-blue)](#)
 [![GoDoc](https://pkg.go.dev/static/frontend/badge/badge.svg)](http://pkg.go.dev/github.com/kitabisa/teler-waf)
 [![codecov](https://codecov.io/gh/kitabisa/teler-waf/branch/master/graph/badge.svg?token=RTIZW58NWK)](https://codecov.io/gh/kitabisa/teler-waf)
-[![tests](https://github.com/kitabisa/teler-waf/actions/workflows/test.yaml/badge.svg)](https://github.com/kitabisa/teler-waf/actions/workflows/test.yaml)
+[![tests](https://github.com/kitabisa/teler-waf/actions/workflows/tests.yaml/badge.svg)](https://github.com/kitabisa/teler-waf/actions/workflows/tests.yaml)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 
 <img src="https://user-images.githubusercontent.com/25837540/97091757-7200d880-1668-11eb-82c4-e5c4971d2bc8.png" align="right" width="250px"/>
