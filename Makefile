@@ -27,14 +27,14 @@ test-all: semgrep lint test report ## Runs the tests, vetting, and golangci-lint
 ci: vet ## Runs the tests and vetting checks (specific for CI)
 	go test -cover -race -count=1 ./...
 
-## Runs the tests and benchmarking
+## Runs benchmarking
 bench:
-	go test -run="^$" -bench $(BENCH_TARGET) -cpu=4 $(ARGS)
+	go test -run "^$$" -bench "$(BENCH_TARGET)" -cpu=4 $(ARGS)
 
-bench-initialize: BENCH_TARGET := "^BenchmarkInitialize"
+bench-initialize: BENCH_TARGET := ^BenchmarkInitialize
 bench-initialize: bench
 
-bench-analyze: BENCH_TARGET := "^BenchmarkAnalyze"
+bench-analyze: BENCH_TARGET := ^BenchmarkAnalyze
 bench-analyze: bench
 
 cover: FILE := /tmp/teler-coverage.out # Define coverage file
