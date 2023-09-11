@@ -10,6 +10,7 @@ require (
 	github.com/hashicorp/go-getter v1.7.2
 	github.com/klauspost/compress v1.16.7
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/petar-dambovaliev/aho-corasick v0.0.0-20230725210150-fb29fc3c913e
 	github.com/projectdiscovery/mapcidr v1.1.2
 	github.com/samber/lo v1.38.1
 	github.com/scorpionknifes/go-pcre v0.0.0-20210805092536-77486363b797

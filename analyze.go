@@ -531,7 +531,7 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 }
 
 // checkDirectoryBruteforce checks the request for a directory bruteforce attack.
-// It checks if the pattern matches the data using inThreatRegexp. If a match
+// It checks if the pattern matches the data using aho-corasick algorithm. If a match
 // is found, it returns an error indicating a directory bruteforce attack has been
 // detected. If no match is found or there was an error during the regex matching
 // process, it returns nil.
@@ -556,17 +556,12 @@ func (t *Teler) checkDirectoryBruteforce(r *http.Request) error {
 		}
 	}
 
-	// Check if the pattern matches the data using inThreatRegexp
-	match, err := t.inThreatRegexp(threat.DirectoryBruteforce, path)
-	if err != nil {
-		// Logs and return nil if there was an error during the regex matching process
-		t.error(zapcore.ErrorLevel, err.Error())
-		return nil
-	}
+	// Find path on the threat data dictionary
+	matches := t.threat.directoryBruteforce.FindAll(path)
 
-	// If the pattern matches the data, cache the request path and
+	// If the pattern matches more than 0, cache the request path and
 	// return an error indicating a directory bruteforce attack has been detected
-	if match {
+	if len(matches) > 0 {
 		t.setCache(path, errDirectoryBruteforce)
 		return errors.New(errDirectoryBruteforce)
 	}

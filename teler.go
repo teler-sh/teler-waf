@@ -43,6 +43,7 @@ import (
 	"github.com/kitabisa/teler-waf/threat"
 	"github.com/klauspost/compress/zstd"
 	"github.com/patrickmn/go-cache"
+	"github.com/petar-dambovaliev/aho-corasick"
 	"github.com/scorpionknifes/go-pcre"
 	"github.com/valyala/fastjson"
 	"go.uber.org/zap"
@@ -72,6 +73,10 @@ type Threat struct {
 
 	// cwa is a struct of CommonWebAttack threat data
 	cwa *cwa
+
+	// directoryBruteforce is a struct of DirectoryBruteforce compiled
+	// aho-corasick data structure
+	directoryBruteforce *directoryBruteforce
 }
 
 // Teler is a middleware that helps setup a few basic security features
@@ -662,6 +667,19 @@ func (t *Teler) processResource(k threat.Threat) error {
 				}
 			}
 		}
+	case threat.DirectoryBruteforce:
+		directoryBruteforce := &directoryBruteforce{}
+
+		data := strings.Split(t.threat.data[k], "\n")
+		builder := aho_corasick.NewAhoCorasickBuilder(aho_corasick.Opts{
+			AsciiCaseInsensitive: false,
+			MatchOnlyWholeWords:  true,
+			MatchKind:            aho_corasick.LeftMostFirstMatch,
+			DFA:                  true,
+		})
+
+		directoryBruteforce.AhoCorasick = builder.Build(data)
+		t.threat.directoryBruteforce = directoryBruteforce
 	}
 
 	return nil
