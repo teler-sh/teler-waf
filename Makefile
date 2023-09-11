@@ -29,7 +29,7 @@ ci: vet ## Runs the tests and vetting checks (specific for CI)
 
 ## Runs the tests and benchmarking
 bench:
-	go test -bench $(BENCH_TARGET) -cpu=4 $(ARGS)
+	go test -run="^$" -bench $(BENCH_TARGET) -cpu=4 $(ARGS)
 
 bench-initialize: BENCH_TARGET := "^BenchmarkInitialize"
 bench-initialize: bench
