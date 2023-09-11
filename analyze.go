@@ -7,14 +7,12 @@ package teler
 
 import (
 	"errors"
-	"regexp"
 	"strings"
 
 	"net/http"
 
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
-	"github.com/scorpionknifes/go-pcre"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/net/publicsuffix"
 )
@@ -234,21 +232,11 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 
 	// Iterate over the filters in the CommonWebAttack data stored in the t.threat.cwa.Filters field
 	for _, filter := range t.threat.cwa.Filters {
-		// Initialize a variable to track whether a match is found
-		var match bool
+		// Check if the pattern matches the request URI or request body
+		match := filter.pattern.MatchString(uri, 0) || filter.pattern.MatchString(body, 0)
 
-		// Check the type of the filter's pattern
-		switch pattern := filter.pattern.(type) {
-		case *regexp.Regexp: // If the pattern is a regex
-			match = pattern.MatchString(uri) || pattern.MatchString(body)
-		case *pcre.Matcher: // If the pattern is a PCRE expr
-			match = pattern.MatchString(uri, 0) || pattern.MatchString(body, 0)
-		default: // If the pattern is of an unknown type, skip to the next iteration
-			continue
-		}
-
-		// If the pattern matches the request URI or body, cache the request
-		// and return an error indicating a common web attack has been detected
+		// If matched, set cache for the request and return an
+		// error indicating a common web attack has been detected
 		if match {
 			t.setCache(key, filter.Description)
 			return errors.New(filter.Description)
@@ -503,22 +491,9 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 
 	// Iterate over BadCrawler compiled patterns and do the check
 	for _, pattern := range t.threat.badCrawler {
-		// Initialize a variable to track whether a match is found
-		var match bool
-
-		// Check the type of the pattern
-		switch p := pattern.(type) {
-		case *regexp.Regexp: // If the pattern is a regex
-			match = p.MatchString(ua)
-		case *pcre.Matcher: // If the pattern is a PCRE expr
-			match = p.MatchString(ua, 0)
-		default: // If the pattern is of an unknown type, skip to the next iteration
-			continue
-		}
-
 		// Check if the pattern is not nil and matches the User-Agent,
-		// cache the User-Agent if it matched
-		if match {
+		// then cache the User-Agent if it matched
+		if pattern.MatchString(ua, 0) {
 			t.setCache(ua, errBadCrawler)
 			return errors.New(errBadCrawler)
 		}

@@ -63,9 +63,9 @@ type Threat struct {
 	// strings containing the data for the corresponding threat category.
 	data map[threat.Threat]string
 
-	// badCrawler contains the compiled slices of pointers to regexp.Regexp
-	// and pcre.Matcher objects of BadCrawler threat data as interface.
-	badCrawler []interface{}
+	// badCrawler contains the compiled slices of pcre.Matcher pointers
+	// objects of BadCrawler threat data.
+	badCrawler []*pcre.Matcher
 
 	// cve contains the compiled JSON CVEs data of pointers to fastjson.Value
 	cve *fastjson.Value
@@ -566,18 +566,13 @@ func (t *Teler) processResource(k threat.Threat) error {
 
 		// Compile the regular expression patterns from the filter rules
 		for i, filter := range t.threat.cwa.Filters {
-			// Compile the filter rule as a regular expression
-			t.threat.cwa.Filters[i].pattern, err = regexp.Compile(filter.Rule) // nosemgrep: trailofbits.go.questionable-assignment.questionable-assignment
+			// Compile the filter rule as a perl-compatible regular expression
+			cpcre, err := pcre.Compile(filter.Rule, pcre.MULTILINE)
 			if err != nil {
-				// If the regular expression cannot be compiled,
-				// try to compile it as a PCRE pattern
-				cpcre, err := pcre.Compile(filter.Rule, pcre.MULTILINE)
-				if err == nil {
-					// If the PCRE pattern is successfully compiled,
-					// create a new Matcher and assign it to the pattern field
-					t.threat.cwa.Filters[i].pattern = cpcre.NewMatcher()
-				}
+				return err
 			}
+
+			t.threat.cwa.Filters[i].pattern = cpcre.NewMatcher()
 		}
 	case threat.CVE:
 		// Initialize the cve field of the threat struct.
@@ -647,20 +642,15 @@ func (t *Teler) processResource(k threat.Threat) error {
 		// Split the data into a slice of strings, compile each string
 		// into a regex or pcre expr, and save it in the badCrawler field.
 		patterns := strings.Split(t.threat.data[k], "\n")
-		t.threat.badCrawler = make([]interface{}, len(patterns))
+		t.threat.badCrawler = make([]*pcre.Matcher, len(patterns))
 
 		for i, pattern := range patterns {
-			t.threat.badCrawler[i], err = regexp.Compile(pattern)
+			cpcre, err := pcre.Compile(pattern, pcre.MULTILINE)
 			if err != nil {
-				// If the regular expression cannot be compiled,
-				// try to compile it as a PCRE pattern
-				cpcre, err := pcre.Compile(pattern, pcre.MULTILINE)
-				if err == nil {
-					// If the PCRE pattern is successfully compiled,
-					// create a new Matcher and assign it to the pattern field
-					t.threat.badCrawler[i] = cpcre.NewMatcher()
-				}
+				return err
 			}
+
+			t.threat.badCrawler[i] = cpcre.NewMatcher()
 		}
 	}
 
