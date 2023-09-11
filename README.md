@@ -446,6 +446,7 @@ telerMiddleware := teler.New(teler.Options{
 ## Resources
 
 - **teler WAF tester!** — You are free to use the following site for testing, https://waf.teler.app.
+- **teler WAF playground** — Simulate your requests tailored to meet the specific needs of your app, https://play.teler.sh.
 
 ## Security
 
