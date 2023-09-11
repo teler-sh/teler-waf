@@ -5,6 +5,8 @@
 
 package teler
 
+import "github.com/scorpionknifes/go-pcre"
+
 type cwa struct {
 	Filters []struct {
 		Description string   `json:"description"`
@@ -12,6 +14,6 @@ type cwa struct {
 		Impact      int64    `json:"impact"`
 		Rule        string   `json:"rule"`
 		Tags        []string `json:"tags"`
-		pattern     interface{}
+		pattern     *pcre.Matcher
 	} `json:"filters"`
 }
