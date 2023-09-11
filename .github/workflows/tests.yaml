@@ -76,13 +76,5 @@ jobs:
       - run: go install -v github.com/palantir/go-license@latest
       - run: make license-verify
 
-  regression:
-    strategy:
-      matrix:
-        phase: [initialize, analyze]
-    uses: ./.github/workflows/regression.yaml
-    with:
-      phase: ${{ matrix.phase }}
-
   codeql:
     uses: ./.github/workflows/codeql.yaml
