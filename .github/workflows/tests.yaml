@@ -8,6 +8,9 @@ on:
   pull_request:
     branches:
       - "**"
+    paths:
+      - "**.go"
+      - "go.mod"
   workflow_dispatch:
 
 name: tests
@@ -29,6 +32,7 @@ jobs:
 
   codecov:
     runs-on: ubuntu-latest
+    needs: tests
     steps:
       - uses: actions/checkout@v3
         with:
@@ -46,6 +50,7 @@ jobs:
 
   golangci:
     runs-on: ubuntu-latest
+    needs: tests
     steps:
       - uses: actions/checkout@v3
       - name: golangci-lint
@@ -55,6 +60,7 @@ jobs:
         
   semgrep:
     runs-on: ubuntu-latest
+    needs: tests
     container:
       image: returntocorp/semgrep
     if: (github.actor != 'dependabot[bot]')
@@ -63,6 +69,10 @@ jobs:
       - run: semgrep ci
         env:
            SEMGREP_RULES: auto
+
+  codeql:
+    needs: tests
+    uses: ./.github/workflows/codeql.yaml
 
   license-verify:
     runs-on: ubuntu-latest
@@ -75,6 +85,3 @@ jobs:
           go-version: 'stable'
       - run: go install -v github.com/palantir/go-license@latest
       - run: make license-verify
-
-  codeql:
-    uses: ./.github/workflows/codeql.yaml
