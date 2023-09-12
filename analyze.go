@@ -166,13 +166,13 @@ func (t *Teler) checkCustomRules(r *http.Request) error {
 			// If it matches, set ok to true
 			switch cond.Element {
 			case request.URI:
-				ok = pattern.MatchString(uri)
+				ok = pattern.MatchString(uri, 0)
 			case request.Headers:
-				ok = pattern.MatchString(headers)
+				ok = pattern.MatchString(headers, 0)
 			case request.Body:
-				ok = pattern.MatchString(body)
+				ok = pattern.MatchString(body, 0)
 			case request.Any:
-				ok = (pattern.MatchString(uri) || pattern.MatchString(headers) || pattern.MatchString(body))
+				ok = (pattern.MatchString(uri, 0) || pattern.MatchString(headers, 0) || pattern.MatchString(body, 0))
 			}
 
 			// If the rule condition is satisfied, increment the found match counter

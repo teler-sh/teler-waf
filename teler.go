@@ -26,7 +26,6 @@ import (
 	"io"
 	"os"
 	"path"
-	"regexp"
 	"runtime"
 	"strings"
 	"time"
@@ -271,13 +270,13 @@ func New(opts ...Options) *Teler {
 				t.error(zapcore.PanicLevel, fmt.Sprintf(errPattern, rule.Name, "pattern cannot be empty"))
 			}
 
-			// Compile the regular expression pattern
-			regex, err := regexp.Compile(cond.Pattern)
+			// Compile the condition pattern
+			cpcre, err := pcre.Compile(cond.Pattern, pcre.MULTILINE)
 			if err != nil {
 				t.error(zapcore.PanicLevel, fmt.Sprintf(errPattern, rule.Name, err.Error()))
 			}
 
-			rule.Rules[i].patternRegex = regex
+			rule.Rules[i].patternRegex = cpcre.NewMatcher()
 		}
 	}
 

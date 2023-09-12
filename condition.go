@@ -6,10 +6,9 @@
 package teler
 
 import (
-	"regexp"
-
 	"github.com/antonmedv/expr/vm"
 	"github.com/kitabisa/teler-waf/request"
+	"github.com/scorpionknifes/go-pcre"
 )
 
 // Condition specifies a request element to match and
@@ -41,7 +40,7 @@ type Condition struct {
 
 	// patternRegex saves the compiled regular expressions of the
 	// Pattern for subsequent use.
-	patternRegex *regexp.Regexp
+	patternRegex *pcre.Matcher
 
 	// DSL is the DSL expression to match against the incoming requests.
 	DSL string `json:"dsl" yaml:"dsl"`
