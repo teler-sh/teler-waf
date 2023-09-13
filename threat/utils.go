@@ -67,11 +67,9 @@ func (t Threat) Count() (int, error) {
 		return file.JQ(".filters[].id").CountLines()
 	case CVE:
 		return file.JQ(".templates[].id").CountLines()
-	default:
-		return file.CountLines()
 	}
 
-	return 0, nil
+	return file.CountLines()
 }
 
 // List returns a slice of all Threat type categories
