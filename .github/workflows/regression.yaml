@@ -1,4 +1,10 @@
 on:
+  push:
+    branches:
+      - master
+    paths:
+      - "**.go"
+      - "go.mod"
   workflow_run:
     workflows: [tests]
     types: [requested]
