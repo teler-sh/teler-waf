@@ -42,3 +42,14 @@ func TestList(t *testing.T) {
 	list := List()
 	assert.LessOrEqual(t, len(list), len(str))
 }
+
+func TestCount(t *testing.T) {
+	l := List()
+	for _, k := range l {
+		t.Run(k.String(), func(t *testing.T) {
+			i, err := k.Count()
+			assert.Nil(t, err)
+			assert.Greater(t, i, int(0))
+		})
+	}
+}

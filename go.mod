@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/antonmedv/expr v1.12.7
+	github.com/bitfield/script v0.22.0
 	github.com/daniel-hutao/spinlock v0.1.0
 	github.com/dwisiswant0/clientip v0.3.0
 	github.com/go-playground/validator/v10 v10.15.2
@@ -46,6 +47,8 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
+	github.com/itchyny/gojq v0.12.12 // indirect
+	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.25 // indirect
@@ -72,4 +75,5 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230629202037-9506855d4529 // indirect
 	google.golang.org/grpc v1.56.1 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
+	mvdan.cc/sh/v3 v3.6.0 // indirect
 )

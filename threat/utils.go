@@ -9,6 +9,8 @@ import (
 	"fmt"
 
 	"path/filepath"
+
+	"github.com/bitfield/script"
 )
 
 // String returns the string representation of a Threat value
@@ -45,6 +47,31 @@ func (t Threat) Filename(full bool) (string, error) {
 	}
 
 	return "", fmt.Errorf(errFilepath, t.String())
+}
+
+// Count returns the number of datasets from a Threat
+func (t Threat) Count() (int, error) {
+	if int8(t) <= 0 {
+		return 0, nil
+	}
+
+	path, err := t.Filename(true)
+	if err != nil {
+		return 0, err
+	}
+
+	file := script.File(path)
+
+	switch t {
+	case CommonWebAttack:
+		return file.JQ(".filters[].id").CountLines()
+	case CVE:
+		return file.JQ(".templates[].id").CountLines()
+	default:
+		return file.CountLines()
+	}
+
+	return 0, nil
 }
 
 // List returns a slice of all Threat type categories
