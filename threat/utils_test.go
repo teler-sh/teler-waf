@@ -15,7 +15,9 @@ import (
 
 func TestString(t *testing.T) {
 	for k, v := range str {
-		assert.Equal(t, k.String(), v)
+		t.Run(k.String(), func(t *testing.T) {
+			assert.Equal(t, k.String(), v)
+		})
 	}
 }
 
@@ -28,13 +30,15 @@ func TestFilename(t *testing.T) {
 	}
 
 	for k, v := range file {
-		fn, err := k.Filename(true)
-		assert.Nil(t, err)
+		t.Run(k.String(), func(t *testing.T) {
+			fn, err := k.Filename(true)
+			assert.Nil(t, err)
 
-		loc, err := location()
-		assert.Nil(t, err)
+			loc, err := location()
+			assert.Nil(t, err)
 
-		assert.Equal(t, fn, filepath.Join(loc, v))
+			assert.Equal(t, fn, filepath.Join(loc, v))
+		})
 	}
 }
 
