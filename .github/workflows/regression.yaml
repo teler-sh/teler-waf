@@ -5,9 +5,7 @@ on:
     paths:
       - "**.go"
       - "go.mod"
-  workflow_run:
-    workflows: [tests]
-    types: [requested]
+  workflow_call:
   workflow_dispatch:
 
 name: regression

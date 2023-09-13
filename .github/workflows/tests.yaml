@@ -74,6 +74,10 @@ jobs:
     needs: tests
     uses: ./.github/workflows/codeql.yaml
 
+  regression:
+    needs: tests
+    uses: ./.github/workflows/regression.yaml
+
   license-verify:
     runs-on: ubuntu-latest
     steps:
