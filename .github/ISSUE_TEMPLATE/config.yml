@@ -3,3 +3,6 @@ contact_links:
   - name: Ask a question
     url: https://github.com/kitabisa/teler-waf/discussions
     about: Ask questions and discuss with other community members
+  - name: Announcement Bulletin
+    url: https://groups.google.com/g/teler-announce
+    about: Stay updated and receive important information about significant developments by joining our mailing list.
