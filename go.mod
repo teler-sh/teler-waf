@@ -18,7 +18,7 @@ require (
 	github.com/twharmon/gouid v0.5.2
 	github.com/valyala/fastjson v1.6.3
 	github.com/valyala/fasttemplate v1.2.2
-	go.uber.org/zap v1.25.0
+	go.uber.org/zap v1.26.0
 	golang.org/x/net v0.14.0
 	golang.org/x/text v0.12.0
 	gopkg.in/yaml.v3 v3.0.1
