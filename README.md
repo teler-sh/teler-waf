@@ -335,6 +335,22 @@ Also, you have access to a variety of functions. These functions encompass both 
 
 For more comprehensive details on operators and built-in functions, please refer to the [Expr documentation](https://expr.medv.io/docs/Getting-Started). It provides a comprehensive guide to utilizing operators and exploring the available built-in functions in your DSL expressions.
 
+### Streamlined Configuration Management
+
+For effective configuration, it's essential to define a range of settings, including whitelists, custom rule definitions, logging preferences, and other parameters. The [`option`](https://pkg.go.dev/github.com/kitabisa/teler-waf/option) package streamlines this configuration workflow by enabling you to efficiently unmarshal or load configuration data from JSON and YAML formats into a format that teler-waf can readily comprehend and implement.
+
+```go
+// Load configuration from a YAML file.
+opt, err := option.LoadFromYAMLFile("/path/to/teler-waf.conf.yaml")
+if err != nil {
+    panic(err)
+}
+
+// Create a new instance of the Teler type with
+// the loaded options.
+telerMiddleware := teler.New(opt)
+```
+
 ### Development
 
 By default, teler-waf caches all incoming requests for 15 minutes & clear them every 20 minutes to improve the performance. However, if you're still customizing the settings to match the requirements of your application, you can disable caching during development by setting the development mode option to `true`. This will prevent incoming requests from being cached and can be helpful for debugging purposes.
