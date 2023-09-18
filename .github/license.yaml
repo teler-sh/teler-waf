@@ -12,10 +12,10 @@ custom-headers:
       // See the LICENSE-APACHE file in the project root for more information.
 
     paths:
-      - dsl/
-      - option/
-      - request/
-      - threat/
+      - dsl
+      - option
+      - request
+      - threat
 
 exclude:
   paths:
