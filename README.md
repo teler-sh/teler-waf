@@ -422,6 +422,9 @@ The teler-waf package utilizes a dataset of threats to identify and analyze each
 
 However, there may be situations where you want to disable automatic updates to the threat dataset. For example, you may have a slow or limited internet connection, or you may be using a machine with restricted file access. In these cases, you can set an option called **NoUpdateCheck** to `true`, which will prevent the teler-waf from automatically updating the dataset.
 
+> **Warning**
+> Enabling the `InMemory` takes precedence and ensures that automatic updates remain enabled.
+
 ```go
 // Create a new instance of the Teler type using the New
 // function & disable automatic updates to the threat dataset.

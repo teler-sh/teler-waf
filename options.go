@@ -69,6 +69,9 @@ type Options struct {
 	//
 	// When set to true, automatic updates will be disabled. If set to false, automatic
 	// updates will be enabled. By default, automatic updates are enabled (false).
+	//
+	// If the InMemory is set to true, the NoUpdateCheck value will not have any effect
+	// or automatic updates will always be enabled.
 	NoUpdateCheck bool `json:"no_update_check" yaml:"no_update_check"`
 
 	// Development is a boolean flag that determines whether the request is cached or not.
