@@ -1,7 +1,6 @@
-// Copyright Dwi Siswanto and/or licensed to Dwi Siswanto under one
-// or more contributor license agreements. Licensed under the Elastic License 2.0;
-// you may not use this file except in compliance with the Elastic License 2.0.
-// See the LICENSE-ELASTIC file in the project root for more information.
+// Licensed to Dwi Siswanto under one or more agreements.
+// Dwi Siswanto licenses this file to you under the Apache 2.0 License.
+// See the LICENSE-APACHE file in the project root for more information.
 
 /*
 Package option provides functions for unmarshaling teler-waf configuration
