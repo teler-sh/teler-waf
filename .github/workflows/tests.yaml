@@ -42,11 +42,10 @@ jobs:
           go-version: 'stable'
       - run: make cover
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v3
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: /tmp/teler-coverage.out
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   golangci:
     runs-on: ubuntu-latest
