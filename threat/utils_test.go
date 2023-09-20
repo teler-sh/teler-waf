@@ -33,7 +33,7 @@ func TestFilename(t *testing.T) {
 			fn, err := k.Filename(true)
 			assert.Nil(t, err)
 
-			loc, err := location()
+			loc, err := Location()
 			assert.Nil(t, err)
 
 			assert.Equal(t, fn, filepath.Join(loc, v))

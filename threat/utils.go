@@ -33,7 +33,7 @@ func (t Threat) Filename(full bool) (string, error) {
 	var err error
 
 	if full {
-		path, err = location()
+		path, err = Location()
 		if err != nil {
 			return "", err
 		}

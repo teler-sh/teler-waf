@@ -19,7 +19,7 @@ import (
 // It returns an error if there was an issue when retrieving the datasets.
 func Get() error {
 	// Get the destination location for the datasets
-	dst, err := location()
+	dst, err := Location()
 	if err != nil {
 		// If there was an error getting the location, return the error
 		return err
@@ -49,9 +49,9 @@ func Get() error {
 	return nil
 }
 
-// location returns the location of the teler cache directory.
+// Location returns the location of the teler cache directory.
 // It returns an error if there was an issue when getting the user cache directory.
-func location() (string, error) {
+func Location() (string, error) {
 	// Get the user cache directory using the os.UserCacheDir function
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
@@ -71,7 +71,7 @@ func IsUpdated() (bool, error) {
 	var out bool
 
 	// Get the location of the threat datasets
-	loc, err := location()
+	loc, err := Location()
 	if err != nil {
 		// If there was an error getting the location, return out and the error
 		return out, err
