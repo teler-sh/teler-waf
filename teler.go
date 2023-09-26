@@ -404,19 +404,11 @@ func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string
 	}
 
 	// Send the POST request to FalcoSidekick instance
-	req, err := http.NewRequest("POST", t.opt.FalcoSidekickURL, bytes.NewBuffer(payload))
+	resp, err := http.Post(t.opt.FalcoSidekickURL, "application/json", bytes.NewBuffer(payload))
 	if err != nil {
 		t.error(zapcore.ErrorLevel, err.Error())
 	}
-	req.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		t.error(zapcore.ErrorLevel, err.Error())
-	} else {
-		defer resp.Body.Close()
-	}
+	defer resp.Body.Close()
 }
 
 // getResources to download datasets of threat ruleset from teler-resources
