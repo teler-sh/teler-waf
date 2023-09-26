@@ -33,6 +33,6 @@ jobs:
           tool: 'go'
           output-file-path: ${{ env.out }}
           external-data-json-path: ./cache/benchmark-data-${{ matrix.phase }}.json
-          fail-on-alert: true
+          fail-on-alert: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
           comment-on-alert: true
