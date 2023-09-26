@@ -55,8 +55,12 @@ func (t *Teler) checkFalcoEvents() {
 		return
 	}
 
+	// Initialize ticker
+	ticker := time.NewTicker(time.Second * 5)
+	defer ticker.Stop()
+
 	// Check for pending Falco events every 5 seconds.
-	for range time.Tick(time.Second * 5) {
+	for range ticker.C {
 		// Get the count of pending Falco events.
 		c := len(t.falcoSidekick.events)
 		if c > 0 {
