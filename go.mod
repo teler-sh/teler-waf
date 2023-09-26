@@ -14,11 +14,13 @@ require (
 	github.com/projectdiscovery/mapcidr v1.1.2
 	github.com/samber/lo v1.38.1
 	github.com/scorpionknifes/go-pcre v0.0.0-20210805092536-77486363b797
+	github.com/sourcegraph/conc v0.3.0
 	github.com/stretchr/testify v1.8.2
 	github.com/twharmon/gouid v0.5.2
 	github.com/valyala/fastjson v1.6.3
 	github.com/valyala/fasttemplate v1.2.2
 	go.uber.org/zap v1.26.0
+	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0
 	golang.org/x/net v0.14.0
 	golang.org/x/text v0.12.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -64,7 +66,6 @@ require (
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.12.0 // indirect
-	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0 // indirect
 	golang.org/x/oauth2 v0.8.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect

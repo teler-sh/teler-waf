@@ -2,9 +2,9 @@
 #listenport: 2801 # port to listen for daemon (default: 2801)
 debug: false # if true all outputs will print in stdout the payload they send (default: false)
 customfields: # custom fields are added to falco events and metrics, if the value starts with % the relative env var is used
-  Akey: "AValue"
-  Bkey: "BValue"
-  Ckey: "CValue"
+  # Akey: "AValue"
+  # Bkey: "BValue"
+  # Ckey: "CValue"
 templatedfields: # templated fields are added to falco events and metrics, it uses Go template + output_fields values
   # Dkey: '{{ or (index . "k8s.ns.labels.foo") "bar" }}'
 # bracketreplacer: "_" # if not empty, the brackets in keys of Output Fields are replaced

@@ -20,7 +20,6 @@ package teler
 
 import (
 	"bufio"
-	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -104,6 +103,9 @@ type Teler struct {
 
 	// env is environment for DSL.
 	env *dsl.Env
+
+	// falcoSidekick is Falco Sidekick instance that holds events.
+	falcoSidekick falcoSidekick
 }
 
 // New constructs a new Teler instance with the supplied options.
@@ -320,6 +322,9 @@ func New(opts ...Options) *Teler {
 		t.error(zapcore.PanicLevel, fmt.Sprintf(errResources, err))
 	}
 
+	// Run checks Falco events
+	go t.checkFalcoEvents()
+
 	return t
 }
 
@@ -380,35 +385,27 @@ func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string
 	now := time.Now()
 
 	// Build FalcoSidekick event payload
-	data := map[string]interface{}{
-		"output": fmt.Sprintf(
-			"%s: %s at %s by %s (caller=%s threat=%s id=%s)",
-			now.Format("15:04:05.000000000"), msg, r.URL.Path, ipAddr, t.caller, cat, id),
-		"priority": "Warning",
-		"rule":     msg,
-		"time":     now.Format("2006-01-02T15:04:05.999999999Z"),
-		"output_fields": map[string]interface{}{
-			"teler.caller":    t.caller,
-			"teler.id":        id,
-			"teler.threat":    cat,
-			"request.method":  r.Method,
-			"request.path":    path,
-			"request.ip_addr": ipAddr,
-			"request.headers": string(jsonHeaders),
-			"request.body":    string(body),
-		},
-	}
-	payload, err := json.Marshal(data)
-	if err != nil {
-		t.error(zapcore.ErrorLevel, err.Error())
-	}
+	event := new(falcoEvent)
+	event.Output = fmt.Sprintf(
+		"%s: %s at %s by %s (caller=%s threat=%s id=%s)",
+		now.Format("15:04:05.000000000"), msg, r.URL.Path, ipAddr, t.caller, cat, id,
+	)
+	event.Priority = "Warning"
+	event.Rule = msg
+	event.Time = now.Format("2006-01-02T15:04:05.999999999Z")
+	event.OutputFields.Caller = t.caller
+	event.OutputFields.ID = id
+	event.OutputFields.Threat = cat
+	event.OutputFields.RequestBody = string(body)
+	event.OutputFields.RequestHeaders = string(jsonHeaders)
+	event.OutputFields.RequestIPAddr = ipAddr
+	event.OutputFields.RequestMethod = r.Method
+	event.OutputFields.RequestPath = path
 
-	// Send the POST request to FalcoSidekick instance
-	resp, err := http.Post(t.opt.FalcoSidekickURL, "application/json", bytes.NewBuffer(payload))
-	if err != nil {
-		t.error(zapcore.ErrorLevel, err.Error())
-	}
-	defer resp.Body.Close()
+	// Append event to falcoSidekick instance
+	t.falcoSidekick.sl.Lock()
+	t.falcoSidekick.events = append(t.falcoSidekick.events, event)
+	t.falcoSidekick.sl.Unlock()
 }
 
 // getResources to download datasets of threat ruleset from teler-resources
