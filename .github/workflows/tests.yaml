@@ -21,14 +21,19 @@ jobs:
         go-version: [1.19.x, 1.20.x, 1.21.x]
     runs-on: ubuntu-latest
     steps:
-      - name: Install Go
-        uses: actions/setup-go@v4
+      - uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Test
-        run: make ci
+      - uses: actions/checkout@v3
+      - run: |
+          echo "date=$(date +%Y%m%d)" >> "$GITHUB_OUTPUT"
+          echo "dir=$HOME/.cache/teler-waf" >> "$GITHUB_OUTPUT"
+        id: cache
+      - uses: actions/cache@v3
+        with:
+          path: ${{ steps.cache.outputs.dir }}
+          key: teler-resources-${{ steps.cache.outputs.date }}
+      - run: make ci
 
   codecov:
     runs-on: ubuntu-latest
