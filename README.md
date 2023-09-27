@@ -17,7 +17,7 @@ In addition to providing protection against web-based attacks, teler-waf can als
 **See also:**
 
 - [kitabisa/teler](https://github.com/kitabisa/teler): Real-time HTTP intrusion detection.
-- [dwisiswant0/cox](https://github.com/dwisiswant0/cox): Cox is [bluemonday](https://github.com/microcosm-cc/bluemonday)-wrapper to perform a deep-clean and/or sanitization of <i>(nested-)</i>interfaces from HTML to prevent XSS payloads.
+- [kitabisa/teler-proxy](https://github.com/kitabisa/teler-proxy): teler Proxy enabling seamless integration with teler WAF.
 
 ## Features
 
