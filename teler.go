@@ -151,13 +151,22 @@ func New(opts ...Options) *Teler {
 		ws = append(ws, t.out)
 	}
 
+	// Define log level
+	logLevel := zap.WarnLevel
+	if o.Verbose {
+		logLevel = zap.DebugLevel
+	}
+
 	// Create a new logger with the multiwriter as the output destination
 	mw := zapcore.NewMultiWriteSyncer(ws...)
 	t.log = zap.New(zapcore.NewCore(
 		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), // Use JSON encoding
-		mw,            // Use the multiwriter
-		zap.WarnLevel, // Set the logging level to debug
+		mw,       // Use the multiwriter
+		logLevel, // Set the logging level
 	))
+
+	// Logs the options
+	t.log.Info("teler WAF options", zap.Any("options", o))
 
 	// The defer statement is used to ensure that the Sync function is called before the function exits.
 	// This is used to flush any buffered writes to the output stream.
@@ -185,6 +194,7 @@ func New(opts ...Options) *Teler {
 	// For each entry in the Whitelists option, compile a DSL expression and
 	// add it to the wlPrograms slice of the Teler struct
 	for _, wl := range o.Whitelists {
+		t.log.Debug("compiling whitelist", zap.String("pattern", wl))
 		program, err := t.env.Compile(wl)
 		if err != nil {
 			t.error(zapcore.PanicLevel, fmt.Sprintf(errCompileDSLExpr, wl, err.Error()))
@@ -203,6 +213,8 @@ func New(opts ...Options) *Teler {
 		// Iterate over the found files
 		for _, rule := range rules {
 			// Open the file
+			t.log.Debug("load CustomsFromFile", zap.String("file", rule), zap.String("pattern", o.CustomsFromFile))
+
 			file, err := os.Open(rule)
 			if err != nil {
 				t.error(zapcore.PanicLevel, fmt.Sprintf(errOpenFile, rule, err.Error()))
@@ -225,6 +237,9 @@ func New(opts ...Options) *Teler {
 		if rule.Name == "" {
 			t.error(zapcore.PanicLevel, errInvalidRuleName)
 		}
+
+		// Logs the rule
+		t.log.Debug("load Customs", zap.Any("rule", rule))
 
 		// Convert the condition to lowercase, if empty string then defaulting to "or"
 		rule.Condition = strings.ToLower(rule.Condition)
@@ -423,6 +438,7 @@ func (t *Teler) getResources() error {
 	// if threat datasets is not up-to-date, update check is disabled
 	// and in-memory option is true
 	if !updated && !t.opt.NoUpdateCheck && !t.opt.InMemory {
+		t.log.Debug("downloading datasets")
 		if err := threat.Get(); err != nil {
 			return err
 		}
@@ -435,6 +451,7 @@ func (t *Teler) getResources() error {
 	// from the DB URL and uncompress it from Zstandard format, then extract the contents of
 	// each file from the tar archive and store them in a map indexed by their file name
 	if t.opt.InMemory {
+		t.log.Debug("downloading datasets")
 		resp, err := http.Get(threat.DbURL)
 		if err != nil {
 			return err
@@ -541,6 +558,25 @@ func (t *Teler) getResources() error {
 // It initializes and unmarshals the data into the corresponding field in the threat struct.
 func (t *Teler) processResource(k threat.Threat) error {
 	var err error
+
+	if t.opt.Verbose {
+		cat := k.String()
+		count, err := k.Count()
+		if err != nil {
+			return err
+		}
+
+		path, err := k.Filename(false)
+		if err != nil {
+			return err
+		}
+
+		t.log.Debug("load datasets",
+			zap.String("category", cat),
+			zap.Int("count", count),
+			zap.String("file", path),
+		)
+	}
 
 	switch k {
 	case threat.CommonWebAttack:
