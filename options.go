@@ -95,4 +95,8 @@ type Options struct {
 	// This field should be set to the URL of your FalcoSidekick instance, including the
 	// protocol & port (e.g. "http://localhost:2801").
 	FalcoSidekickURL string `json:"falcosidekick_url" yaml:"falcosidekick_url"`
+
+	// Verbose is a boolean flag that controls whether verbose logging is enabled.
+	// When set to true, it enables detailed and informative logging messages.
+	Verbose bool `json:"verbose" yaml:"verbose"`
 }
