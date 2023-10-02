@@ -22,22 +22,27 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Harden Runner
+        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           persist-credentials: false
 
-      - uses: ossf/scorecard-action@v2.2.0
+      - uses: ossf/scorecard-action@08b4669551908b1024bb425080c797723083c031 # v2.2.0
         with:
           results_file: results.sarif
           results_format: sarif
           publish_results: true
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
         with:
           name: SARIF file
           path: results.sarif
           retention-days: 5
 
-      - uses: github/codeql-action/upload-sarif@v2
+      - uses: github/codeql-action/upload-sarif@ddccb873888234080b77e9bc2d4764d5ccaaccf9 # v2.21.9
         with:
           sarif_file: results.sarif
