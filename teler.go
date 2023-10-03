@@ -131,11 +131,18 @@ func New(opts ...Options) *Teler {
 		t.caller = path.Base(path.Dir(file))
 	}
 
-	// Initialize writer for logging and add standard error (stderr)
-	// as writer if NoStderr is false
+	// Initialize writer for logging
 	ws := []zapcore.WriteSyncer{}
+
+	// Add standard error (stderr)
+	// as writer if NoStderr is false
 	if !o.NoStderr {
 		ws = append(ws, os.Stderr)
+	}
+
+	// Add LogWriter to writer if its non-nil
+	if o.LogWriter != nil {
+		ws = append(ws, zapcore.AddSync(o.LogWriter))
 	}
 
 	var err error
