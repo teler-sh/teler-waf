@@ -5,7 +5,11 @@
 
 package teler
 
-import "github.com/kitabisa/teler-waf/threat"
+import (
+	"io"
+
+	"github.com/kitabisa/teler-waf/threat"
+)
 
 // Options is a struct for specifying configuration options for the teler.Teler middleware.
 type Options struct {
@@ -51,6 +55,18 @@ type Options struct {
 	// If LogFile is specified, log messages will be written to the specified
 	// file in addition to stderr (if NoStderr is false).
 	LogFile string `json:"log_file" yaml:"log_file"`
+
+	// LogWriter is an io.Writer interface used for custom log message output.
+	//
+	// By default, log messages are written to the standard error (stderr) if
+	// NoStderr is set to false. However, you can customize the output destination
+	// for log messages by providing your own implementation of io.Writer to this
+	// field. When a custom LogWriter is assigned, log messages will be written to
+	// it in addition to LogFile and stderr (if NoStderr is false). This allows you
+	// to capture and handle log messages in a custom way, such as sending them to
+	// a remote logging service, storing them in a database, or handling them in a
+	// specialized manner.
+	LogWriter io.Writer `json:"-" yaml:"-"`
 
 	// TODO:
 	// LogRotate specifies whether to rotate the log file when it reaches a new day.
