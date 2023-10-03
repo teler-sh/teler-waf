@@ -288,6 +288,27 @@ func TestNewWithFalcoSidekickURL(t *testing.T) {
 	}
 }
 
+func TestNewWithVerbose(t *testing.T) {
+	// Initialize teler
+	telerMiddleware := New(Options{NoStderr: true, Verbose: true})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestNewCustomsFromFile(t *testing.T) {
 	// Initialize teler
 	telerMiddleware := New(Options{
