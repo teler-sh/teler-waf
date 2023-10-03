@@ -7,6 +7,7 @@ package teler
 
 import (
 	"bufio"
+	"io"
 	"os"
 	"strings"
 	"testing"
@@ -118,6 +119,34 @@ func TestNewWithNoUpdateCheck(t *testing.T) {
 func TestNewWithLogFile(t *testing.T) {
 	// Initialize teler
 	telerMiddleware := New(Options{NoStderr: true, LogFile: "/dev/null"})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNewWithLogWriter(t *testing.T) {
+	// Open /dev/null as a file for writing
+	nullFile, err := os.OpenFile("/dev/null", os.O_WRONLY, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defer nullFile.Close()
+
+	// Initialize teler
+	telerMiddleware := New(Options{NoStderr: true, LogWriter: io.Writer(nullFile)})
 	wrappedHandler := telerMiddleware.Handler(handler)
 
 	// Create a test server with the wrapped handler
