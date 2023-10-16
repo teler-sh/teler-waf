@@ -427,6 +427,24 @@ Once you have set up this integration, any threats detected by teler-waf will be
 
 <a href="#"><img src="https://user-images.githubusercontent.com/25837540/235839471-a9d0b35d-4ff8-4c7f-bed2-fcfc4afa4a1e.png" alt="teler-waf's Falco Sidekick event" width="400px"></a>
 
+#### **Event**
+
+The event forwarded to Falco Sidekick instance includes the following information:
+
+* **`output`**: Represents the alert message.
+* **`priority`**: The priority is consistently denoted as **warning**, a nod to the urgency associated with security-related events.
+* **`rule`**: Indicates the specific rule _(message)_ that matched the associated request.
+* **`time`**: Event's generation timestamp.
+* Output fields:
+	* **`teler.caller`**: Identifies the application source that invoked teler-waf.
+	* **`teler.id`**: Represents a unique identifier for the rejected request.
+	* **`teler.threat`**: Specifies the category of the threat.
+	* **`request.body`**: Contains the body of the associated request.
+	* **`request.headers`**: Lists the headers from the associated request.
+	* **`request.ip_addr`**: Discloses the IP address of the associated request.
+	* **`request.method`**: States the HTTP method employed in the associated request.
+	* **`request.path`**: Refers to the path of the associated request.
+
 Overall, Falco Sidekick is a versatile tool that can help you automate your security response process and improve your overall security posture. By leveraging its capabilities, you can ensure that your cloud-native applications are secure and protected against potential threats.
 
 ### Datasets
