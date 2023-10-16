@@ -109,8 +109,9 @@ func (t *Teler) sendFalcoEvents() {
 			if err != nil {
 				// Handle HTTP POST request error by logging an error message.
 				t.error(zapcore.ErrorLevel, err.Error())
+			} else {
+				defer resp.Body.Close()
 			}
-			defer resp.Body.Close()
 		})
 	}
 
