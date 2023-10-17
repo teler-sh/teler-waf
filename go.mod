@@ -21,8 +21,8 @@ require (
 	github.com/valyala/fasttemplate v1.2.2
 	go.uber.org/zap v1.26.0
 	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0
-	golang.org/x/net v0.14.0
-	golang.org/x/text v0.12.0
+	golang.org/x/net v0.17.0
+	golang.org/x/text v0.13.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -65,9 +65,9 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.12.0 // indirect
+	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/oauth2 v0.8.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.114.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
