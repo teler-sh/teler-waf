@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"net/http"
 	"net/http/httptest"
@@ -286,6 +287,8 @@ func TestNewWithFalcoSidekickURL(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	time.Sleep(5 * time.Second)
 }
 
 func TestNewWithVerbose(t *testing.T) {
