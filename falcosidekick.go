@@ -61,12 +61,18 @@ func (t *Teler) checkFalcoEvents() {
 
 	// Check for pending Falco events every 5 seconds.
 	for range ticker.C {
+		// Lock the FalcoSidekick event
+		t.falcoSidekick.sl.Lock()
+
 		// Get the count of pending Falco events.
 		c := len(t.falcoSidekick.events)
 		if c > 0 {
 			// Send pending Falco events to FalcoSidekick.
 			t.sendFalcoEvents()
 		}
+
+		// Unlock the FalcoSidekick event
+		t.falcoSidekick.sl.Unlock()
 	}
 }
 
