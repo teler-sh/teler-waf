@@ -364,8 +364,9 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 	// Get the error message & convert to string as a message
 	msg := err.Error()
 
-	// Set custom headers
-	setCustomHeaders(w, msg, k)
+	// Set custom headers ("X-Teler-Msg" and "X-Teler-Threat")
+	setCustomHeader(w, xTelerMsg, msg)
+	setCustomHeader(w, xTelerThreat, k.String())
 
 	// Send the logs
 	t.sendLogs(r, k, id, msg)
