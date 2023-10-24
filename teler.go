@@ -358,15 +358,16 @@ func (t *Teler) postAnalyze(w http.ResponseWriter, r *http.Request, k threat.Thr
 		return
 	}
 
-	// Set teler request ID to the header
-	id := setReqIdHeader(w)
+	// Get unique ID
+	id := getUID()
 
 	// Get the error message & convert to string as a message
 	msg := err.Error()
 
-	// Set custom headers ("X-Teler-Msg" and "X-Teler-Threat")
+	// Set custom headers ("X-Teler-Msg", "X-Teler-Threat", "X-Teler-Req-Id")
 	setCustomHeader(w, xTelerMsg, msg)
 	setCustomHeader(w, xTelerThreat, k.String())
+	setCustomHeader(w, xTelerReqId, id)
 
 	// Send the logs
 	t.sendLogs(r, k, id, msg)

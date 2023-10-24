@@ -211,13 +211,10 @@ func setCustomHeader(w http.ResponseWriter, key, value string) {
 	w.Header().Set(key, value)
 }
 
-// setReqIdHeader to set teler request ID header response and return it
-func setReqIdHeader(w http.ResponseWriter) string {
+// getUID to get unique ID
+func getUID() string {
 	// Generate a unique ID using the gouid package.
 	id := gouid.Bytes(10)
-
-	// Set the "X-Teler-Req-Id" header in the response with the unique ID.
-	setCustomHeader(w, xTelerReqId, id.String())
 
 	return id.String()
 }

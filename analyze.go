@@ -23,7 +23,7 @@ func (t *Teler) Analyze(w http.ResponseWriter, r *http.Request) error {
 
 	// If threat detected, set teler request ID to the header
 	if err != nil {
-		setReqIdHeader(w)
+		setCustomHeader(w, xTelerReqId, getUID())
 	}
 
 	return err
