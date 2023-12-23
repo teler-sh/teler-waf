@@ -93,3 +93,7 @@ jobs:
           go-version: 'stable'
       - run: go install -v github.com/palantir/go-license@latest
       - run: make license-verify
+
+  dependency-review:
+    if: (github.event_name == 'pull_request')
+    uses: ./.github/workflows/dependency-review.yaml
