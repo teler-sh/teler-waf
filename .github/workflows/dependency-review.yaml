@@ -26,3 +26,4 @@ jobs:
           comment-summary-in-pr: on-failure
           license-check: false
           base-ref: ${{ github.ref }}
+          head-ref: ${{ github.ref }}
