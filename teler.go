@@ -26,7 +26,6 @@ import (
 	"os"
 	"path"
 	"regexp"
-	"runtime"
 	"strings"
 	"time"
 
@@ -46,6 +45,7 @@ import (
 	"github.com/valyala/fastjson"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"tlog.app/go/loc"
 )
 
 // Threat defines what threat category should be excluded
@@ -126,8 +126,8 @@ func New(opts ...Options) *Teler {
 	}
 
 	// Get the package name of the calling package
-	_, file, _, ok := runtime.Caller(1)
-	if ok {
+	if pc := loc.Caller(1); pc != 0 {
+		_, file, _ := pc.NameFileLine()
 		t.caller = path.Base(path.Dir(file))
 	}
 

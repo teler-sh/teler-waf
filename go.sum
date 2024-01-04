@@ -1000,3 +1000,5 @@ mvdan.cc/sh/v3 v3.6.0/go.mod h1:U4mhtBLZ32iWhif5/lD+ygy1zrgaQhUu+XFy7C8+TTA=
 rsc.io/binaryregexp v0.2.0/go.mod h1:qTv7/COck+e2FymRvadv62gMdZztPaShugOCi3I+8D8=
 rsc.io/quote/v3 v3.1.0/go.mod h1:yEA65RcK8LyAZtP9Kv3t0HmxON59tX3rD+tICJqUlj0=
 rsc.io/sampler v1.3.0/go.mod h1:T1hPZKmBbMNahiBKFy5HrXp6adAjACjK9JXDnKaTXpA=
+tlog.app/go/loc v0.6.1 h1:Eae0owcUBxpQm5KRuZHJFQKXlA7D8hGMw53tKdp0zMY=
+tlog.app/go/loc v0.6.1/go.mod h1:k5eWl4QTHUxt1iyV324nJ/I6ib9KgjlluOl1A634IyE=
