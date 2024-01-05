@@ -78,6 +78,12 @@ jobs:
     needs: tests
     uses: ./.github/workflows/codeql.yaml
 
+  bearer:
+    needs: tests
+    uses: ./.github/workflows/bearer.yaml
+    with:
+      diff: ${{ github.event_name == 'pull_request' && true || false }}
+
   regression:
     needs: tests
     uses: ./.github/workflows/regression.yaml
