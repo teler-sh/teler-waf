@@ -7,7 +7,7 @@ require (
 	github.com/bitfield/script v0.22.0
 	github.com/daniel-hutao/spinlock v0.1.0
 	github.com/dwisiswant0/clientip v0.3.0
-	github.com/go-playground/validator/v10 v10.16.0
+	github.com/go-playground/validator/v10 v10.17.0
 	github.com/hashicorp/go-getter v1.7.2
 	github.com/klauspost/compress v1.17.4
 	github.com/patrickmn/go-cache v2.1.0+incompatible
