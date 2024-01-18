@@ -29,7 +29,7 @@ jobs:
           echo "date=$(date +%Y%m%d)" >> "$GITHUB_OUTPUT"
           echo "dir=$HOME/.cache/teler-waf" >> "$GITHUB_OUTPUT"
         id: cache
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ steps.cache.outputs.dir }}
           key: teler-resources-${{ steps.cache.outputs.date }}

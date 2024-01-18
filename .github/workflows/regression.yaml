@@ -24,7 +24,7 @@ jobs:
           go-version: 'stable'
       - run: go mod download
       - run: make bench-${{ matrix.phase }} | tee ${{ env.out }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ./cache
           key: ${{ runner.os }}-benchmark-${{ matrix.phase }}
