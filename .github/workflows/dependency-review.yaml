@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Dependency Review
-        uses: actions/dependency-review-action@v3.1.4
+        uses: actions/dependency-review-action@v4.0.0
         with:
           fail-on-severity: moderate
           comment-summary-in-pr: on-failure
