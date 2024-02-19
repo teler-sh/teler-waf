@@ -1,4 +1,3 @@
-.PHONY: help test ci
 .DEFAULT_GOAL := help
 
 BENCH_TARGET := .
@@ -37,6 +36,9 @@ bench-initialize: bench
 bench-analyze: BENCH_TARGET := ^BenchmarkAnalyze
 bench-analyze: bench
 
+bench-analyze-dev: BENCH_TARGET := ^BenchmarkAnalyze.+WithDevelopment$
+bench-analyze-dev: bench
+
 cover: FILE := /tmp/teler-coverage.out # Define coverage file
 cover: ## Runs the tests and check & view the test coverage
 	go test -race -coverprofile=$(FILE) -covermode=atomic $(TARGET)
@@ -53,3 +55,6 @@ license-verify: licensing
 
 pprof: ARGS := -cpuprofile=cpu.out -memprofile=mem.out
 pprof: bench
+
+.PHONY: help semgrep lint vet report test test-all ci bench bench-initialize
+.PHONY: bench-analyze cover cover-all licensing license-verify pprof
