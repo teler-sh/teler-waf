@@ -1272,6 +1272,28 @@ func BenchmarkAnalyzeDefault(b *testing.B) {
 	}
 }
 
+func BenchmarkAnalyzeDefaultWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{Development: true})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
 func BenchmarkAnalyzeCommonWebAttack(b *testing.B) {
 	// Initialize teler
 	waf := New(Options{
@@ -1300,22 +1322,37 @@ func BenchmarkAnalyzeCommonWebAttack(b *testing.B) {
 			b.Fatal(err)
 		}
 	}
+}
+
+func BenchmarkAnalyzeCommonWebAttackWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{
+		Excludes: []threat.Threat{
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+		Development: true,
+	})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
 
 	// Run the benchmark
-	// for _, req := range []int{1, 1000, 10000, 100000} {
-	// 	b.Run(fmt.Sprintf("%d-requests", req), func(b *testing.B) {
-	// 		b.ReportAllocs()
-	// 		b.ResetTimer()
-	// 		for i := 0; i < b.N; i++ {
-	// 			for j := 0; j < req; j++ {
-	// 				err := waf.Analyze(w, r)
-	// 				if err != nil {
-	// 					b.Fatal(err)
-	// 				}
-	// 			}
-	// 		}
-	// 	})
-	// }
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
 }
 
 func BenchmarkAnalyzeCVE(b *testing.B) {
@@ -1328,6 +1365,37 @@ func BenchmarkAnalyzeCVE(b *testing.B) {
 			threat.BadCrawler,
 			threat.DirectoryBruteforce,
 		},
+	})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkAnalyzeCVEWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+		Development: true,
 	})
 
 	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
@@ -1378,6 +1446,37 @@ func BenchmarkAnalyzeBadIPAddress(b *testing.B) {
 	}
 }
 
+func BenchmarkAnalyzeBadIPAddressWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+		Development: true,
+	})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
 func BenchmarkAnalyzeBadReferrer(b *testing.B) {
 	// Initialize teler
 	waf := New(Options{
@@ -1388,6 +1487,37 @@ func BenchmarkAnalyzeBadReferrer(b *testing.B) {
 			threat.BadCrawler,
 			threat.DirectoryBruteforce,
 		},
+	})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkAnalyzeBadReferrerWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+		Development: true,
 	})
 
 	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
@@ -1438,6 +1568,37 @@ func BenchmarkAnalyzeBadCrawler(b *testing.B) {
 	}
 }
 
+func BenchmarkAnalyzeBadCrawlerWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.DirectoryBruteforce,
+		},
+		Development: true,
+	})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
 func BenchmarkAnalyzeDirectoryBruteforce(b *testing.B) {
 	// Initialize teler
 	waf := New(Options{
@@ -1448,6 +1609,37 @@ func BenchmarkAnalyzeDirectoryBruteforce(b *testing.B) {
 			threat.BadReferrer,
 			threat.BadCrawler,
 		},
+	})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkAnalyzeDirectoryBruteforceWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+		},
+		Development: true,
 	})
 
 	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
@@ -1512,12 +1704,84 @@ func BenchmarkAnalyzeCustomRule(b *testing.B) {
 	}
 }
 
+func BenchmarkAnalyzeCustomRuleWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+			threat.CVE,
+			threat.BadIPAddress,
+			threat.BadReferrer,
+			threat.BadCrawler,
+			threat.DirectoryBruteforce,
+		},
+		Customs: []Rule{
+			{
+				Name:      "Log4j Attack",
+				Condition: "or",
+				Rules: []Condition{
+					{
+						Method:  request.GET,
+						Element: request.URI,
+						Pattern: `\$\{.*:\/\/.*\/?\w+?\}`,
+					},
+				},
+			},
+		},
+		Development: true,
+	})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
 func BenchmarkAnalyzeWithoutCommonWebAttack(b *testing.B) {
 	// Initialize teler
 	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.CommonWebAttack,
 		},
+	})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkAnalyzeWithoutCommonWebAttackWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{
+		Excludes: []threat.Threat{
+			threat.CommonWebAttack,
+		},
+		Development: true,
 	})
 
 	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
@@ -1564,12 +1828,66 @@ func BenchmarkAnalyzeWithoutCVE(b *testing.B) {
 	}
 }
 
+func BenchmarkAnalyzeWithoutCVEWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{
+		Excludes: []threat.Threat{
+			threat.CVE,
+		},
+		Development: true,
+	})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
 func BenchmarkAnalyzeWithoutBadIPAddress(b *testing.B) {
 	// Initialize teler
 	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.BadIPAddress,
 		},
+	})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkAnalyzeWithoutBadIPAddressWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{
+		Excludes: []threat.Threat{
+			threat.BadIPAddress,
+		},
+		Development: true,
 	})
 
 	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
@@ -1616,6 +1934,33 @@ func BenchmarkAnalyzeWithoutBadReferrer(b *testing.B) {
 	}
 }
 
+func BenchmarkAnalyzeWithoutBadReferrerWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{
+		Excludes: []threat.Threat{
+			threat.BadReferrer,
+		},
+		Development: true,
+	})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
 func BenchmarkAnalyzeWithoutBadCrawler(b *testing.B) {
 	// Initialize teler
 	waf := New(Options{
@@ -1642,12 +1987,66 @@ func BenchmarkAnalyzeWithoutBadCrawler(b *testing.B) {
 	}
 }
 
+func BenchmarkAnalyzeWithoutBadCrawlerWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{
+		Excludes: []threat.Threat{
+			threat.BadCrawler,
+		},
+		Development: true,
+	})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
 func BenchmarkAnalyzeWithoutDirectoryBruteforce(b *testing.B) {
 	// Initialize teler
 	waf := New(Options{
 		Excludes: []threat.Threat{
 			threat.DirectoryBruteforce,
 		},
+	})
+
+	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+
+	// Run the benchmark
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err := waf.Analyze(w, r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkAnalyzeWithoutDirectoryBruteforceWithDevelopment(b *testing.B) {
+	// Initialize teler
+	waf := New(Options{
+		Excludes: []threat.Threat{
+			threat.DirectoryBruteforce,
+		},
+		Development: true,
 	})
 
 	r, err := http.ReadRequest(bufio.NewReader(strings.NewReader(mockRawReq)))
