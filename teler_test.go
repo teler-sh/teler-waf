@@ -734,238 +734,150 @@ func TestNewWithResponseHTMLFile(t *testing.T) {
 }
 
 func TestNewInvalidWhitelist(t *testing.T) {
-	defer func() {
-		// Check that the teler function panics
-		if r := recover(); r != nil {
-			assert.Panics(t, func() { panic(r) })
-		}
-	}()
-
-	// Initialize teler
-	telerMiddleware := New(Options{
-		Whitelists: []string{`XYZ matches "foo(?!bar)"`},
-		NoStderr:   true,
+	assert.Panics(t, func() {
+		New(Options{
+			Whitelists: []string{`XYZ matches "foo(?!bar)"`},
+			NoStderr:   true,
+		})
 	})
-
-	telerMiddleware.Handler(handler)
 }
 
 func TestNewInvalidCustomRuleName(t *testing.T) {
-	defer func() {
-		// Check that the teler function panics
-		if r := recover(); r != nil {
-			assert.Panics(t, func() { panic(r) })
-		}
-	}()
-
-	// Initialize teler
-	telerMiddleware := New(Options{
-		Customs: []Rule{
-			{
-				Name:      "",
-				Condition: "or",
-				Rules: []Condition{
-					{
-						Method:  request.GET,
-						Element: request.URI,
-						Pattern: `.`,
+	assert.Panics(t, func() {
+		New(Options{
+			Customs: []Rule{
+				{
+					Name:      "",
+					Condition: "or",
+					Rules: []Condition{
+						{
+							Method:  request.GET,
+							Element: request.URI,
+							Pattern: `.`,
+						},
 					},
 				},
 			},
-		},
-		NoStderr: true,
+			NoStderr: true,
+		})
 	})
-
-	telerMiddleware.Handler(handler)
 }
 
 func TestNewInvalidCustomRuleName2(t *testing.T) {
-	defer func() {
-		// Check that the teler function panics
-		if r := recover(); r != nil {
-			assert.Panics(t, func() { panic(r) })
-		}
-	}()
-
-	// Initialize teler
-	telerMiddleware := New(Options{
-		CustomsFromFile: "tests/rules/invalid/err-name.yaml",
-		NoStderr:        true,
+	assert.Panics(t, func() {
+		New(Options{
+			CustomsFromFile: "tests/rules/invalid/err-name.yaml",
+			NoStderr:        true,
+		})
 	})
-
-	telerMiddleware.Handler(handler)
 }
 
 func TestNewInvalidCustomRuleCondition(t *testing.T) {
-	defer func() {
-		// Check that the teler function panics
-		if r := recover(); r != nil {
-			assert.Panics(t, func() { panic(r) })
-		}
-	}()
-
-	// Initialize teler
-	telerMiddleware := New(Options{
-		Customs: []Rule{
-			{
-				Name:      "foo",
-				Condition: "bar",
-				Rules: []Condition{
-					{
-						Method:  request.GET,
-						Element: request.URI,
-						Pattern: `.`,
+	assert.Panics(t, func() {
+		New(Options{
+			Customs: []Rule{
+				{
+					Name:      "foo",
+					Condition: "bar",
+					Rules: []Condition{
+						{
+							Method:  request.GET,
+							Element: request.URI,
+							Pattern: `.`,
+						},
 					},
 				},
 			},
-		},
-		NoStderr: true,
+			NoStderr: true,
+		})
 	})
-
-	telerMiddleware.Handler(handler)
 }
 
 func TestNewInvalidCustomRuleCondition2(t *testing.T) {
-	defer func() {
-		// Check that the teler function panics
-		if r := recover(); r != nil {
-			assert.Panics(t, func() { panic(r) })
-		}
-	}()
-
-	// Initialize teler
-	telerMiddleware := New(Options{
-		CustomsFromFile: "tests/rules/invalid/err-condition.yaml",
-		NoStderr:        true,
+	assert.Panics(t, func() {
+		New(Options{
+			CustomsFromFile: "tests/rules/invalid/err-condition.yaml",
+			NoStderr:        true,
+		})
 	})
-
-	telerMiddleware.Handler(handler)
 }
 
 func TestNewBlankCustomRulePattern(t *testing.T) {
-	defer func() {
-		// Check that the teler function panics
-		if r := recover(); r != nil {
-			assert.Panics(t, func() { panic(r) })
-		}
-	}()
-
-	// Initialize teler
-	telerMiddleware := New(Options{
-		Customs: []Rule{
-			{
-				Name:      "foo",
-				Condition: "or",
-				Rules: []Condition{
-					{
-						Method:  request.GET,
-						Element: request.URI,
-						Pattern: "",
+	assert.Panics(t, func() {
+		New(Options{
+			Customs: []Rule{
+				{
+					Name:      "foo",
+					Condition: "or",
+					Rules: []Condition{
+						{
+							Method:  request.GET,
+							Element: request.URI,
+							Pattern: "",
+						},
 					},
 				},
 			},
-		},
-		NoStderr: true,
+			NoStderr: true,
+		})
 	})
-
-	telerMiddleware.Handler(handler)
 }
 
 func TestNewBlankCustomRulePattern2(t *testing.T) {
-	defer func() {
-		// Check that the teler function panics
-		if r := recover(); r != nil {
-			assert.Panics(t, func() { panic(r) })
-		}
-	}()
-
-	// Initialize teler
-	telerMiddleware := New(Options{
-		CustomsFromFile: "tests/rules/invalid/err-pattern.yaml",
-		NoStderr:        true,
+	assert.Panics(t, func() {
+		New(Options{
+			CustomsFromFile: "tests/rules/invalid/err-pattern.yaml",
+			NoStderr:        true,
+		})
 	})
-
-	telerMiddleware.Handler(handler)
 }
 
 func TestNewInvalidCustomRulePattern(t *testing.T) {
-	defer func() {
-		// Check that the teler function panics
-		if r := recover(); r != nil {
-			assert.Panics(t, func() { panic(r) })
-		}
-	}()
-
-	// Initialize teler
-	telerMiddleware := New(Options{
-		Customs: []Rule{
-			{
-				Name:      "foo",
-				Condition: "or",
-				Rules: []Condition{
-					{
-						Method:  request.GET,
-						Element: request.URI,
-						Pattern: `foo(?!bar)`,
+	assert.Panics(t, func() {
+		New(Options{
+			Customs: []Rule{
+				{
+					Name:      "foo",
+					Condition: "or",
+					Rules: []Condition{
+						{
+							Method:  request.GET,
+							Element: request.URI,
+							Pattern: `foo(?!bar)`,
+						},
 					},
 				},
 			},
-		},
-		NoStderr: true,
+			NoStderr: true,
+		})
 	})
-
-	telerMiddleware.Handler(handler)
 }
 
 func TestNewInvalidCustomRulePattern2(t *testing.T) {
-	defer func() {
-		// Check that the teler function panics
-		if r := recover(); r != nil {
-			assert.Panics(t, func() { panic(r) })
-		}
-	}()
-
-	// Initialize teler
-	telerMiddleware := New(Options{
-		CustomsFromFile: "tests/rules/invalid/err-pattern-2.yaml",
-		NoStderr:        true,
+	assert.Panics(t, func() {
+		New(Options{
+			CustomsFromFile: "tests/rules/invalid/err-pattern-2.yaml",
+			NoStderr:        true,
+		})
 	})
-
-	telerMiddleware.Handler(handler)
 }
 
 func TestNewInvalidCustomRuleMethod2(t *testing.T) {
-	defer func() {
-		// Check that the teler function panics
-		if r := recover(); r != nil {
-			assert.Panics(t, func() { panic(r) })
-		}
-	}()
-
-	// Initialize teler
-	telerMiddleware := New(Options{
-		CustomsFromFile: "tests/rules/invalid/err-method.yaml",
-		NoStderr:        true,
+	assert.Panics(t, func() {
+		New(Options{
+			CustomsFromFile: "tests/rules/invalid/err-method.yaml",
+			NoStderr:        true,
+		})
 	})
-
-	telerMiddleware.Handler(handler)
 }
 
 func TestNewInvalidCustomRuleElement2(t *testing.T) {
-	defer func() {
-		// Check that the teler function panics
-		if r := recover(); r != nil {
-			assert.Panics(t, func() { panic(r) })
-		}
-	}()
-
-	// Initialize teler
-	telerMiddleware := New(Options{
-		CustomsFromFile: "tests/rules/invalid/err-element.yaml",
-		NoStderr:        true,
+	assert.Panics(t, func() {
+		New(Options{
+			CustomsFromFile: "tests/rules/invalid/err-element.yaml",
+			NoStderr:        true,
+		})
 	})
-
-	telerMiddleware.Handler(handler)
 }
 
 func BenchmarkInitializeDefault(b *testing.B) {
