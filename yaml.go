@@ -28,36 +28,11 @@ type yamlRule struct {
 	Rules     []*yamlCondition `yaml:"rules" validate:"required,dive"`
 }
 
-func validateYAMLRules(fl validator.FieldLevel) bool {
-	// Retrieve the YAML string from the field
-	yamlString, ok := fl.Field().Interface().(string)
-	if !ok {
-		return false
-	}
-
-	// Unmarshal the YAML string into a yamlRule struct
-	var data yamlRule
-	err := yaml.Unmarshal([]byte(yamlString), &data)
-	if err != nil {
-		return false
-	}
-
-	// Create a new validator instance
-	validate := validator.New()
-
-	// Validate the yamlRule struct
-	err = validate.Struct(data)
-	return err == nil
-}
-
 func yamlToRule(file *os.File) (Rule, error) {
 	defer file.Close()
 
 	// Create a new validator instance
 	validate := validator.New()
-
-	// Register the custom validation function
-	_ = validate.RegisterValidation("yaml", validateYAMLRules)
 
 	// Initialize Rule and slice of yamlRule pointer
 	var rule Rule
