@@ -6,6 +6,7 @@ package option
 
 import (
 	"os"
+	"syscall"
 	"testing"
 
 	"github.com/kitabisa/teler-waf"
@@ -254,6 +255,34 @@ func TestLoadFromJSONFile(t *testing.T) {
 	assert.NotEqual(t, opt, teler.Options{})
 }
 
+func TestErrLoadFromJSONFile(t *testing.T) {
+	t.Run("nonexistent", func(t *testing.T) {
+		_, err := LoadFromJSONFile("nonexistent-file.json")
+		assert.NotNil(t, err)
+	})
+
+	t.Run("notregular", func(t *testing.T) {
+		tmpfile, err := os.CreateTemp("", "config*.json")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		tmpfilePath := tmpfile.Name()
+		if err := os.Remove(tmpfilePath); err != nil {
+			t.Fatal(err)
+		}
+
+		err = syscall.Mknod(tmpfilePath, syscall.S_IFCHR|0644, 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer os.Remove(tmpfilePath)
+
+		_, err = LoadFromJSONFile(tmpfilePath)
+		assert.NotNil(t, err)
+	})
+}
+
 func TestLoadFromYAMLBytes(t *testing.T) {
 	opt, err := LoadFromYAMLBytes(yamlConfig)
 	if err != nil {
@@ -292,4 +321,32 @@ func TestLoadFromYAMLFile(t *testing.T) {
 	}
 
 	assert.NotEqual(t, opt, teler.Options{})
+}
+
+func TestErrLoadFromYAMLFile(t *testing.T) {
+	t.Run("nonexistent", func(t *testing.T) {
+		_, err := LoadFromYAMLFile("nonexistent-file.yaml")
+		assert.NotNil(t, err)
+	})
+
+	t.Run("notregular", func(t *testing.T) {
+		tmpfile, err := os.CreateTemp("", "config*.yaml")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		tmpfilePath := tmpfile.Name()
+		if err := os.Remove(tmpfilePath); err != nil {
+			t.Fatal(err)
+		}
+
+		err = syscall.Mknod(tmpfilePath, syscall.S_IFCHR|0644, 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer os.Remove(tmpfilePath)
+
+		_, err = LoadFromYAMLFile(tmpfilePath)
+		assert.NotNil(t, err)
+	})
 }
