@@ -65,6 +65,8 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: /tmp/teler-coverage.out
+          verbose: true
+          fail_ci_if_error: true
 
   golangci:
     runs-on: ubuntu-latest
