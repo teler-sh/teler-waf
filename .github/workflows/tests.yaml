@@ -64,7 +64,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: /tmp/teler-coverage.out
+          file: coverage.txt
           verbose: true
           fail_ci_if_error: true
 

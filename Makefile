@@ -25,7 +25,7 @@ test-all: semgrep lint test report ## Run the tests, vetting, and golangci-lint,
 ci: vet ## Run the tests and vetting checks (specific for CI)
 	go test -cover -race -count=1 ./...
 
-cover: FILE := /tmp/teler-coverage.out # Define coverage file
+cover: FILE := coverage.txt
 cover: ## Run coverage
 	go test -race -coverprofile=$(FILE) -covermode=atomic $(TARGET)
 	go tool cover -func=$(FILE)
