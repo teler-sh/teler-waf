@@ -12,7 +12,13 @@ import (
 
 func TestCompileDSL(t *testing.T) {
 	env := New()
+	expr := `1 + 1`
 
-	_, err := env.Compile(`1 + 1`)
+	_, err := env.Compile(expr)
 	assert.ErrorIs(t, err, nil)
+
+	t.Run("err", func(t *testing.T) {
+		_, err := env.Compile(expr + "0O")
+		assert.NotNil(t, err)
+	})
 }
