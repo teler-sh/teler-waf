@@ -59,12 +59,12 @@ jobs:
             ~/go/pkg/mod
           key: go-${{ hashFiles('**/go.sum') }}
           restore-keys: go-
-      - run: make cover
+      - run: make cover-all
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: /tmp/teler-coverage.out
+          file: coverage.txt
           verbose: true
           fail_ci_if_error: true
 

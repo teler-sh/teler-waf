@@ -10,6 +10,7 @@
 /examples/*/app
 /examples/*/main
 /examples/*/demo
+/coverage.txt
 
 # Test binary, built with `go test -c`
 *.test
