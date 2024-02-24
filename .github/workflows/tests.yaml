@@ -20,7 +20,6 @@ jobs:
       matrix:
         go-version: [1.19.x, 1.20.x, 1.21.x, 1.22.x]
     runs-on: ubuntu-latest
-    if: (github.event_name != 'workflow_dispatch')
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v5
@@ -42,6 +41,7 @@ jobs:
           path: ${{ steps.cache.outputs.dir }}
           key: teler-resources-${{ steps.cache.outputs.date }}
       - run: make ci
+        if: (github.event_name != 'workflow_dispatch')
 
   codecov:
     runs-on: ubuntu-latest
