@@ -283,9 +283,45 @@ func TestNewWithFalcoSidekickURL(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = client.Do(req)
+	for i := 0; i < 5; i++ {
+		_, err = client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	time.Sleep(5 * time.Second)
+}
+
+func TestNewWithInvalidFalcoSidekickURL(t *testing.T) {
+	// Initialize Falco Sidekick handler
+	falcoSidekickHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
+	// Initialize Falco Sidekick server
+	falcoSidekickServer := httptest.NewServer(falcoSidekickHandler)
+	falcoSidekickServer.Close() // Close server early
+
+	// Initialize teler
+	telerMiddleware := New(Options{NoStderr: true, FalcoSidekickURL: falcoSidekickServer.URL})
+	wrappedHandler := telerMiddleware.Handler(handler)
+
+	// Create a test server with the wrapped handler
+	ts := httptest.NewServer(wrappedHandler)
+	defer ts.Close()
+
+	// Create a request to send to the test server
+	req, err := http.NewRequest("GET", ts.URL, nil)
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	for i := 0; i < 5; i++ {
+		_, err = client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 
 	time.Sleep(5 * time.Second)
