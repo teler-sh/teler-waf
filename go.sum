@@ -218,6 +218,8 @@ github.com/cncf/xds/go v0.0.0-20210805033703-aa0b78936158/go.mod h1:eXthEFrGJvWH
 github.com/cncf/xds/go v0.0.0-20210922020428-25de7278fc84/go.mod h1:eXthEFrGJvWHgFFCl3hGmgk+/aYT6PnTQLykKQRLhEs=
 github.com/cncf/xds/go v0.0.0-20211001041855-01bcc9b48dfe/go.mod h1:eXthEFrGJvWHgFFCl3hGmgk+/aYT6PnTQLykKQRLhEs=
 github.com/cncf/xds/go v0.0.0-20211011173535-cb28da3451f1/go.mod h1:eXthEFrGJvWHgFFCl3hGmgk+/aYT6PnTQLykKQRLhEs=
+github.com/codingsince1985/checksum v1.3.0 h1:kqqIqWBwjidGmt/pO4yXCEX+np7HACGx72EB+MkKcVY=
+github.com/codingsince1985/checksum v1.3.0/go.mod h1:QfRskdtdWap+gJil8e5obw6I8/cWJ0SwMUACruWDSU8=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/creack/pty v1.1.18/go.mod h1:MOBLtS5ELjhRRrroQr9kyvTxUAFNvYEK993ew/Vr4O4=
 github.com/daniel-hutao/spinlock v0.1.0 h1:qk6v2L6mJLUmxzq1eJ5xUIlCh4q0wM+26Qy/KfH5c3U=
