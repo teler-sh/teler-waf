@@ -32,14 +32,13 @@ jobs:
             ~/go/pkg/mod
           key: go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
           restore-keys: go-${{ matrix.go-version }}-
-      - run: |
-          echo "date=$(date +%Y%m%d)" >> "$GITHUB_OUTPUT"
-          echo "dir=$HOME/.cache/teler-waf" >> "$GITHUB_OUTPUT"
+      - run: echo "date=$(date +%Y%m%d)" >> "$GITHUB_OUTPUT"
         id: cache
       - uses: actions/cache@v4
         with:
-          path: ${{ steps.cache.outputs.dir }}
+          path: ~/.cache/teler-waf
           key: teler-resources-${{ steps.cache.outputs.date }}
+          restore-keys: teler-resources-${{ matrix.go-version }}-
       - run: make ci
         if: (github.event_name != 'workflow_dispatch')
 
