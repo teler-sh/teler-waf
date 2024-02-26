@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := help
 
 BENCH_TARGET := .
+COVER_COUNT := 1
 
 help: ## Displays this help message.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -27,10 +28,11 @@ ci: vet ## Run the tests and vetting checks (specific for CI)
 
 cover: FILE := coverage.txt
 cover: ## Run coverage
-	go test -race -coverprofile=$(FILE) -covermode=atomic $(TARGET)
+	go test -race -coverprofile=$(FILE) -covermode=atomic -count=$(COVER_COUNT) $(TARGET)
 	go tool cover -func=$(FILE)
 
 cover-all: ## Run coverage but recursive
+cover-all: COVER_COUNT := 2
 cover-all: TARGET := ./...
 cover-all: cover
 
