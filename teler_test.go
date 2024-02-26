@@ -252,7 +252,7 @@ func TestNewWithMalformedDataset(t *testing.T) {
 	t.Run("malformed", func(t *testing.T) {
 		// Append CVEs dataset
 		f, err := os.OpenFile(cvesPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
+		if err != nil && !os.IsNotExist(err) {
 			t.Fatal(err)
 		}
 		defer f.Close()
