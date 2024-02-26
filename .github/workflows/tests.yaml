@@ -38,7 +38,7 @@ jobs:
         with:
           path: ~/.cache/teler-waf
           key: teler-resources-${{ steps.cache.outputs.date }}
-          restore-keys: teler-resources-${{ matrix.go-version }}-
+          restore-keys: teler-resources-${{ steps.cache.outputs.date }}-
       - run: make ci
         if: (github.event_name != 'workflow_dispatch')
 
