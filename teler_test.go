@@ -46,7 +46,7 @@ func init() {
 
 	updated, err := threat.IsUpdated()
 	if err != nil {
-		panic(err)
+		_ = threat.Get()
 	}
 
 	verified, err := threat.Verify()
