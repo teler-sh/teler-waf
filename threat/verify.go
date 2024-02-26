@@ -88,7 +88,7 @@ func verifyChecksums(md5sums map[string]string) (bool, error) {
 
 		f := filepath.Base(p)
 		if md5sum := md5sums[f]; sum != md5sum {
-			return false, fmt.Errorf(errCorrupted, threat.String(), md5sum, sum)
+			return false, fmt.Errorf(errMalformed, threat.String(), md5sum, sum)
 		}
 	}
 

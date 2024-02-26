@@ -9,5 +9,5 @@ const (
 	errGetSumFile  = "unable to fetch checksum file: %w"
 	errReadSumFile = "cannot read checksum file: %w"
 	errChecksum    = "cannot perform checksum for '%s' file: %w"
-	errCorrupted   = "threat '%s' datasets is corrupted, expect '%s' got '%s' sum"
+	errMalformed   = "threat '%s' datasets is malformed, expect '%s' got '%s' sum"
 )
