@@ -36,3 +36,4 @@ jobs:
           fail-on-alert: ${{ matrix.phase == 'analyze' && true || false }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           comment-on-alert: ${{ matrix.phase == 'analyze' && true || false }}
+          summary-always: true
