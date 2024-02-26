@@ -25,13 +25,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: go-${{ matrix.go-version }}-
+          cache-dependency-path: '**/go.sum'
       - run: echo "date=$(date +%Y%m%d)" >> "$GITHUB_OUTPUT"
         id: cache
       - uses: actions/cache@v4
@@ -52,13 +46,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: go-${{ hashFiles('**/go.sum') }}
-          restore-keys: go-
+          cache-dependency-path: '**/go.sum'
       - run: make cover-all
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
