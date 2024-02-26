@@ -212,30 +212,66 @@ func TestNewWithWhitelist(t *testing.T) {
 }
 
 func TestNewWithMalformedDataset(t *testing.T) {
-	// Remove CVEs dataset
-	cvesFile := filepath.Join(homeDir, cacheDir, "cves.json")
-	if err := os.Remove(cvesFile); err != nil {
-		panic(err)
-	}
+	cvesPath := filepath.Join(homeDir, cacheDir, "cves.json")
 
-	// Initialize teler
-	telerMiddleware := New(Options{NoStderr: true})
-	wrappedHandler := telerMiddleware.Handler(handler)
+	t.Run("nonexistent", func(t *testing.T) {
+		// Remove CVEs dataset
+		err := os.Remove(cvesPath)
+		if err != nil && !os.IsNotExist(err) {
+			panic(err)
+		}
 
-	// Create a test server with the wrapped handler
-	ts := httptest.NewServer(wrappedHandler)
-	defer ts.Close()
+		// Initialize teler
+		telerMiddleware := New(Options{NoStderr: true})
+		wrappedHandler := telerMiddleware.Handler(handler)
 
-	// Create a request to send to the test server
-	req, err := http.NewRequest("GET", ts.URL, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+		// Create a test server with the wrapped handler
+		ts := httptest.NewServer(wrappedHandler)
+		defer ts.Close()
 
-	_, err = client.Do(req)
-	if err != nil {
-		t.Fatal(err)
-	}
+		// Create a request to send to the test server
+		req, err := http.NewRequest("GET", ts.URL, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
+
+	t.Run("malformed", func(t *testing.T) {
+		// Append CVEs dataset
+		f, err := os.OpenFile(cvesPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer f.Close()
+
+		if _, err := f.WriteString("AAAAAAAAAAAAAAAAAAaaaaaaaa\n"); err != nil {
+			t.Fatal(err)
+		}
+
+		// Initialize teler
+		telerMiddleware := New(Options{NoStderr: true})
+		wrappedHandler := telerMiddleware.Handler(handler)
+
+		// Create a test server with the wrapped handler
+		ts := httptest.NewServer(wrappedHandler)
+		defer ts.Close()
+
+		// Create a request to send to the test server
+		req, err := http.NewRequest("GET", ts.URL, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
 }
 
 func TestNewWithInMemory(t *testing.T) {
