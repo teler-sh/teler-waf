@@ -13,7 +13,7 @@ jobs:
   regression:
     strategy:
       matrix:
-        phase: [initialize, analyze-dev]
+        phase: [initialize, analyze]
     runs-on: ubuntu-latest
     env:
       out: benchmark.out
