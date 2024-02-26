@@ -42,12 +42,18 @@ Content-Length: 9
 some=body`
 
 func init() {
-	homeDir, _ = os.UserHomeDir()
-
-	// Removing teler threat datasets
-	err := os.RemoveAll(filepath.Join(homeDir, cacheDir))
+	updated, err := threat.IsUpdated()
 	if err != nil {
 		panic(err)
+	}
+
+	verified, err := threat.Verify()
+	if err != nil {
+		_ = threat.Get()
+	}
+
+	if !updated && !verified {
+		_ = threat.Get()
 	}
 }
 
