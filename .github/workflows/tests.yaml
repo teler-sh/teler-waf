@@ -51,7 +51,7 @@ jobs:
           fetch-depth: 2
       - uses: actions/setup-go@v5
         with:
-          go-version: 'stable'
+          go-version-file: 'go.mod'
       - uses: actions/cache@v4
         with:
           path: |
@@ -112,7 +112,7 @@ jobs:
           fetch-depth: 2
       - uses: actions/setup-go@v5
         with:
-          go-version: 'stable'
+          go-version-file: 'go.mod'
       - run: go install -v github.com/palantir/go-license@latest
       - run: make license-verify
 
