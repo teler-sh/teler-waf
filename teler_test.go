@@ -42,6 +42,8 @@ Content-Length: 9
 some=body`
 
 func init() {
+	homeDir, _ = os.UserHomeDir()
+
 	updated, err := threat.IsUpdated()
 	if err != nil {
 		panic(err)
