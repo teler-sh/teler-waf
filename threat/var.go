@@ -4,11 +4,11 @@
 
 package threat
 
-import "fmt"
-
 var (
-	DbURL   = fmt.Sprintf("%s/raw/master/db/db.tar.zst", repoURL)
-	dbQuery = fmt.Sprintf("checksum=file:%s/raw/master/db/MD5SUMS", repoURL)
+	dbFile  = "db.tar.zst"
+	DbURL   = repoURL + "/raw/master/db/" + dbFile
+	sumURL  = repoURL + "/raw/master/db/MD5SUMS"
+	dbQuery = "checksum=file:" + sumURL
 )
 
 var str = map[Threat]string{

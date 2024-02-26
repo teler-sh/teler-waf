@@ -5,5 +5,9 @@
 package threat
 
 const (
-	errFilepath = "unable to get file path location of given %s threat type"
+	errFilepath    = "unable to get file path location of given %s threat type"
+	errGetSumFile  = "unable to fetch checksum file: %w"
+	errReadSumFile = "cannot read checksum file: %w"
+	errChecksum    = "cannot perform checksum for '%s' file: %w"
+	errMalformed   = "threat '%s' datasets is malformed, expect '%s' got '%s' sum"
 )

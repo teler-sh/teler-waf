@@ -443,6 +443,24 @@ func (t *Teler) getResources() error {
 		updated = false
 	}
 
+	// Do checksum for threat datasets
+	if updated {
+		t.log.Debug("verifying datasets")
+		verify, err := threat.Verify()
+		if err != nil {
+			// Got something error while verifying
+			updated = false
+		}
+
+		// Checks if datasets is malformed/corrupted
+		//
+		// If not verified, err is defintely not nil.
+		if !verify {
+			t.log.Debug(err.Error())
+			updated = false
+		}
+	}
+
 	// Download the datasets of threat ruleset from teler-resources
 	// if threat datasets is not up-to-date, update check is disabled
 	// and in-memory option is true

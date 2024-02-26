@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/antonmedv/expr v1.12.7
 	github.com/bitfield/script v0.22.0
+	github.com/codingsince1985/checksum v1.3.0
 	github.com/daniel-hutao/spinlock v0.1.0
 	github.com/dwisiswant0/clientip v0.3.0
 	github.com/go-playground/validator/v10 v10.16.0
