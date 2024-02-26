@@ -148,7 +148,7 @@ func TestNewWithLogWriter(t *testing.T) {
 	// Open /dev/null as a file for writing
 	nullFile, err := os.OpenFile("/dev/null", os.O_WRONLY, 0666)
 	if err != nil {
-		panic(err)
+		t.Fatal(err)
 	}
 	defer nullFile.Close()
 
@@ -224,7 +224,7 @@ func TestNewWithMalformedDataset(t *testing.T) {
 		// Remove CVEs dataset
 		err := os.Remove(cvesPath)
 		if err != nil && !os.IsNotExist(err) {
-			panic(err)
+			t.Fatal(err)
 		}
 
 		// Initialize teler
