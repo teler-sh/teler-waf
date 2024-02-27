@@ -44,17 +44,12 @@ some=body`
 func init() {
 	homeDir, _ = os.UserHomeDir()
 
-	updated, err := threat.IsUpdated()
-	if err != nil {
-		_ = threat.Get()
-	}
-
 	verified, err := threat.Verify()
 	if err != nil {
 		_ = threat.Get()
 	}
 
-	if !updated && !verified {
+	if !verified {
 		_ = threat.Get()
 	}
 }
