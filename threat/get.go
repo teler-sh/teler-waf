@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 
 	"github.com/hashicorp/go-getter"
+	"github.com/otiai10/copy"
 )
 
 // Get retrieves all the teler threat datasets.
@@ -38,15 +39,71 @@ func Get() error {
 		return err
 	}
 
-	// Retrieve the compressed archive DB file from the GitHub repository using go-getter
-	err = getter.Get(dst, fmt.Sprintf("%s?%s", DbURL, dbQuery))
+	// Downloading teler-resources from local, fallback to repo
+	if err := getLocal(); err != nil {
+		// Downloading from repo
+		err = getter.Get(dst, fmt.Sprintf("%s?%s", DbURL, dbQuery))
+		if err != nil {
+			return err
+		}
+
+		tmpDst, err := TmpLocation()
+		if err != nil {
+			return err
+		}
+
+		// Copy the resources from the cache dir to the temporary dir
+		err = copy.Copy(dst, tmpDst)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// getLocal fetches the local resources, copies them from a temporary location
+// to the cache directory, and verifies the checksum of the copied resources.
+// It returns an error if any step encounters an issue.
+func getLocal() error {
+	// Get the destination dir where local resources will be copied
+	dst, err := Location()
 	if err != nil {
-		// If there was an error retrieving the files, return the error
 		return err
 	}
 
-	// Return a nil error
-	return nil
+	// Get the temporary dir containing the resources to be copied
+	tmpDst, err := TmpLocation()
+	if err != nil {
+		return err
+	}
+
+	// Copy the resources from the temporary dir to the cache dir
+	err = copy.Copy(tmpDst, dst)
+	if err != nil {
+		return err
+	}
+
+	// Verify the checksum of the copied resources
+	_, err = Verify()
+
+	// Return any error encountered during the process
+	return err
+}
+
+// tmpLocation generates a temporary directory path based on the current date
+// and creates the directory if it doesn't already exist. It returns the
+// path of the temporary directory or an error if the creation fails.
+func TmpLocation() (string, error) {
+	date := time.Now().Format("02012006")
+	tmpDir := filepath.Join(os.TempDir(), fmt.Sprintf(tmpDirSuffix, date))
+
+	err := os.MkdirAll(tmpDir, 0755)
+	if err != nil && !os.IsExist(err) {
+		return "", err
+	}
+
+	return tmpDir, nil
 }
 
 // Location returns the location of the teler cache directory.

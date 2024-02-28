@@ -11,6 +11,7 @@ require (
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/hashicorp/go-getter v1.7.2
 	github.com/klauspost/compress v1.17.4
+	github.com/otiai10/copy v1.14.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/projectdiscovery/mapcidr v1.1.2
 	github.com/samber/lo v1.38.1
@@ -69,6 +70,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.18.0 // indirect
 	golang.org/x/oauth2 v0.8.0 // indirect
+	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.114.0 // indirect
