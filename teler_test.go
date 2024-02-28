@@ -29,8 +29,7 @@ var (
 	})
 	client = &http.Client{}
 
-	homeDir  string
-	cacheDir = filepath.Join(".cache", "teler-waf")
+	cacheDir, tmpDir string
 )
 
 var mockRawReq = `POST /path?query=value#fragments HTTP/1.1
@@ -42,7 +41,17 @@ Content-Length: 9
 some=body`
 
 func init() {
-	homeDir, _ = os.UserHomeDir()
+	var err error
+
+	cacheDir, err = threat.Location()
+	if err != nil {
+		panic(err)
+	}
+
+	tmpDir, err = threat.TmpLocation()
+	if err != nil {
+		panic(err)
+	}
 
 	verified, err := threat.Verify()
 	if err != nil {
@@ -215,11 +224,12 @@ func TestNewWithWhitelist(t *testing.T) {
 }
 
 func TestNewWithMalformedDataset(t *testing.T) {
-	cvesPath := filepath.Join(homeDir, cacheDir, "cves.json")
+	cvesCachePath := filepath.Join(cacheDir, "cves.json")
+	cvesTmpPath := filepath.Join(tmpDir, "cves.json")
 
 	t.Run("nonexistent", func(t *testing.T) {
 		// Remove CVEs dataset
-		err := os.Remove(cvesPath)
+		err := os.Remove(cvesCachePath)
 		if err != nil && !os.IsNotExist(err) {
 			t.Fatal(err)
 		}
@@ -246,13 +256,84 @@ func TestNewWithMalformedDataset(t *testing.T) {
 
 	t.Run("malformed", func(t *testing.T) {
 		// Append CVEs dataset
-		f, err := os.OpenFile(cvesPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		f, err := os.OpenFile(cvesCachePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil && !os.IsNotExist(err) {
 			t.Fatal(err)
 		}
 		defer f.Close()
 
 		if _, err := f.WriteString("AAAAAAAAAAAAAAAAAAaaaaaaaa\n"); err != nil {
+			t.Fatal(err)
+		}
+
+		// Initialize teler
+		telerMiddleware := New(Options{NoStderr: true})
+		wrappedHandler := telerMiddleware.Handler(handler)
+
+		// Create a test server with the wrapped handler
+		ts := httptest.NewServer(wrappedHandler)
+		defer ts.Close()
+
+		// Create a request to send to the test server
+		req, err := http.NewRequest("GET", ts.URL, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
+
+	t.Run("nonexistent-tmp", func(t *testing.T) {
+		// Remove CVEs dataset
+		err := os.Remove(cvesTmpPath)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		// Remove cached datasets
+		err = os.RemoveAll(cacheDir)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		// Initialize teler
+		telerMiddleware := New(Options{NoStderr: true})
+		wrappedHandler := telerMiddleware.Handler(handler)
+
+		// Create a test server with the wrapped handler
+		ts := httptest.NewServer(wrappedHandler)
+		defer ts.Close()
+
+		// Create a request to send to the test server
+		req, err := http.NewRequest("GET", ts.URL, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
+
+	t.Run("malformed-tmp", func(t *testing.T) {
+		// Append CVEs dataset
+		f, err := os.OpenFile(cvesTmpPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer f.Close()
+
+		if _, err := f.WriteString("AAAAAAAAAAAAAAAAAAaaaaaaaa\n"); err != nil {
+			t.Fatal(err)
+		}
+
+		// Remove cached datasets
+		err = os.RemoveAll(cacheDir)
+		if err != nil {
 			t.Fatal(err)
 		}
 

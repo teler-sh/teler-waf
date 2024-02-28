@@ -5,6 +5,8 @@
 package threat
 
 const (
-	repoURL   = "https://github.com/kitabisa/teler-resources"
-	cachePath = "/teler-waf"
+	telerRes     = "teler-resources"
+	repoURL      = "https://github.com/kitabisa/" + telerRes
+	cachePath    = "/teler-waf"
+	tmpDirSuffix = "." + telerRes + "-%s"
 )

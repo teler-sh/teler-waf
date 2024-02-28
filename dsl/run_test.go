@@ -30,9 +30,7 @@ func TestRunDSL(t *testing.T) {
 		program, err := env.Compile(`"1+10O`)
 		assert.NotNil(t, err)
 
-		res, err := env.Run(program)
+		_, err = env.Run(program)
 		assert.NotNil(t, err)
-
-		t.Log(res)
 	})
 }
