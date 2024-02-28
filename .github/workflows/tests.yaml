@@ -26,13 +26,16 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
           cache-dependency-path: '**/go.sum'
-      - run: echo "date=$(date +%Y%m%d)" >> "$GITHUB_OUTPUT"
+      - run: echo "date=$(date +%d%m%Y)" >> "$GITHUB_OUTPUT"
         id: cache
       - uses: actions/cache@v4
+        id: teler-resources
         with:
           path: ~/.cache/teler-waf
           key: teler-resources-${{ steps.cache.outputs.date }}
           restore-keys: teler-resources-${{ steps.cache.outputs.date }}-
+      - run: cp -a ~/.cache/teler-waf/ /tmp/.teler-resources-${{ steps.cache.outputs.date }}
+        if: steps.teler-resources.outputs.cache-hit == 'true'
       - run: make ci
         if: (github.event_name != 'workflow_dispatch')
 
