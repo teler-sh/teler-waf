@@ -23,7 +23,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
       - run: go mod download
-      - uses: ${{ github.repository_owner }}/teler-resources/cache@master
+      - uses: kitabisa/teler-resources/cache@master
       - run: make bench-${{ matrix.phase }} | tee ${{ env.out }}
       - uses: actions/cache@v4
         with:
