@@ -26,16 +26,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
           cache-dependency-path: '**/go.sum'
-      - run: echo "date=$(date +%d%m%Y)" >> "$GITHUB_OUTPUT"
-        id: cache
-      - uses: actions/cache@v4
-        id: teler-resources
-        with:
-          path: ~/.cache/teler-waf
-          key: teler-resources-${{ steps.cache.outputs.date }}
-          restore-keys: teler-resources-${{ steps.cache.outputs.date }}-
-      - run: cp -a ~/.cache/teler-waf/ /tmp/.teler-resources-${{ steps.cache.outputs.date }}
-        if: steps.teler-resources.outputs.cache-hit == 'true'
+      - uses: ${{ github.repository_owner }}/teler-resources/cache@master
       - run: make ci
         if: (github.event_name != 'workflow_dispatch')
 
@@ -50,6 +41,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
           cache-dependency-path: '**/go.sum'
+      - uses: ${{ github.repository_owner }}/teler-resources/cache@master
       - run: make cover-all
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
