@@ -26,7 +26,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
           cache-dependency-path: '**/go.sum'
-      - uses: ${{ github.repository_owner }}/teler-resources/cache@master
+      - uses: kitabisa/teler-resources/cache@master
       - run: make ci
         if: (github.event_name != 'workflow_dispatch')
 
@@ -41,7 +41,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
           cache-dependency-path: '**/go.sum'
-      - uses: ${{ github.repository_owner }}/teler-resources/cache@master
+      - uses: kitabisa/teler-resources/cache@master
       - run: make cover-all
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
