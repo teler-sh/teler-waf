@@ -35,13 +35,17 @@ jobs:
       - name: Is patch update?
         id: patch-update
         if: >
-          success() && contains(
+          steps.is-dependabot.outcome == 'success' && contains(
             github.event.head_commit.message, 'version-update:semver-patch'
           )
         run: true
 
       - name: Auto merge PR
-        if: success() || steps.is-ready.outcome == 'success'
+        if: >
+          (
+            steps.is-ready.outcome == 'success' ||
+            steps.is-dependabot.outcome == 'success'
+          )
         uses: pascalgn/automerge-action@v0.16.2
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
