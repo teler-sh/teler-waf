@@ -18,7 +18,7 @@ require (
 	github.com/scorpionknifes/go-pcre v0.0.0-20210805092536-77486363b797
 	github.com/sourcegraph/conc v0.3.0
 	github.com/stretchr/testify v1.8.2
-	github.com/twharmon/gouid v0.5.2
+	github.com/twharmon/gouid v0.6.0
 	github.com/valyala/fastjson v1.6.3
 	github.com/valyala/fasttemplate v1.2.2
 	go.uber.org/zap v1.26.0
