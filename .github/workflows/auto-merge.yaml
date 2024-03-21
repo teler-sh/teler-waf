@@ -1,0 +1,43 @@
+name: Auto Merge PR
+
+on:
+  pull_request:
+    types: [labeled, unlabeled]
+  pull_request_review:
+    types: [submitted]
+  workflow_call:
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Is Dependabot?
+        if: github.event.pull_request.user.login == 'dependabot[bot]'
+        run: true
+
+      - name: Is patch update?
+        id: patch-update
+        if: >
+          success() && contains(
+            github.event.head_commit.message, 'version-update:semver-patch'
+          )
+        run: true
+
+      - name: Auto merge PR
+        if: >
+          (success() && !github.event.pull_request.draft) ||
+            github.event.pull_request.mergeable
+        uses: pascalgn/automerge-action@v0.16.2
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          MERGE_LABELS: "ready"
+          MERGE_REMOVE_LABELS: "ready"
+          MERGE_METHOD: "squash"
+          MERGE_COMMIT_MESSAGE: "automatic"
+          MERGE_FILTER_AUTHOR: "dependabot[bot]"
+          MERGE_FORKS: "false"
+          MERGE_RETRIES: "6"
+          MERGE_RETRY_SLEEP: "10000"
+          MERGE_REQUIRED_APPROVALS: "${{ steps.patch-update.outcome == 'success' && 0 || 1 }}"
+          UPDATE_LABELS: ""
+          UPDATE_METHOD: "rebase"
