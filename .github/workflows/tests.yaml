@@ -13,6 +13,16 @@ on:
       - "go.mod"
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+  security-events: write
+
 name: tests
 jobs:
   tests:
@@ -21,27 +31,48 @@ jobs:
         go-version: [1.19.x, 1.20.x, 1.21.x, 1.22.x]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
           cache-dependency-path: '**/go.sum'
-      - uses: kitabisa/teler-resources/cache@master
+      - uses: teler-sh/actions/resources@v1
       - run: make ci
         if: (github.event_name != 'workflow_dispatch')
+
+  sast:
+    runs-on: ubuntu-latest
+    needs: tests
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: teler-sh/actions/dependency-review@v1
+        if: (github.event_name == 'push')
+      - uses: teler-sh/actions/golangci-lint@v1
+      - uses: teler-sh/actions/semgrep@v1
+      - uses: teler-sh/actions/bearer@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: teler-sh/actions/codeql@v1
+        with:
+          lang: go
+
+  regression:
+    needs: tests
+    uses: ./.github/workflows/regression.yaml
 
   codecov:
     runs-on: ubuntu-latest
     needs: tests
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 2
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
           cache-dependency-path: '**/go.sum'
-      - uses: kitabisa/teler-resources/cache@master
+      - uses: teler-sh/actions/resources@v1
       - run: make cover-all
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -50,42 +81,6 @@ jobs:
           file: coverage.txt
           verbose: true
           fail_ci_if_error: true
-
-  golangci:
-    runs-on: ubuntu-latest
-    needs: tests
-    steps:
-      - uses: actions/checkout@v3
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v4
-        with:
-          args: --timeout=5m
-        
-  semgrep:
-    runs-on: ubuntu-latest
-    needs: tests
-    container:
-      image: returntocorp/semgrep
-    if: (github.actor != 'dependabot[bot]')
-    steps:
-      - uses: actions/checkout@v3
-      - run: semgrep ci
-        env:
-           SEMGREP_RULES: auto
-
-  codeql:
-    needs: tests
-    uses: ./.github/workflows/codeql.yaml
-
-  bearer:
-    needs: tests
-    uses: ./.github/workflows/bearer.yaml
-    with:
-      diff: ${{ github.event_name == 'pull_request' && true || false }}
-
-  regression:
-    needs: tests
-    uses: ./.github/workflows/regression.yaml
 
   license-verify:
     runs-on: ubuntu-latest
@@ -98,11 +93,3 @@ jobs:
           go-version-file: 'go.mod'
       - run: go install -v github.com/palantir/go-license@latest
       - run: make license-verify
-
-  dependency-review:
-    if: (github.event_name == 'pull_request')
-    uses: ./.github/workflows/dependency-review.yaml
-
-  auto-merge:
-    if: (github.event_name == 'pull_request')
-    uses: ./.github/workflows/auto-merge.yaml
