@@ -23,7 +23,10 @@ report: ## Run goreportcard
 
 test-all: semgrep lint test report ## Run the tests, vetting, and golangci-lint, and semgrep
 
-ci: vet ## Run the tests and vetting checks (specific for CI)
+tidy: ## Tidy up the modules
+	go mod tidy
+
+ci: tidy vet ## Run the tidy, vet, and tests checks (specific for CI)
 	go test -cover -race -count=1 ./...
 
 cover: FILE := coverage.txt
