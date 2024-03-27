@@ -32,10 +32,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: teler-sh/actions/setup-go@v1
         with:
-          go-version: ${{ matrix.go-version }}
-          cache-dependency-path: '**/go.sum'
+          go-version: '${{ matrix.go-version }}'
       - uses: teler-sh/actions/resources@v1
       - run: make ci
         if: (github.event_name != 'workflow_dispatch')
@@ -68,10 +67,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: 'go.mod'
-          cache-dependency-path: '**/go.sum'
+      - uses: teler-sh/actions/setup-go@v1
       - uses: teler-sh/actions/resources@v1
       - run: make cover-all
       - name: Upload coverage to Codecov
@@ -88,8 +84,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 2
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: 'go.mod'
+      - uses: teler-sh/actions/setup-go@v1
       - run: go install -v github.com/palantir/go-license@latest
       - run: make license-verify
