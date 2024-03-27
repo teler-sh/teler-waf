@@ -8,7 +8,7 @@ package teler
 import (
 	"regexp"
 
-	"github.com/antonmedv/expr/vm"
+	"github.com/expr-lang/expr/vm"
 	"github.com/kitabisa/teler-waf/request"
 )
 
