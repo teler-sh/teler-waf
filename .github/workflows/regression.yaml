@@ -18,7 +18,7 @@ jobs:
     env:
       out: benchmark.out
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: teler-sh/actions/setup-go@v1
       - uses: kitabisa/teler-resources/cache@master
       - run: make bench-${{ matrix.phase }} | tee ${{ env.out }}
