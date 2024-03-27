@@ -36,12 +36,12 @@ import (
 	"path/filepath"
 
 	"github.com/expr-lang/expr/vm"
-	"github.com/teler-sh/dsl"
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
 	"github.com/klauspost/compress/zstd"
 	"github.com/patrickmn/go-cache"
 	"github.com/scorpionknifes/go-pcre"
+	"github.com/teler-sh/dsl"
 	"github.com/valyala/fastjson"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -181,8 +181,7 @@ func New(opts ...Options) *Teler {
 		_ = t.log.Sync()
 	}()
 
-	// Initialize the excludes field of the Threat struct to a new map and
-	// set the boolean flag for each threat category specified in the Excludes option to true
+	// Initialize the excludes field of the Threat struct to a new map
 	t.threat.excludes = map[threat.Threat]bool{
 		threat.CommonWebAttack:     false,
 		threat.CVE:                 false,
@@ -191,6 +190,17 @@ func New(opts ...Options) *Teler {
 		threat.BadCrawler:          false,
 		threat.DirectoryBruteforce: false,
 	}
+
+	// Deprecation notice for Excludes options
+	if len(o.Excludes) > 0 {
+		deprecatedExcludesMsg := "threat exclusions (Excludes) will be " +
+			"deprecated in the upcoming release (v2), use Whitelists instead. " +
+			"See teler-waf#73 & teler-waf#64."
+		t.log.Warn(deprecatedExcludesMsg)
+	}
+
+	// set the boolean flag for each threat category specified in the Excludes
+	// option to true
 	for _, ex := range o.Excludes {
 		t.threat.excludes[ex] = true
 	}
