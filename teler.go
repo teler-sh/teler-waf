@@ -35,8 +35,8 @@ import (
 	"net/url"
 	"path/filepath"
 
-	"github.com/antonmedv/expr/vm"
-	"github.com/kitabisa/teler-waf/dsl"
+	"github.com/expr-lang/expr/vm"
+	"github.com/teler-sh/dsl"
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
 	"github.com/klauspost/compress/zstd"
