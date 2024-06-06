@@ -315,11 +315,9 @@ func New(opts ...Options) *Teler {
 		}
 	}
 
-	// If development mode is enabled, create a new cache with a default
-	// expiration time of 15 minutes and cleanup interval of 20 minutes.
-	if !o.Development {
-		t.cache = cache.New(15*time.Minute, 20*time.Minute)
-	}
+	// Initialize cache with a default expiration time of 15 minutes and cleanup
+	// interval of 20 minutes.
+	t.cache = cache.New(15*time.Minute, 20*time.Minute)
 
 	// If custom response status is set, overwrite default response status.
 	if o.Response.Status != 0 {
