@@ -315,11 +315,9 @@ func New(opts ...Options) *Teler {
 		}
 	}
 
-	// If development mode is enabled, create a new cache with a default
-	// expiration time of 15 minutes and cleanup interval of 20 minutes.
-	if !o.Development {
-		t.cache = cache.New(15*time.Minute, 20*time.Minute)
-	}
+	// Initialize cache with a default expiration time of 15 minutes and cleanup
+	// interval of 20 minutes.
+	t.cache = cache.New(15*time.Minute, 20*time.Minute)
 
 	// If custom response status is set, overwrite default response status.
 	if o.Response.Status != 0 {
@@ -392,11 +390,14 @@ func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string
 	cat := k.String()
 	path := r.URL.String()
 	ipAddr := t.env.GetRequestValue("IP")
+	listenAddr := t.getListenAddr(r)
 
 	// Log the detected threat, request details and the error message.
 	t.log.With(
 		zap.String("id", id),
 		zap.String("category", cat),
+		zap.String("caller", t.caller),
+		zap.String("listen_addr", listenAddr),
 		zap.Namespace("request"),
 		zap.String("method", r.Method),
 		zap.String("path", path),
