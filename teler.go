@@ -396,14 +396,14 @@ func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string
 	t.log.With(
 		zap.String("id", id),
 		zap.String("category", cat),
+		zap.String("caller", t.caller),
+		zap.String("listen_addr", listenAddr),
 		zap.Namespace("request"),
 		zap.String("method", r.Method),
 		zap.String("path", path),
 		zap.String("ip_addr", ipAddr),
 		zap.Any("headers", r.Header),
 		zap.String("body", body),
-		zap.String("listen_addr", listenAddr),
-		zap.String("caller", t.caller),
 	).Warn(msg)
 
 	if t.opt.FalcoSidekickURL == "" {
