@@ -49,9 +49,9 @@ jobs:
         if: (github.event_name == 'push')
       - uses: teler-sh/actions/golangci-lint@v1
       - uses: teler-sh/actions/semgrep@v1
-      - uses: teler-sh/actions/bearer@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # - uses: teler-sh/actions/bearer@v1
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
       - uses: teler-sh/actions/codeql@v1
         with:
           lang: go
