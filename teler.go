@@ -392,6 +392,7 @@ func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string
 	cat := k.String()
 	path := r.URL.String()
 	ipAddr := t.env.GetRequestValue("IP")
+	listenAddr := t.getListenAddr(r)
 
 	// Log the detected threat, request details and the error message.
 	t.log.With(
@@ -403,6 +404,8 @@ func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string
 		zap.String("ip_addr", ipAddr),
 		zap.Any("headers", r.Header),
 		zap.String("body", body),
+		zap.String("listen_addr", listenAddr),
+		zap.String("caller", t.caller),
 	).Warn(msg)
 
 	if t.opt.FalcoSidekickURL == "" {
