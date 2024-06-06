@@ -10,14 +10,15 @@ import (
 	"errors"
 	"html"
 	"io"
+	"net"
 	"regexp"
 	"strings"
 
 	"net/http"
 	"net/url"
 
-	"github.com/expr-lang/expr/vm"
 	"github.com/dwisiswant0/clientip"
+	"github.com/expr-lang/expr/vm"
 	"github.com/kitabisa/teler-waf/request"
 	"github.com/kitabisa/teler-waf/threat"
 	"github.com/patrickmn/go-cache"
@@ -313,4 +314,25 @@ func isValidReferrer(ref string) (bool, string, error) {
 	}
 
 	return false, host, nil
+}
+
+// getListenAddr retrieves the local network address that the HTTP server is
+// listening on from the request's context, utilizing a cache to store and
+// retrieve this value efficiently.
+func (t *Teler) getListenAddr(r *http.Request) string {
+	cacheKey := "listen_addr"
+	localAddrCtx := r.Context().Value(http.LocalAddrContextKey)
+
+	if listenAddrCache, ok := t.cache.Get(cacheKey); ok {
+		return listenAddrCache.(string)
+	}
+
+	if conn, ok := localAddrCtx.(net.Addr); ok {
+		listenAddr := conn.String()
+		t.cache.Set(cacheKey, listenAddr, cache.DefaultExpiration)
+
+		return listenAddr
+	}
+
+	return ""
 }
