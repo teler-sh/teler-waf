@@ -29,6 +29,7 @@ type falcoEvent struct {
 		Caller         string `json:"teler.caller"`
 		ID             string `json:"teler.id"`
 		Threat         string `json:"teler.threat"`
+		ListenAddr     string `json:"teler.listen_addr"`
 		RequestBody    string `json:"request.body"`
 		RequestHeaders string `json:"request.headers"`
 		RequestIPAddr  string `json:"request.ip_addr"`
