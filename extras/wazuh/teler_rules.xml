@@ -1,0 +1,89 @@
+<!--
+  -  teler WAF rules
+  -  Author: Dwi Siswanto (me@dw1.io).
+  -  Copyright (C) 2024, Dwi Siswanto.
+  -  This program is a free software; you can redistribute it and/or modify it under the terms of Apache 2.0 License.
+-->
+
+<group name="teler,teler-waf,teler-proxy,">
+  <!-- 
+  {"level":"warn","ts":1672261174.5995026,"msg":"bad crawler","id":"654b85325e1b2911258a","category":"BadCrawler","caller":"teler-waf","listen_addr":"127.0.0.1:36267","request":{"method":"GET","path":"/","ip_addr":"127.0.0.1:37702","headers":{"Accept":["*/*"],"User-Agent":["curl/7.81.0"]},"body":""}}
+  {"level":"warn","ts":1672261175.9567692,"msg":"directory bruteforce","id":"b29546945276ed6b1fba","category":"DirectoryBruteforce","caller":"teler-waf","listen_addr":"127.0.0.1:36267","request":{"method":"GET","path":"/.git","ip_addr":"127.0.0.1:37716","headers":{"Accept":["*/*"],"User-Agent":["X"]},"body":""}}
+  {"level":"warn","ts":1672261177.1487508,"msg":"Detects common comment types","id":"75412f2cc0ec1cf79efd","category":"CommonWebAttack","caller":"teler-waf","listen_addr":"127.0.0.1:36267","request":{"method":"GET","path":"/?id=1%27%20or%201%3D1%23","ip_addr":"127.0.0.1:37728","headers":{"Accept":["*/*"],"User-Agent":["X"]},"body":""}}
+  -->
+
+  <rule id="100300" level="0">
+    <decoded_as>json</decoded_as>
+    <field name="level">^warn$</field>
+    <description>teler WAF events</description>
+  </rule>
+
+  <rule id="100301" level="10">
+    <if_sid>100300</if_sid>
+    <field name="category">CommonWebAttack</field>
+    <description>teler: $(msg) request at "$(request.path)" from "$(request.ip_addr)" to "$(listen_addr)" ($(caller))</description>
+    <mitre>
+      <id>T1210</id>
+    </mitre>
+  </rule>
+
+  <rule id="100302" level="10">
+    <if_sid>100300</if_sid>
+    <field name="category">CVE</field>
+    <info type="cve">$(msg)</info>
+    <description>teler: $(msg) exploit detected at "$(request.path)" from "$(request.ip_addr)" to "$(listen_addr)" ($(caller))</description>
+    <mitre>
+      <id>T1190</id>
+      <id>T1210</id>
+      <id>T1595.002</id>
+    </mitre>
+  </rule>
+
+  <rule id="100303" level="9">
+    <if_sid>100300</if_sid>
+    <field name="category">BadIPAddress</field>
+    <description>teler: $(msg) request detected at "$(request.path)" from "$(request.ip_addr)" to "$(listen_addr)" ($(caller))</description>
+    <options>no_full_log</options>
+    <mitre>
+      <id>T1102</id>
+      <id>T1584.005</id>
+    </mitre>
+  </rule>
+
+  <rule id="100304" level="9">
+    <if_sid>100300</if_sid>
+    <field name="category">BadReferrer</field>
+    <description>teler: $(msg) request $(request.headers.Referer) detected at "$(request.path)" from "$(request.ip_addr)" to "$(listen_addr)" ($(caller))</description>
+    <options>no_full_log</options>
+    <mitre>
+      <id>T1102</id>
+      <id>T1584.005</id>
+    </mitre>
+  </rule>
+
+  <rule id="100305" level="9">
+    <if_sid>100300</if_sid>
+    <field name="category">BadCrawler</field>
+    <description>teler: $(msg) request $(request.headers.User-Agent) detected at "$(request.path)" from "$(request.ip_addr)" to "$(listen_addr)" ($(caller))</description>
+    <options>no_full_log</options>
+    <mitre>
+      <id>T1595.002</id>
+    </mitre>
+  </rule>
+
+  <rule id="100306" level="10">
+    <if_sid>100300</if_sid>
+    <field name="category">DirectoryBruteforce</field>
+    <description>teler: $(msg) request detected at "$(request.path)" from "$(request.ip_addr)" to "$(listen_addr)" ($(caller))</description>
+    <options>no_full_log</options>
+    <mitre>
+      <id>T1595.003</id>
+    </mitre>
+  </rule>
+
+  <rule id="100307" level="13">
+    <if_sid>100300</if_sid>
+    <field name="category">Custom</field>
+    <description>teler: $(msg) detected at "$(request.path)" from "$(request.ip_addr)" to "$(listen_addr)" ($(caller))</description>
+  </rule>
+</group>
