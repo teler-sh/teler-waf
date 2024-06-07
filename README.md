@@ -447,6 +447,27 @@ The event forwarded to Falco Sidekick instance includes the following informatio
 
 Overall, Falco Sidekick is a versatile tool that can help you automate your security response process and improve your overall security posture. By leveraging its capabilities, you can ensure that your cloud-native applications are secure and protected against potential threats.
 
+### Wazuh
+
+You can enhance your security monitoring by integrating teler WAF logs into Wazuh. To do this, use [custom rules](https://documentation.wazuh.com/current/user-manual/ruleset/rules/custom.html) available in the [`extras/`](/extras) directory.
+
+Add the `localfile` element block below inside `ossec_config` element in the [local configuration](https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/index.html) file:
+
+```xml
+<ossec_config>
+  <!-- ... -->
+  <localfile>
+    <log_format>syslog</log_format>
+    <location>/path/to/your/teler.log</location>
+  </localfile>
+</ossec_config>
+```
+
+> [!NOTE]
+> The value of `location` should be the teler WAF log file path you specified in [`Options.LogFile`](https://pkg.go.dev/github.com/kitabisa/teler-waf#Options.LogFile).
+
+By doing this, Wazuh will be able to read and analyze the teler WAF logs, enhancing your network protection and providing better insights.
+
 ### Datasets
 
 The teler-waf package utilizes a dataset of threats to identify and analyze each incoming request for potential security threats. This dataset is updated daily, which means that you will always have the latest resource. The dataset is initially stored in the user-level cache directory _(on Unix systems, it returns `$XDG_CACHE_HOME/teler-waf` as specified by [XDG Base Directory Specification
