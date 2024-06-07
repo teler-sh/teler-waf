@@ -439,6 +439,7 @@ The event forwarded to Falco Sidekick instance includes the following informatio
 	* **`teler.caller`**: Identifies the application source that invoked teler-waf.
 	* **`teler.id`**: Represents a unique identifier for the rejected request.
 	* **`teler.threat`**: Specifies the category of the threat.
+  * **`teler.listen_addr`**: Denotes the network address on which teler-waf is listening for incoming requests.
 	* **`request.body`**: Contains the body of the associated request.
 	* **`request.headers`**: Lists the headers from the associated request.
 	* **`request.ip_addr`**: Discloses the IP address of the associated request.
