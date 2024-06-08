@@ -1,16 +1,22 @@
 .DEFAULT_GOAL := help
 
+GO_MOD_VERSION := $(shell grep -Po '^go \K([0-9]+\.[0-9]+(\.[0-9]+)?)$$' go.mod)
+GO := go${GO_MOD_VERSION}
 BENCH_TARGET := .
 COVER_COUNT := 1
+
+ifeq ($(shell which ${GO}),)
+	GO = go
+endif
 
 help: ## Displays this help message.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 test: vet ## Runs the tests and vetting
-	go test -v -race -count=1 ./...
+	$(GO) test -v -race -count=1 ./...
 
 vet: ## Run vetting checks
-	go vet ./...
+	$(GO) vet ./...
 
 semgrep: ## Run semgrep
 	semgrep --config auto
@@ -24,15 +30,15 @@ report: ## Run goreportcard
 test-all: semgrep lint test report ## Run the tests, vetting, and golangci-lint, and semgrep
 
 tidy: ## Tidy up the modules
-	go mod tidy
+	$(GO) mod tidy
 
 ci: tidy vet ## Run the tidy, vet, and tests checks (specific for CI)
-	go test -cover -race -count=1 ./...
+	$(GO) test -cover -race -count=1 ./...
 
 cover: FILE := coverage.txt
 cover: ## Run coverage
-	go test -race -coverprofile=$(FILE) -covermode=atomic -count=$(COVER_COUNT) $(TARGET)
-	go tool cover -func=$(FILE)
+	$(GO) test -race -coverprofile=$(FILE) -covermode=atomic -count=$(COVER_COUNT) $(TARGET)
+	$(GO) tool cover -func=$(FILE)
 
 cover-all: ## Run coverage but recursive
 cover-all: COVER_COUNT := 2
@@ -40,7 +46,7 @@ cover-all: TARGET := ./...
 cover-all: cover
 
 bench: ## Run benchmarking
-	go test -run "^$$" -bench "$(BENCH_TARGET)" -cpu=4 $(ARGS)
+	$(GO) test -run "^$$" -bench "$(BENCH_TARGET)" -cpu=4 $(ARGS)
 
 bench-initialize: ## Run benchmarking for initializing
 bench-initialize: BENCH_TARGET := ^BenchmarkInitialize

@@ -431,6 +431,7 @@ func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string
 	event.OutputFields.Caller = t.caller
 	event.OutputFields.ID = id
 	event.OutputFields.Threat = cat
+	event.OutputFields.ListenAddr = listenAddr
 	event.OutputFields.RequestBody = string(body)
 	event.OutputFields.RequestHeaders = string(jsonHeaders)
 	event.OutputFields.RequestIPAddr = ipAddr
