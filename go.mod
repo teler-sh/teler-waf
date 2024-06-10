@@ -1,4 +1,4 @@
-module github.com/kitabisa/teler-waf
+module github.com/teler-sh/teler-waf
 
 go 1.19
 

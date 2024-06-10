@@ -3,9 +3,9 @@ package main
 import (
 	"net/http"
 
-	"github.com/kitabisa/teler-waf"
-	"github.com/kitabisa/teler-waf/request"
-	"github.com/kitabisa/teler-waf/threat"
+	"github.com/teler-sh/teler-waf"
+	"github.com/teler-sh/teler-waf/request"
+	"github.com/teler-sh/teler-waf/threat"
 )
 
 var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

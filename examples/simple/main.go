@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/arl/statsviz"
-	"github.com/kitabisa/teler-waf"
+	"github.com/teler-sh/teler-waf"
 )
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {

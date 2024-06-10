@@ -19,8 +19,8 @@ import (
 
 	"github.com/dwisiswant0/clientip"
 	"github.com/expr-lang/expr/vm"
-	"github.com/kitabisa/teler-waf/request"
-	"github.com/kitabisa/teler-waf/threat"
+	"github.com/teler-sh/teler-waf/request"
+	"github.com/teler-sh/teler-waf/threat"
 	"github.com/patrickmn/go-cache"
 	"github.com/twharmon/gouid"
 	"go.uber.org/zap"

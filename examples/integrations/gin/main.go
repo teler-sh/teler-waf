@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/kitabisa/teler-waf"
+	"github.com/teler-sh/teler-waf"
 )
 
 func main() {

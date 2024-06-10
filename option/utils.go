@@ -10,7 +10,7 @@ import (
 
 	"encoding/json"
 
-	"github.com/kitabisa/teler-waf"
+	"github.com/teler-sh/teler-waf"
 	"gopkg.in/yaml.v3"
 )
 

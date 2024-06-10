@@ -1,15 +1,14 @@
 # teler-waf
 
-[![Kitabisa Security](https://img.shields.io/badge/kitabisa-security%20project-blue)](#)
-[![GoDoc](https://pkg.go.dev/static/frontend/badge/badge.svg)](http://pkg.go.dev/github.com/kitabisa/teler-waf)
-[![codecov](https://codecov.io/gh/kitabisa/teler-waf/branch/master/graph/badge.svg?token=RTIZW58NWK)](https://codecov.io/gh/kitabisa/teler-waf)
-[![tests](https://github.com/kitabisa/teler-waf/actions/workflows/tests.yaml/badge.svg)](https://github.com/kitabisa/teler-waf/actions/workflows/tests.yaml)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/kitabisa/teler-waf/badge)](https://securityscorecards.dev/viewer/?uri=github.com/kitabisa/teler-waf)
+[![GoDoc](https://pkg.go.dev/static/frontend/badge/badge.svg)](http://pkg.go.dev/github.com/teler-sh/teler-waf)
+[![codecov](https://codecov.io/gh/teler-sh/teler-waf/graph/badge.svg?token=RTIZW58NWK)](https://codecov.io/gh/teler-sh/teler-waf)
+[![tests](https://github.com/teler-sh/teler-waf/actions/workflows/tests.yaml/badge.svg)](https://github.com/teler-sh/teler-waf/actions/workflows/tests.yaml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/teler-sh/teler-waf/badge)](https://securityscorecards.dev/viewer/?uri=github.com/teler-sh/teler-waf)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 
 <img src="https://user-images.githubusercontent.com/25837540/97091757-7200d880-1668-11eb-82c4-e5c4971d2bc8.png" align="right" width="250px"/>
 
-**teler-waf** is a comprehensive security solution for Go-based web applications. It acts as an HTTP middleware, providing an easy-to-use interface for integrating IDS functionality with [teler IDS](https://github.com/kitabisa/teler-waf) into existing Go applications. By using teler-waf, you can help protect against a variety of web-based attacks, such as cross-site scripting (XSS) and SQL injection.
+**teler-waf** is a comprehensive security solution for Go-based web applications. It acts as an HTTP middleware, providing an easy-to-use interface for integrating IDS functionality with [teler IDS](https://github.com/teler-sh/teler-waf) into existing Go applications. By using teler-waf, you can help protect against a variety of web-based attacks, such as cross-site scripting (XSS) and SQL injection.
 
 The package comes with a standard [`net/http.Handler`](https://pkg.go.dev/net/http#Handler), making it easy to integrate into your application's routing. When a client makes a request to a route protected by teler-waf, the request is first checked against the teler IDS to detect known malicious patterns. If no malicious patterns are detected, the request is then passed through for further processing.
 
@@ -17,8 +16,8 @@ In addition to providing protection against web-based attacks, teler-waf can als
 
 **See also:**
 
-- [kitabisa/teler](https://github.com/kitabisa/teler): Real-time HTTP intrusion detection.
-- [kitabisa/teler-proxy](https://github.com/kitabisa/teler-proxy): teler Proxy enabling seamless integration with teler WAF.
+- [teler-sh/teler](https://github.com/teler-sh/teler): Real-time HTTP intrusion detection.
+- [teler-sh/teler-proxy](https://github.com/teler-sh/teler-proxy): teler Proxy enabling seamless integration with teler WAF.
 
 ## Features
 
@@ -49,20 +48,20 @@ Overall, teler-waf provides a comprehensive security solution for Go-based web a
 To install teler-waf in your Go application, run the following command to download and install the teler-waf package:
 
 ```console
-go get github.com/kitabisa/teler-waf
+go get github.com/teler-sh/teler-waf
 ```
 
 ## Usage
 
 > [!WARNING]
-> **Deprecation notice**: Threat exclusions (`Excludes`) will be deprecated in the upcoming release (**v2**). See [#73](https://github.com/kitabisa/teler-waf/discussions/73) & [#64](https://github.com/kitabisa/teler-waf/issues/64).
+> **Deprecation notice**: Threat exclusions (`Excludes`) will be deprecated in the upcoming release (**v2**). See [#73](https://github.com/teler-sh/teler-waf/discussions/73) & [#64](https://github.com/teler-sh/teler-waf/issues/64).
 
 Here is an example of how to use teler-waf in a Go application:
 
 1. Import the teler-waf package in your Go code:
 
 ```go
-import "github.com/kitabisa/teler-waf"
+import "github.com/teler-sh/teler-waf"
 ```
 
 2. Use the `New` function to create a new instance of the `Teler` type. This function takes a variety of optional parameters that can be used to configure teler-waf to suit the specific needs of your application.
@@ -87,7 +86,7 @@ That's it! You have configured teler-waf in your Go application.
 
 **Options:**
 
-For a list of the options available to customize teler-waf, see the [`teler.Options`](https://pkg.go.dev/github.com/kitabisa/teler-waf#Options) struct.
+For a list of the options available to customize teler-waf, see the [`teler.Options`](https://pkg.go.dev/github.com/teler-sh/teler-waf#Options) struct.
 
 ### Examples
 
@@ -100,9 +99,9 @@ package main
 import (
 	"net/http"
 
-	"github.com/kitabisa/teler-waf"
-	"github.com/kitabisa/teler-waf/request"
-	"github.com/kitabisa/teler-waf/threat"
+	"github.com/teler-sh/teler-waf"
+	"github.com/teler-sh/teler-waf/request"
+	"github.com/teler-sh/teler-waf/threat"
 )
 
 var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -185,7 +184,7 @@ func main() {
 }
 ```
 
-For more examples of how to use teler-waf or integrate it with any framework, take a look at [examples/](https://github.com/kitabisa/teler-waf/tree/master/examples) directory.
+For more examples of how to use teler-waf or integrate it with any framework, take a look at [examples/](https://github.com/teler-sh/teler-waf/tree/master/examples) directory.
 
 ### Custom Rules
 
@@ -196,9 +195,9 @@ To integrate custom rules into the teler-waf middleware, you have two choices: `
 
 - **`Customs` option**
 
-You can define custom rules directly using the `Customs` option, as shown in the [example](https://github.com/kitabisa/teler-waf#examples) above.
+You can define custom rules directly using the `Customs` option, as shown in the [example](https://github.com/teler-sh/teler-waf#examples) above.
 
-In the `Customs` option, you provide an array of `teler.Rule` structures. Each `teler.Rule` represents a custom rule with a unique name and a condition that specifies how the individual conditions within the rule are evaluated (`or` or `and`). The rule consists of one or more `teler.Condition` structures, each defining a specific condition to check. Conditions can be based on the [HTTP method](https://pkg.go.dev/github.com/kitabisa/teler-waf/request#pkg-constants), [element](https://pkg.go.dev/github.com/kitabisa/teler-waf/request#Element) (headers, body, URI, or any), and a regex pattern or a [DSL expression](https://pkg.go.dev/github.com/kitabisa/teler-waf/dsl) to match against.
+In the `Customs` option, you provide an array of `teler.Rule` structures. Each `teler.Rule` represents a custom rule with a unique name and a condition that specifies how the individual conditions within the rule are evaluated (`or` or `and`). The rule consists of one or more `teler.Condition` structures, each defining a specific condition to check. Conditions can be based on the [HTTP method](https://pkg.go.dev/github.com/teler-sh/teler-waf/request#pkg-constants), [element](https://pkg.go.dev/github.com/teler-sh/teler-waf/request#Element) (headers, body, URI, or any), and a regex pattern or a [DSL expression](https://pkg.go.dev/github.com/teler-sh/teler-waf/dsl) to match against.
 
 - **`CustomsFromFile` option**
 
@@ -208,14 +207,14 @@ Alternatively, the `CustomsFromFile` option allows you to load custom rules from
 - name: <name>
   condition: <condition> # Valid values are: "or" or "and", in lowercase or uppercase.
   rules:
-    - method: <method> # Valid methods are: "ALL", "CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", and "TRACE". Please refer to https://pkg.go.dev/github.com/kitabisa/teler-waf/request for further details.
+    - method: <method> # Valid methods are: "ALL", "CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", and "TRACE". Please refer to https://pkg.go.dev/github.com/teler-sh/teler-waf/request for further details.
       element: <element> # Valid elements are: "headers", "body", "uri", and "any", in lowercase, uppercase, or title case (except for "uri").
       pattern: "<pattern>" # Regular expression pattern
     - dsl: "<expression>" # DSL expression
 ```
 
 > [!IMPORTANT]
-> Please note that the `condition`, `method`, and `element` are optional parameters. The default values assigned to them are as follows: `condition` is set to **or**, `method` is set to **ALL**, and `element` is set to **ANY**. Therefore, if desired, you can leave those parameters empty. The `pattern` parameter is mandatory, unless you specify a `dsl` expression. In such cases, when a `dsl` expression is provided, teler-waf will disregard any values assigned to `method` and `element`, even if they are defined. To see some examples, you can refer to the [`tests/rules/`](https://github.com/kitabisa/teler-waf/tree/master/tests/rules/valid) directory.
+> Please note that the `condition`, `method`, and `element` are optional parameters. The default values assigned to them are as follows: `condition` is set to **or**, `method` is set to **ALL**, and `element` is set to **ANY**. Therefore, if desired, you can leave those parameters empty. The `pattern` parameter is mandatory, unless you specify a `dsl` expression. In such cases, when a `dsl` expression is provided, teler-waf will disregard any values assigned to `method` and `element`, even if they are defined. To see some examples, you can refer to the [`tests/rules/`](https://github.com/teler-sh/teler-waf/tree/master/tests/rules/valid) directory.
 
 You can specify the `CustomsFromFile` option with the actual file path or glob pattern pointing to the location of your custom rule files. For example:
 
@@ -338,7 +337,7 @@ For more comprehensive details on operators and built-in functions, please refer
 
 ### Streamlined Configuration Management
 
-For effective configuration, it's essential to define a range of settings, including whitelists, custom rule definitions, logging preferences, and other parameters. The [`option`](https://pkg.go.dev/github.com/kitabisa/teler-waf/option) package streamlines this configuration workflow by enabling you to efficiently unmarshal or load configuration data from JSON and YAML formats into a format that teler-waf can readily comprehend and implement.
+For effective configuration, it's essential to define a range of settings, including whitelists, custom rule definitions, logging preferences, and other parameters. The [`option`](https://pkg.go.dev/github.com/teler-sh/teler-waf/option) package streamlines this configuration workflow by enabling you to efficiently unmarshal or load configuration data from JSON and YAML formats into a format that teler-waf can readily comprehend and implement.
 
 ```go
 // Load configuration from a YAML file.
@@ -382,7 +381,7 @@ Teler request IDs are used by teler-waf to track requests made to its web applic
 
 ### Custom Response
 
-By default, teler-waf employs the [`DefaultHTMLResponse`](https://pkg.go.dev/github.com/kitabisa/teler-waf#DefaultHTMLResponse) as the standard response when a request is rejected or blocked. However, teler-waf offers a high degree of customization, empowering you to tailor the response to your specific requirements. The customization can be achieved using the `Status`, `HTML`, or `HTMLFile` options, all of which are part of the [`Response`](https://pkg.go.dev/github.com/kitabisa/teler-waf#Response) interface.
+By default, teler-waf employs the [`DefaultHTMLResponse`](https://pkg.go.dev/github.com/teler-sh/teler-waf#DefaultHTMLResponse) as the standard response when a request is rejected or blocked. However, teler-waf offers a high degree of customization, empowering you to tailor the response to your specific requirements. The customization can be achieved using the `Status`, `HTML`, or `HTMLFile` options, all of which are part of the [`Response`](https://pkg.go.dev/github.com/teler-sh/teler-waf#Response) interface.
 
 Here's how you can make use of these options in your code:
 
@@ -465,7 +464,7 @@ Add the `localfile` element block below inside `ossec_config` element in the [lo
 ```
 
 > [!NOTE]
-> The value of `location` should be the teler WAF log file path you specified in [`Options.LogFile`](https://pkg.go.dev/github.com/kitabisa/teler-waf#Options.LogFile).
+> The value of `location` should be the teler WAF log file path you specified in [`Options.LogFile`](https://pkg.go.dev/github.com/teler-sh/teler-waf#Options.LogFile).
 
 By doing this, Wazuh will be able to read and analyze the teler WAF logs, enhancing your network protection and providing better insights.
 
@@ -475,7 +474,7 @@ The teler-waf package utilizes a dataset of threats to identify and analyze each
 ](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html) if non-empty, else `$HOME/.cache/teler-waf`. On Darwin, it returns `$HOME/Library/Caches/teler-waf`. On Windows, it returns `%LocalAppData%/teler-waf`. On Plan 9, it returns `$home/lib/cache/teler-waf`)_ on your first launch. Subsequent launch will utilize the cached dataset, rather than downloading it again.
 
 > [!NOTE]
-> The threat datasets are obtained from the [kitabisa/teler-resources](https://github.com/kitabisa/teler-resources) repository.
+> The threat datasets are obtained from the [teler-sh/teler-resources](https://github.com/teler-sh/teler-resources) repository.
 
 However, there may be situations where you want to disable automatic updates to the threat dataset. For example, you may have a slow or limited internet connection, or you may be using a machine with restricted file access. In these cases, you can set an option called **NoUpdateCheck** to `true`, which will prevent the teler-waf from automatically updating the dataset.
 
@@ -514,7 +513,7 @@ If you discover a security issue, please bring it to their attention right away,
 
 ### Reporting a Vulnerability
 
-If you have information about a security issue, or vulnerability in this teler-waf package, and/or you are able to successfully execute such as cross-site scripting (XSS) and pop-up an alert in our [demo site](https://waf.teler.app) (see [resources](#resources)), please do **NOT** file a public issue — instead, kindly send your report privately via the [vulnerability report form](https://github.com/kitabisa/teler-waf/security/advisories/new) or to our [official channels](https://security.kitabisa.com/#official-channels) as per our [security policy](https://security.kitabisa.com/).
+If you have information about a security issue, or vulnerability in this teler-waf package, and/or you are able to successfully execute such as cross-site scripting (XSS) and pop-up an alert in our [demo site](https://waf.teler.app) (see [resources](#resources)), please do **NOT** file a public issue — instead, kindly send your report privately via the [vulnerability report form](https://github.com/teler-sh/teler-waf/security/advisories/new).
 
 ## Limitations
 
@@ -526,7 +525,7 @@ Here are some limitations of using teler-waf:
 $ go test -bench "^BenchmarkAnalyze" -cpu=4 
 goos: linux
 goarch: amd64
-pkg: github.com/kitabisa/teler-waf
+pkg: github.com/teler-sh/teler-waf
 cpu: 11th Gen Intel(R) Core(TM) i9-11900H @ 2.50GHz
 BenchmarkAnalyzeDefault-4                      	  266018	      4018 ns/op	    2682 B/op	      74 allocs/op
 BenchmarkAnalyzeCommonWebAttack-4              	  374410	      3126 ns/op	    2090 B/op	      68 allocs/op
@@ -543,24 +542,24 @@ BenchmarkAnalyzeWithoutBadReferrer-4           	  298168	      3667 ns/op	    25
 BenchmarkAnalyzeWithoutBadCrawler-4            	  276108	      4023 ns/op	    2682 B/op	      74 allocs/op
 BenchmarkAnalyzeWithoutDirectoryBruteforce-4   	  276699	      3627 ns/op	    2682 B/op	      74 allocs/op
 PASS
-ok  	github.com/kitabisa/teler-waf	32.093s
+ok  	github.com/teler-sh/teler-waf	32.093s
 ```
 
 > [!NOTE]
-> Benchmarking results may vary and may not be consistent. The [teler-resources](https://github.com/kitabisa/teler-resources) dataset may have increased since then, which may impact the results.
+> Benchmarking results may vary and may not be consistent. The [teler-resources](https://github.com/teler-sh/teler-resources) dataset may have increased since then, which may impact the results.
 
 - **Configuration complexity**: Configuring teler-waf to suit the specific needs of your application can be complex, and may require a certain level of expertise in web security. This can make it difficult for those who are not familiar with application firewalls and IDS systems to properly set up and use teler-waf.
 - **Limited protection**: teler-waf is not a perfect security solution, and it may not be able to protect against all possible types of attacks. As with any security system, it is important to regularly monitor and maintain teler-waf to ensure that it is providing the desired level of protection.
 
 #### Known Issues
 
-To view a list of known issues with teler-waf, please filter the issues by the ["known-issue" label](https://github.com/kitabisa/teler-waf/issues?q=is%3Aopen+is%3Aissue+label%3Aknown-issue).
+To view a list of known issues with teler-waf, please filter the issues by the ["known-issue" label](https://github.com/teler-sh/teler-waf/issues?q=is%3Aopen+is%3Aissue+label%3Aknown-issue).
 
 ## Community
 
-We use the Google Groups as our dedicated mailing list. Subscribe to [teler-announce](https://groups.google.com/g/teler-announce) via [teler-announce+subscribe@googlegroups.com](mailto:teler-announce+subscribe@googlegroups.com) for important announcements, such as the availability of new releases. This subscription will keep you informed about significant developments related to [teler IDS](https://github.com/kitabisa/teler), [teler WAF](https://github.com/kitabisa/teler-waf), [teler Proxy](https://github.com/kitabisa/teler-proxy), and [teler Resources](https://github.com/kitabisa/teler-resources).
+We use the Google Groups as our dedicated mailing list. Subscribe to [teler-announce](https://groups.google.com/g/teler-announce) via [teler-announce+subscribe@googlegroups.com](mailto:teler-announce+subscribe@googlegroups.com) for important announcements, such as the availability of new releases. This subscription will keep you informed about significant developments related to [teler IDS](https://github.com/teler-sh/teler), [teler WAF](https://github.com/teler-sh/teler-waf), [teler Proxy](https://github.com/teler-sh/teler-proxy), and [teler Resources](https://github.com/teler-sh/teler-resources).
 
-For any [inquiries](https://github.com/kitabisa/teler-waf/discussions/categories/q-a), [discussions](https://github.com/kitabisa/teler-waf/discussions), or [issues](https://github.com/kitabisa/teler-waf/issues) are being tracked here on GitHub. This is where we actively manage and address these aspects of our community engagement.
+For any [inquiries](https://github.com/teler-sh/teler-waf/discussions/categories/q-a), [discussions](https://github.com/teler-sh/teler-waf/discussions), or [issues](https://github.com/teler-sh/teler-waf/issues) are being tracked here on GitHub. This is where we actively manage and address these aspects of our community engagement.
 
 ## License
 

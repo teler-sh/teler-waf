@@ -17,8 +17,8 @@ import (
 	"net/http/httptest"
 	"path/filepath"
 
-	"github.com/kitabisa/teler-waf/request"
-	"github.com/kitabisa/teler-waf/threat"
+	"github.com/teler-sh/teler-waf/request"
+	"github.com/teler-sh/teler-waf/threat"
 	"github.com/stretchr/testify/assert"
 )
 

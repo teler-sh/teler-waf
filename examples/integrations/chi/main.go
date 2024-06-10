@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	"github.com/kitabisa/teler-waf"
+	"github.com/teler-sh/teler-waf"
 )
 
 func main() {

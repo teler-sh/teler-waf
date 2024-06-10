@@ -433,8 +433,8 @@ github.com/kataras/sitemap v0.0.6/go.mod h1:dW4dOCNs896OR1HmG+dMLdT7JjDk7mYBzoIR
 github.com/kataras/tunnel v0.0.4 h1:sCAqWuJV7nPzGrlb0os3j49lk2JhILT0rID38NHNLpA=
 github.com/kataras/tunnel v0.0.4/go.mod h1:9FkU4LaeifdMWqZu7o20ojmW4B7hdhv2CMLwfnHGpYw=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
-github.com/kitabisa/teler-waf v1.1.7 h1:eYCfrmIv53NlDDUhrdMjWXqmS8dBc8IlI10iT5x6ud4=
-github.com/kitabisa/teler-waf v1.1.7/go.mod h1:QVyhPUFwI5sFC1YM2OS7/90izNw9nVGHSacvyYrq9rI=
+github.com/teler-sh/teler-waf v1.1.7 h1:eYCfrmIv53NlDDUhrdMjWXqmS8dBc8IlI10iT5x6ud4=
+github.com/teler-sh/teler-waf v1.1.7/go.mod h1:QVyhPUFwI5sFC1YM2OS7/90izNw9nVGHSacvyYrq9rI=
 github.com/klauspost/compress v1.15.11/go.mod h1:QPwzmACJjUTFsnSHH934V6woptycfrDDJnH7hvFVbGM=
 github.com/klauspost/compress v1.16.7 h1:2mk3MPGNzKyxErAw8YaohYh69+pa4sIQSC0fPGCFR9I=
 github.com/klauspost/compress v1.16.7/go.mod h1:ntbaceVETuRiXiv4DpjP66DpAtAGkEQskQzEyD//IeE=

@@ -6,7 +6,7 @@ import (
 
 	"net/http"
 
-	"github.com/kitabisa/teler-waf"
+	"github.com/teler-sh/teler-waf"
 	"gitlab.com/golang-commonmark/mdurl"
 )
 

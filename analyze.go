@@ -11,8 +11,8 @@ import (
 
 	"net/http"
 
-	"github.com/kitabisa/teler-waf/request"
-	"github.com/kitabisa/teler-waf/threat"
+	"github.com/teler-sh/teler-waf/request"
+	"github.com/teler-sh/teler-waf/threat"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/net/publicsuffix"
 )

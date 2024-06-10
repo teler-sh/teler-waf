@@ -8,7 +8,7 @@ package teler
 import (
 	"io"
 
-	"github.com/kitabisa/teler-waf/threat"
+	"github.com/teler-sh/teler-waf/threat"
 )
 
 // Options is a struct for specifying configuration options for the teler.Teler middleware.

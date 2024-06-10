@@ -9,7 +9,7 @@ import (
 	"regexp"
 
 	"github.com/expr-lang/expr/vm"
-	"github.com/kitabisa/teler-waf/request"
+	"github.com/teler-sh/teler-waf/request"
 )
 
 // Condition specifies a request element to match and
