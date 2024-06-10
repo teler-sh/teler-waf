@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/kitabisa/teler-waf"
+	"github.com/teler-sh/teler-waf"
 	"github.com/stretchr/testify/assert"
 )
 

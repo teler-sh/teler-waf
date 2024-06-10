@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/kataras/iris/v12"
-	"github.com/kitabisa/teler-waf"
+	"github.com/teler-sh/teler-waf"
 )
 
 func main() {

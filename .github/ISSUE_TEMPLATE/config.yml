@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Ask a question
-    url: https://github.com/kitabisa/teler-waf/discussions
+    url: https://github.com/teler-sh/teler-waf/discussions
     about: Ask questions and discuss with other community members
   - name: Announcement Bulletin
     url: https://groups.google.com/g/teler-announce

@@ -12,7 +12,7 @@ Options struct for further processing.
 */
 package option
 
-import "github.com/kitabisa/teler-waf"
+import "github.com/teler-sh/teler-waf"
 
 // LoadFromJSONBytes to unmarshal the teler-waf JSON
 // bytes configuration into the [teler.Options] struct.

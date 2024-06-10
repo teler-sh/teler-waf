@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/kitabisa/teler-waf"
+	"github.com/teler-sh/teler-waf"
 	"github.com/zenazn/goji"
 	"github.com/zenazn/goji/web"
 )

@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: teler-sh/actions/setup-go@v1
-      - uses: kitabisa/teler-resources/cache@master
+      - uses: teler-sh/teler-resources/cache@master
       - run: make bench-${{ matrix.phase }} | tee ${{ env.out }}
       - uses: actions/cache@v4
         with:

@@ -1,4 +1,4 @@
-module github.com/kitabisa/teler-waf
+module github.com/teler-sh/teler-waf
 
 go 1.19
 
@@ -16,7 +16,7 @@ require (
 	github.com/scorpionknifes/go-pcre v0.0.0-20210805092536-77486363b797
 	github.com/sourcegraph/conc v0.3.0
 	github.com/stretchr/testify v1.9.0
-	github.com/teler-sh/dsl v1.0.1
+	github.com/teler-sh/dsl v1.0.2
 	github.com/twharmon/gouid v0.6.0
 	github.com/valyala/fastjson v1.6.3
 	github.com/valyala/fasttemplate v1.2.2
