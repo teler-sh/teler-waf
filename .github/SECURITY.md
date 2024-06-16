@@ -4,4 +4,4 @@ If you discover a security issue, please bring it to their attention right away,
 
 ### Reporting a Vulnerability
 
-If you have information about a security issue, or vulnerability in this teler-waf package, and/or you are able to successfully execute such as cross-site scripting (XSS) and pop-up an alert in [our demo site](https://waf.teler.app), please do **NOT** file a public issue — instead, kindly send your report privately via the [vulnerability report form](https://github.com/teler-sh/teler-waf/security/advisories/new).
+If you have information about a security issue, or vulnerability in this teler-waf package, and/or you are able to successfully execute such as cross-site scripting (XSS) and pop-up an alert in [our demo site](https://test.teler.sh), please do **NOT** file a public issue — instead, kindly send your report privately via the [vulnerability report form](https://github.com/teler-sh/teler-waf/security/advisories/new).

@@ -504,7 +504,7 @@ telerMiddleware := teler.New(teler.Options{
 
 ## Resources
 
-- **teler WAF tester!** — You are free to use the following site for testing, https://waf.teler.app.
+- **teler WAF tester!** — You are free to use the following site for testing, https://test.teler.sh.
 - **teler WAF playground** — Simulate your requests tailored to meet the specific needs of your app, https://play.teler.sh.
 
 ## Security
@@ -513,7 +513,7 @@ If you discover a security issue, please bring it to their attention right away,
 
 ### Reporting a Vulnerability
 
-If you have information about a security issue, or vulnerability in this teler-waf package, and/or you are able to successfully execute such as cross-site scripting (XSS) and pop-up an alert in our [demo site](https://waf.teler.app) (see [resources](#resources)), please do **NOT** file a public issue — instead, kindly send your report privately via the [vulnerability report form](https://github.com/teler-sh/teler-waf/security/advisories/new).
+If you have information about a security issue, or vulnerability in this teler-waf package, and/or you are able to successfully execute such as cross-site scripting (XSS) and pop-up an alert in our [demo site](https://test.teler.sh) (see [resources](#resources)), please do **NOT** file a public issue — instead, kindly send your report privately via the [vulnerability report form](https://github.com/teler-sh/teler-waf/security/advisories/new).
 
 ## Limitations
 
@@ -563,8 +563,8 @@ For any [inquiries](https://github.com/teler-sh/teler-waf/discussions/categories
 
 ## License
 
-This package is developed and maintained by members of Kitabisa Security team, and this is not an officially supported Kitabisa product. This package is made available under a dual license: the [Apache License 2.0](/LICENSE-APACHE) and the [Elastic License 2.0 (ELv2)](/LICENSE-ELASTIC) (for the main package, **teler**).
+This package is made available under a dual license: the [Apache License 2.0](/LICENSE-APACHE) and the [Elastic License 2.0 (ELv2)](/LICENSE-ELASTIC) (for the main package, **teler**).
 
 You can use it freely inside your organization to protect your applications. However, you cannot use the main package to create a cloud, hosted, or managed service, or for any commercial purposes, as you would need a commercial license for that – though this option is not currently available. If you are interested in obtaining this commercial license for uses not authorized by [ELv2](/LICENSE-ELASTIC), please reach out to **@dwisiswant0**.
 
-Kitabisa teler-waf and any contributions are copyright © by Dwi Siswanto 2022-2023.
+teler-waf and any contributions are copyright © by Dwi Siswanto 2022-2024.
