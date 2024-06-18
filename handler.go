@@ -8,6 +8,7 @@ package teler
 import (
 	"net/http"
 
+	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/valyala/fasttemplate"
 )
 
@@ -62,6 +63,23 @@ func (t *Teler) Handler(h http.Handler) http.Handler {
 	})
 }
 
+// CaddyHandler is a special HTTP handler implementation for Caddy.
+func (t *Teler) CaddyHandler(h caddyhttp.Handler) caddyhttp.HandlerFunc {
+	return caddyhttp.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
+		// Let teler analyze the request. If it returns an error,
+		// that indicates the request should not continue.
+		k, err := t.analyzeRequest(w, r)
+		if err != nil {
+			// Process the analyzeRequest
+			t.postAnalyze(w, r, k, err)
+
+			return err
+		}
+
+		return h.ServeHTTP(w, r)
+	})
+}
+
 // HandlerFuncWithNext is a special implementation for Negroni, but could be used elsewhere.
 func (t *Teler) HandlerFuncWithNext(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	// Let teler analyze the request. If it returns an error,
@@ -78,4 +96,24 @@ func (t *Teler) HandlerFuncWithNext(w http.ResponseWriter, r *http.Request, next
 	if next != nil {
 		next(w, r)
 	}
+}
+
+// CaddyHandlerFuncWithNext is a special implementation for Caddy.
+func (t *Teler) CaddyHandlerFuncWithNext(w http.ResponseWriter, r *http.Request, next caddyhttp.HandlerFunc) error {
+	// Let teler analyze the request. If it returns an error,
+	// that indicates the request should not continue.
+	k, err := t.analyzeRequest(w, r)
+	if err != nil {
+		// Process the analyzeRequest
+		t.postAnalyze(w, r, k, err)
+
+		return err
+	}
+
+	// If next handler is not nil, call it.
+	if next != nil {
+		return next(w, r)
+	}
+
+	return nil
 }
