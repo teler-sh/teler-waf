@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
+	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -49,4 +50,40 @@ func TestHandlerFuncWithNext(t *testing.T) {
 
 	// Call the HandlerFuncWithNext function with the mock request, response & next
 	teler.HandlerFuncWithNext(w, r, next)
+}
+
+func TestCaddyHandler(t *testing.T) {
+	// Create a mock Teler
+	teler := New()
+
+	// Create a mock HTTP request using the httptest package
+	r := httptest.NewRequest("GET", "/", nil)
+	w := httptest.NewRecorder()
+
+	// Initialize Caddy HTTP handler
+	handler := teler.CaddyHandler(caddyhttp.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
+		w.WriteHeader(http.StatusOK)
+
+		return nil
+	}))
+
+	// Serve
+	_ = handler.ServeHTTP(w, r)
+}
+
+func TestCaddyHandlerFuncWithNext(t *testing.T) {
+	// Create a mock Teler
+	teler := New()
+
+	// Create a mock HTTP request using the httptest package
+	r := httptest.NewRequest("GET", "/", nil)
+	w := httptest.NewRecorder()
+
+	// Initialize Caddy HTTP handler function
+	next := caddyhttp.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
+		w.WriteHeader(http.StatusOK)
+		return nil
+	})
+
+	_ = teler.CaddyHandlerFuncWithNext(w, r, next)
 }
