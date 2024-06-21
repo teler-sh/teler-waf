@@ -9,7 +9,7 @@ require (
 	github.com/daniel-hutao/spinlock v0.1.0
 	github.com/dwisiswant0/clientip v0.3.0
 	github.com/expr-lang/expr v1.16.3
-	github.com/go-playground/validator/v10 v10.19.0
+	github.com/go-playground/validator/v10 v10.22.0
 	github.com/hashicorp/go-getter v1.7.2
 	github.com/klauspost/compress v1.17.8
 	github.com/otiai10/copy v1.14.0
