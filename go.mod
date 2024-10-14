@@ -11,7 +11,7 @@ require (
 	github.com/expr-lang/expr v1.16.3
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/hashicorp/go-getter v1.7.5
-	github.com/klauspost/compress v1.17.8
+	github.com/klauspost/compress v1.17.11
 	github.com/otiai10/copy v1.14.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/scorpionknifes/go-pcre v0.0.0-20210805092536-77486363b797
