@@ -71,7 +71,7 @@ jobs:
       - uses: teler-sh/actions/resources@v1
       - run: make cover-all
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage.txt
