@@ -4,7 +4,7 @@ go 1.21.0
 toolchain go1.22.5
 
 require (
-	github.com/bitfield/script v0.22.0
+	github.com/bitfield/script v0.24.0
 	github.com/caddyserver/caddy/v2 v2.8.4
 	github.com/codingsince1985/checksum v1.3.0
 	github.com/daniel-hutao/spinlock v0.1.0
@@ -89,7 +89,7 @@ require (
 	github.com/huandu/xstrings v1.3.3 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/itchyny/gojq v0.12.12 // indirect
+	github.com/itchyny/gojq v0.12.13 // indirect
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.14.3 // indirect
@@ -179,5 +179,5 @@ require (
 	google.golang.org/grpc v1.63.2 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	howett.net/plist v1.0.0 // indirect
-	mvdan.cc/sh/v3 v3.6.0 // indirect
+	mvdan.cc/sh/v3 v3.7.0 // indirect
 )
