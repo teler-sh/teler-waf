@@ -1,8 +1,6 @@
 module examples
 
-go 1.21.0
-
-toolchain go1.22.0
+go 1.22
 
 require (
 	github.com/arl/statsviz v0.5.2
