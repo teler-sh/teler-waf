@@ -6,6 +6,9 @@ updates:
       interval: "daily"
     labels:
       - "dependencies"
+    groups:
+      modules:
+        patterns: ["*"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -13,3 +16,6 @@ updates:
       interval: "daily"
     labels:
       - "dependencies"
+    groups:
+      actions:
+        patterns: ["*"]
