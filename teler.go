@@ -30,18 +30,18 @@ import (
 	"time"
 
 	"archive/tar"
-	"encoding/json"
 	"net/http"
 	"net/url"
 	"path/filepath"
 
+	"github.com/bytedance/sonic"
 	"github.com/expr-lang/expr/vm"
-	"github.com/teler-sh/teler-waf/request"
-	"github.com/teler-sh/teler-waf/threat"
 	"github.com/klauspost/compress/zstd"
 	"github.com/patrickmn/go-cache"
 	"github.com/scorpionknifes/go-pcre"
 	"github.com/teler-sh/dsl"
+	"github.com/teler-sh/teler-waf/request"
+	"github.com/teler-sh/teler-waf/threat"
 	"github.com/valyala/fastjson"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -411,7 +411,7 @@ func (t *Teler) sendLogs(r *http.Request, k threat.Threat, id string, msg string
 	}
 
 	// Forward the detected threat to FalcoSidekick instance
-	jsonHeaders, err := json.Marshal(r.Header)
+	jsonHeaders, err := sonic.Marshal(r.Header)
 	if err != nil {
 		t.error(zapcore.PanicLevel, err.Error())
 	}
@@ -623,7 +623,7 @@ func (t *Teler) processResource(k threat.Threat) error {
 		t.threat.cwa = &cwa{}
 
 		// Unmarshal the data into the cwa field.
-		err = json.Unmarshal([]byte(t.threat.data[k]), &t.threat.cwa)
+		err = sonic.Unmarshal([]byte(t.threat.data[k]), &t.threat.cwa)
 		if err != nil {
 			return err
 		}

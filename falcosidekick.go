@@ -9,9 +9,9 @@ import (
 	"bytes"
 	"time"
 
-	"encoding/json"
 	"net/http"
 
+	"github.com/bytedance/sonic"
 	"github.com/daniel-hutao/spinlock"
 	"github.com/sourcegraph/conc/pool"
 	"go.uber.org/zap/zapcore"
@@ -105,7 +105,7 @@ func (t *Teler) sendFalcoEvents() {
 		e := event
 		p.Go(func() {
 			// Marshal the Falco event to JSON format.
-			payload, err := json.Marshal(e)
+			payload, err := sonic.Marshal(e)
 			if err != nil {
 				// Handle JSON marshaling error by logging an error message.
 				t.error(zapcore.ErrorLevel, err.Error())

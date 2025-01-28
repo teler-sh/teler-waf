@@ -8,8 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"encoding/json"
-
+	"github.com/bytedance/sonic"
 	"github.com/teler-sh/teler-waf"
 	"gopkg.in/yaml.v3"
 )
@@ -31,7 +30,7 @@ func unmarshalJSONBytes(raw []byte) (teler.Options, error) {
 	var opt teler.Options
 
 	// Unmarshal the JSON into the Options struct
-	err := json.Unmarshal(raw, &opt)
+	err := sonic.Unmarshal(raw, &opt)
 	return opt, err
 }
 
