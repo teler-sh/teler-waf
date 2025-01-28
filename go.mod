@@ -4,6 +4,7 @@ go 1.22
 
 require (
 	github.com/bitfield/script v0.22.0
+	github.com/bytedance/sonic v1.12.8
 	github.com/caddyserver/caddy/v2 v2.8.4
 	github.com/codingsince1985/checksum v1.3.0
 	github.com/daniel-hutao/spinlock v0.1.0
@@ -47,7 +48,6 @@ require (
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
-	github.com/bytedance/sonic v1.12.8 // indirect
 	github.com/bytedance/sonic/loader v0.2.2 // indirect
 	github.com/caddyserver/certmagic v0.21.3 // indirect
 	github.com/caddyserver/zerossl v0.1.3 // indirect
