@@ -6,8 +6,7 @@
 package teler
 
 import (
-	"regexp"
-
+	"github.com/dwisiswant0/pcregexp/pkg/regexp"
 	"github.com/expr-lang/expr/vm"
 	"github.com/teler-sh/teler-waf/request"
 )

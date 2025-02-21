@@ -17,9 +17,9 @@ import (
 	"net/http/httptest"
 	"path/filepath"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/teler-sh/teler-waf/request"
 	"github.com/teler-sh/teler-waf/threat"
-	"github.com/stretchr/testify/assert"
 )
 
 // Prepraring handler for all cases
@@ -988,35 +988,35 @@ func TestNewBlankCustomRulePattern2(t *testing.T) {
 	})
 }
 
-func TestNewInvalidCustomRulePattern(t *testing.T) {
-	assert.Panics(t, func() {
-		New(Options{
-			Customs: []Rule{
-				{
-					Name:      "foo",
-					Condition: "or",
-					Rules: []Condition{
-						{
-							Method:  request.GET,
-							Element: request.URI,
-							Pattern: `foo(?!bar)`,
-						},
-					},
-				},
-			},
-			NoStderr: true,
-		})
-	})
-}
+// func TestNewInvalidCustomRulePattern(t *testing.T) {
+// 	assert.Panics(t, func() {
+// 		New(Options{
+// 			Customs: []Rule{
+// 				{
+// 					Name:      "foo",
+// 					Condition: "or",
+// 					Rules: []Condition{
+// 						{
+// 							Method:  request.GET,
+// 							Element: request.URI,
+// 							Pattern: `foo(?!bar)`,
+// 						},
+// 					},
+// 				},
+// 			},
+// 			NoStderr: true,
+// 		})
+// 	})
+// }
 
-func TestNewInvalidCustomRulePattern2(t *testing.T) {
-	assert.Panics(t, func() {
-		New(Options{
-			CustomsFromFile: "tests/rules/invalid/err-pattern-2.yaml",
-			NoStderr:        true,
-		})
-	})
-}
+// func TestNewInvalidCustomRulePattern2(t *testing.T) {
+// 	assert.Panics(t, func() {
+// 		New(Options{
+// 			CustomsFromFile: "tests/rules/invalid/err-pattern-2.yaml",
+// 			NoStderr:        true,
+// 		})
+// 	})
+// }
 
 func TestNewInvalidCustomRuleMethod2(t *testing.T) {
 	assert.Panics(t, func() {

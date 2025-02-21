@@ -25,7 +25,6 @@ import (
 	"io"
 	"os"
 	"path"
-	"regexp"
 	"strings"
 	"time"
 
@@ -35,10 +34,10 @@ import (
 	"path/filepath"
 
 	"github.com/bytedance/sonic"
+	"github.com/dwisiswant0/pcregexp/pkg/regexp"
 	"github.com/expr-lang/expr/vm"
 	"github.com/klauspost/compress/zstd"
 	"github.com/patrickmn/go-cache"
-	"github.com/scorpionknifes/go-pcre"
 	"github.com/teler-sh/dsl"
 	"github.com/teler-sh/teler-waf/request"
 	"github.com/teler-sh/teler-waf/threat"
@@ -62,9 +61,9 @@ type Threat struct {
 	// strings containing the data for the corresponding threat category.
 	data map[threat.Threat]string
 
-	// badCrawler contains the compiled slices of pcre.Matcher pointers
+	// badCrawler contains the compiled slices of regexp.Regexp pointers
 	// objects of BadCrawler threat data.
-	badCrawler []*pcre.Matcher
+	badCrawler []*regexp.Regexp
 
 	// cve contains the compiled JSON CVEs data of pointers to fastjson.Value
 	cve *fastjson.Value
@@ -630,13 +629,13 @@ func (t *Teler) processResource(k threat.Threat) error {
 
 		// Compile the regular expression patterns from the filter rules
 		for i, filter := range t.threat.cwa.Filters {
+			var err error
+
 			// Compile the filter rule as a perl-compatible regular expression
-			cpcre, err := pcre.Compile(filter.Rule, pcre.MULTILINE)
+			t.threat.cwa.Filters[i].pattern, err = regexp.Compile(filter.Rule)
 			if err != nil {
 				return err
 			}
-
-			t.threat.cwa.Filters[i].pattern = cpcre.NewMatcher()
 		}
 	case threat.CVE:
 		// Initialize the cve field of the threat struct.
@@ -706,15 +705,15 @@ func (t *Teler) processResource(k threat.Threat) error {
 		// Split the data into a slice of strings, compile each string
 		// into a regex or pcre expr, and save it in the badCrawler field.
 		patterns := strings.Split(t.threat.data[k], "\n")
-		t.threat.badCrawler = make([]*pcre.Matcher, len(patterns))
+		t.threat.badCrawler = make([]*regexp.Regexp, len(patterns))
 
 		for i, pattern := range patterns {
-			cpcre, err := pcre.Compile(pattern, pcre.MULTILINE)
+			var err error
+
+			t.threat.badCrawler[i], err = regexp.Compile(pattern)
 			if err != nil {
 				return err
 			}
-
-			t.threat.badCrawler[i] = cpcre.NewMatcher()
 		}
 	}
 

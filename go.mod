@@ -9,13 +9,13 @@ require (
 	github.com/codingsince1985/checksum v1.3.0
 	github.com/daniel-hutao/spinlock v0.1.0
 	github.com/dwisiswant0/clientip v0.3.0
+	github.com/dwisiswant0/pcregexp v0.1.0
 	github.com/expr-lang/expr v1.16.3
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/hashicorp/go-getter v1.7.5
 	github.com/klauspost/compress v1.17.8
 	github.com/otiai10/copy v1.14.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/scorpionknifes/go-pcre v0.0.0-20210805092536-77486363b797
 	github.com/sourcegraph/conc v0.3.0
 	github.com/stretchr/testify v1.9.0
 	github.com/teler-sh/dsl v1.0.2
@@ -62,6 +62,7 @@ require (
 	github.com/dgraph-io/ristretto v0.1.0 // indirect
 	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
+	github.com/ebitengine/purego v0.8.2 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
