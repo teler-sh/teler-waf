@@ -332,6 +332,12 @@ github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkp
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
 github.com/dwisiswant0/clientip v0.3.0 h1:3KuxOZLIpkkye6dI3+hJXGj8FrTGCChtnM34p0w/A1o=
 github.com/dwisiswant0/clientip v0.3.0/go.mod h1:QqcwmhogIqmcerZ/MGW5JJrX9wjbEXLfMSoxfBHK8Ao=
+github.com/dwisiswant0/pcregexp v0.0.4 h1:WSRFHPfC9XgmqZUA33qFhSVXs0hGW7s95ceOaLPaPRU=
+github.com/dwisiswant0/pcregexp v0.0.4/go.mod h1:EqGOZfeoFa05rdddrLj076KW7pQBhPg2M2hwmfV9efo=
+github.com/dwisiswant0/pcregexp v0.1.0 h1:bDwKGZ/CWw/wjVABzGuvIsOyouYg05s/4sYQurKQ95U=
+github.com/dwisiswant0/pcregexp v0.1.0/go.mod h1:EqGOZfeoFa05rdddrLj076KW7pQBhPg2M2hwmfV9efo=
+github.com/ebitengine/purego v0.8.2 h1:jPPGWs2sZ1UgOSgD2bClL0MJIqu58nOmIcBuXr62z1I=
+github.com/ebitengine/purego v0.8.2/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1mIlRU8Am5FuJP05cCM98=
@@ -721,8 +727,6 @@ github.com/samber/lo v1.39.0/go.mod h1:+m/ZKRl6ClXCE2Lgf3MsQlWfh4bn1bz6CXEOxnEXn
 github.com/satori/go.uuid v1.2.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=
 github.com/schollz/jsonstore v1.1.0 h1:WZBDjgezFS34CHI+myb4s8GGpir3UMpy7vWoCeO0n6E=
 github.com/schollz/jsonstore v1.1.0/go.mod h1:15c6+9guw8vDRyozGjN3FoILt0wpruJk9Pi66vjaZfg=
-github.com/scorpionknifes/go-pcre v0.0.0-20210805092536-77486363b797 h1:gY4oDYOGix3T1pJoNbW+yG7cxuPbKvWDeHQksgPXuM4=
-github.com/scorpionknifes/go-pcre v0.0.0-20210805092536-77486363b797/go.mod h1:ygmxh78DrhoitFrusINenwt2BfHkkPe68GjNYdNPkQQ=
 github.com/shopspring/decimal v0.0.0-20180709203117-cd690d0c9e24/go.mod h1:M+9NzErvs504Cn4c5DxATwIqPbtswREoFCre64PpcG4=
 github.com/shopspring/decimal v1.2.0 h1:abSATXmQEYyShuxI4/vyW3tV1MrKAJzCZ/0zLUXYbsQ=
 github.com/shopspring/decimal v1.2.0/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=

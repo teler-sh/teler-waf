@@ -233,7 +233,7 @@ func (t *Teler) checkCommonWebAttack(r *http.Request) error {
 	// Iterate over the filters in the CommonWebAttack data stored in the t.threat.cwa.Filters field
 	for _, filter := range t.threat.cwa.Filters {
 		// Check if the pattern matches the request URI or request body
-		match := filter.pattern.MatchString(uri, 0) || filter.pattern.MatchString(body, 0)
+		match := filter.pattern.MatchString(uri) || filter.pattern.MatchString(body)
 
 		// If matched, set cache for the request and return an
 		// error indicating a common web attack has been detected
@@ -493,7 +493,7 @@ func (t *Teler) checkBadCrawler(r *http.Request) error {
 	for _, pattern := range t.threat.badCrawler {
 		// Check if the pattern is not nil and matches the User-Agent,
 		// then cache the User-Agent if it matched
-		if pattern.MatchString(ua, 0) {
+		if pattern.MatchString(ua) {
 			t.setCache(ua, errBadCrawler)
 			return errors.New(errBadCrawler)
 		}

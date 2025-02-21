@@ -5,7 +5,7 @@
 
 package teler
 
-import "github.com/scorpionknifes/go-pcre"
+import "github.com/dwisiswant0/pcregexp/pkg/regexp"
 
 type cwa struct {
 	Filters []struct {
@@ -14,6 +14,6 @@ type cwa struct {
 		Impact      int64    `json:"impact"`
 		Rule        string   `json:"rule"`
 		Tags        []string `json:"tags"`
-		pattern     *pcre.Matcher
+		pattern     *regexp.Regexp
 	} `json:"filters"`
 }
